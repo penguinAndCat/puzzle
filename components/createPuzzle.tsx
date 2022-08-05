@@ -1,5 +1,6 @@
 import Paper from 'paper';
 import { Point, Size } from 'paper/dist/paper-core';
+import puzzle from '../libs/puzzle';
 
 const constant = {
   percentageTotal: 100.0,
@@ -120,6 +121,8 @@ export const initConfig = (Paper: any) => {
       //   Paper.view.center._y + y * config.tileWidth - config.originHeight / 4
       // );
       console.log(tile);
+      config.tiles.push(tile);
+      puzzle.moveTile(config);
     }
   }
 };
