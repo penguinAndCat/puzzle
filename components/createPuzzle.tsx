@@ -4,7 +4,7 @@ import puzzle from '../libs/puzzle';
 
 const constant = {
   percentageTotal: 100.0,
-  borderStrokeWidth: 5,
+  borderStrokeWidth: 2,
   tileOpacity: 1,
   maskOpacity: 0.9,
   orgTileLoc: 100,
@@ -24,58 +24,37 @@ type Config = {
   groupTiles: any[];
   shapes: any[];
   tiles: any[];
-  project: typeof Paper;
+  project: any;
   puzzleImage: any;
   tileIndexes: any[];
   groupArr: any[];
 };
 
+const config: Config = {
+  tileWidth: 110,
+  tilesPerColumn: 3,
+  tilesPerRow: 3,
+  shapes: [],
+  project: '',
+  imgWidth: 330,
+  imgHeight: 330,
+  originWidth: 330,
+  originHeight: 330,
+  puzzleImage: '',
+  imgName: 'http://localhost:3000/test.jpg',
+  tileIndexes: [],
+  groupArr: [],
+  groupTiles: [],
+  tiles: [],
+};
+
+const setConfig = (Paper: any) => {
+  config.project = Paper;
+};
+
 export const initConfig = (Paper: any) => {
-  const config: Config = {
-    tileWidth: 165,
-    tilesPerColumn: 2,
-    tilesPerRow: 2,
-    shapes: [
-      {
-        topTab: 0,
-        rightTab: 1,
-        bottomTab: 1,
-        leftTab: 0,
-      },
-      {
-        topTab: 0,
-        rightTab: 0,
-        bottomTab: 1,
-        leftTab: -1,
-      },
-      {
-        topTab: -1,
-        rightTab: -1,
-        bottomTab: 0,
-        leftTab: 0,
-      },
-      {
-        topTab: -1,
-        rightTab: 0,
-        bottomTab: 0,
-        leftTab: 1,
-      },
-    ],
-    project: Paper,
-    imgWidth: 330,
-    imgHeight: 330,
-    originWidth: 330,
-    originHeight: 330,
-    puzzleImage: new Paper.Raster({
-      source: '/test.jpg',
-      position: Paper.view.center,
-    }),
-    imgName: 'http://localhost:3000/test.jpg',
-    tileIndexes: [],
-    groupArr: [],
-    groupTiles: [],
-    tiles: [],
-  };
+  setConfig(Paper);
+  getRandomShapes();
   const tileRatio = config.tileWidth / 100;
   for (let y = 0; y < config.tilesPerColumn; y++) {
     for (let x = 0; x < config.tilesPerRow; x++) {
@@ -95,10 +74,8 @@ export const initConfig = (Paper: any) => {
       mask.opacity = constant.maskOpacity;
       mask.strokeColor = new config.project.Color('#ff0000');
 
-      const cloneImg = config.puzzleImage.clone();
       console.log(config.tileWidth * x, config.tileWidth * y);
       const img = getTileRaster(
-        cloneImg,
         new Size(config.tileWidth, config.tileWidth),
         new Point(config.tileWidth * x, config.tileWidth * y),
         Math.max(config.imgWidth / config.originWidth, config.imgHeight / config.originHeight),
@@ -106,34 +83,49 @@ export const initConfig = (Paper: any) => {
       );
 
       const border = mask.clone();
-      border.strokeColor = new config.project.Color('#ff0000');
+      border.strokeColor = new config.project.Color('#333333');
       border.strokeWidth = constant.borderStrokeWidth;
       console.log(mask, img, border);
-      const tile = new config.project.Group([mask, img, border]);
+      const tile = new config.project.Group([mask, img]);
       tile.clipped = true;
       tile.opacity = constant.tileOpacity;
+      shape.topTab, shape.rightTab, shape.bottomTab, shape.leftTab;
+
+      let marginX = 0;
+      let marginY = 0;
+      const marginP = 11;
+      const marginM = 5;
+      if (shape.rightTab === 1) {
+        marginX += marginP;
+      } else if (shape.rightTab === -1) {
+        marginX += marginM;
+      }
+      if (shape.leftTab === 1) {
+        marginX -= marginP;
+      } else if (shape.leftTab === -1) {
+        marginX -= marginM;
+      }
+      if (shape.topTab === 1) {
+        marginY -= marginP;
+      } else if (shape.topTab === -1) {
+        marginY -= marginM;
+      }
+      if (shape.bottomTab === 1) {
+        marginY += marginP;
+      } else if (shape.bottomTab === -1) {
+        marginY += marginM;
+      }
       tile.position = new Point(
-        Paper.view.center._x + x * config.tileWidth - config.originWidth / 4,
-        Paper.view.center._y + y * config.tileWidth - config.originHeight / 4
+        Paper.view.center._x + (x - 1) * config.tileWidth + marginX,
+        Paper.view.center._y + (y - 1) * config.tileWidth + marginY
       );
-      // tile.position = new Point(
-      //   Paper.view.center._x + x * config.tileWidth - config.originWidth / 4,
-      //   Paper.view.center._y + y * config.tileWidth - config.originHeight / 4
-      // );
-      console.log(tile);
       config.tiles.push(tile);
       puzzle.moveTile(config);
     }
   }
 };
 
-const getTileRaster = (
-  sourceRaster: paper.Raster,
-  size: paper.Size,
-  offset: paper.Point,
-  scaleValue: number,
-  Paper: any
-) => {
+const getTileRaster = (size: paper.Size, offset: paper.Point, scaleValue: number, Paper: any) => {
   const targetRaster = new Paper.Raster('/test.jpg');
   targetRaster.scale(scaleValue);
   targetRaster.position = new Point(-offset.x, -offset.y);
@@ -241,4 +233,50 @@ const getMask = (
   }
 
   return mask;
+};
+
+const getRandomShapes = () => {
+  for (let y = 0; y < config.tilesPerColumn; y++) {
+    for (let x = 0; x < config.tilesPerRow; x++) {
+      let topTab: undefined | number;
+      let rightTab: undefined | number;
+      let bottomTab: undefined | number;
+      let leftTab: undefined | number;
+
+      if (y === 0) topTab = 0;
+      if (y === config.tilesPerColumn - 1) bottomTab = 0;
+      if (x === 0) leftTab = 0;
+      if (x === config.tilesPerRow - 1) rightTab = 0;
+
+      config.shapes.push({
+        topTab: topTab,
+        rightTab: rightTab,
+        bottomTab: bottomTab,
+        leftTab: leftTab,
+      });
+    }
+  }
+
+  for (let y = 0; y < config.tilesPerColumn; y++) {
+    for (let x = 0; x < config.tilesPerRow; x++) {
+      const shape = config.shapes[y * config.tilesPerRow + x];
+
+      const shapeRight = x < config.tilesPerRow - 1 ? config.shapes[y * config.tilesPerRow + (x + 1)] : undefined;
+
+      const shapeBottom = y < config.tilesPerColumn - 1 ? config.shapes[(y + 1) * config.tilesPerRow + x] : undefined;
+
+      config.shapes[y * config.tilesPerRow + x].rightTab =
+        x < config.tilesPerRow - 1 ? getRandomTabValue() : shape.rightTab;
+
+      if (shapeRight && shape.rightTab !== undefined) shapeRight.leftTab = -shape.rightTab;
+
+      config.shapes[y * config.tilesPerRow + x].bottomTab =
+        y < config.tilesPerColumn - 1 ? getRandomTabValue() : shape.bottomTab;
+
+      if (shapeBottom && shape.bottomTab !== undefined) shapeBottom.topTab = -shape.bottomTab;
+    }
+  }
+};
+const getRandomTabValue = () => {
+  return Math.pow(-1, Math.floor(Math.random() * 2));
 };
