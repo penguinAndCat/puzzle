@@ -1,7 +1,7 @@
 import { useRef, useState, useContext, useEffect } from 'react';
 import Paper from 'paper';
 import styled from 'styled-components';
-import { initConfig } from './createPuzzle';
+import { initConfig } from '../libs/puzzle/createPuzzle';
 
 const PuzzleCanvas = (props: any) => {
   const canvasRef = useRef(null);
