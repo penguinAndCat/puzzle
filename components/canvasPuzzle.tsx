@@ -24,8 +24,8 @@ const PuzzleCanvas = (props: any) => {
 
 const Canvas = styled.canvas`
   position: absolute;
-  width: 1280px;
-  height: 765px;
+  width: 1100px;
+  height: 1100px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);

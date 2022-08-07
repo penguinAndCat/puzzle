@@ -6,7 +6,7 @@ const constant = {
   percentageTotal: 100.0,
   borderStrokeWidth: 2,
   tileOpacity: 1,
-  maskOpacity: 0.9,
+  maskOpacity: 0.2,
   orgTileLoc: 100,
   tileMarginM: 10,
   tileMarginP: 30,
@@ -31,17 +31,17 @@ type Config = {
 };
 
 const config: Config = {
-  tileWidth: 110,
-  tilesPerColumn: 3,
-  tilesPerRow: 3,
   shapes: [],
   project: '',
-  imgWidth: 330,
-  imgHeight: 330,
-  originWidth: 330,
-  originHeight: 330,
+  imgWidth: 1000,
+  imgHeight: 1000,
+  originWidth: 1000,
+  originHeight: 1000,
+  tilesPerColumn: 8,
+  tilesPerRow: 8,
+  tileWidth: 1000 / 8,
   puzzleImage: '',
-  imgName: 'http://localhost:3000/test.jpg',
+  imgName: 'http://localhost:3000/test2.jpg',
   tileIndexes: [],
   groupArr: [],
   groupTiles: [],
@@ -74,7 +74,6 @@ export const initConfig = (Paper: any) => {
       mask.opacity = constant.maskOpacity;
       mask.strokeColor = new config.project.Color('#ff0000');
 
-      console.log(config.tileWidth * x, config.tileWidth * y);
       const img = getTileRaster(
         new Size(config.tileWidth, config.tileWidth),
         new Point(config.tileWidth * x, config.tileWidth * y),
@@ -85,16 +84,14 @@ export const initConfig = (Paper: any) => {
       const border = mask.clone();
       border.strokeColor = new config.project.Color('#333333');
       border.strokeWidth = constant.borderStrokeWidth;
-      console.log(mask, img, border);
       const tile = new config.project.Group([mask, img]);
       tile.clipped = true;
       tile.opacity = constant.tileOpacity;
-      shape.topTab, shape.rightTab, shape.bottomTab, shape.leftTab;
 
       let marginX = 0;
       let marginY = 0;
-      const marginP = 11;
-      const marginM = 5;
+      const marginP = (15 * config.tileWidth) / 100;
+      const marginM = (1.5 * config.tileWidth) / 100;
       if (shape.rightTab === 1) {
         marginX += marginP;
       } else if (shape.rightTab === -1) {
@@ -116,8 +113,8 @@ export const initConfig = (Paper: any) => {
         marginY += marginM;
       }
       tile.position = new Point(
-        Paper.view.center._x + (x - 1) * config.tileWidth + marginX,
-        Paper.view.center._y + (y - 1) * config.tileWidth + marginY
+        Paper.view.center._x + (x - (config.tilesPerColumn - 1) / 2) * config.tileWidth + marginX,
+        Paper.view.center._y + (y - (config.tilesPerColumn - 1) / 2) * config.tileWidth + marginY
       );
       config.tiles.push(tile);
       puzzle.moveTile(config);
@@ -126,7 +123,7 @@ export const initConfig = (Paper: any) => {
 };
 
 const getTileRaster = (size: paper.Size, offset: paper.Point, scaleValue: number, Paper: any) => {
-  const targetRaster = new Paper.Raster('/test.jpg');
+  const targetRaster = new Paper.Raster('/test2.jpg');
   targetRaster.scale(scaleValue);
   targetRaster.position = new Point(-offset.x, -offset.y);
 
@@ -146,10 +143,145 @@ const getMask = (
 ) => {
   if (topTab === undefined || rightTab === undefined || bottomTab === undefined || leftTab === undefined) return;
 
+  const cx1 = 20,
+    cy1 = 3,
+    x1 = 20,
+    y1 = 3;
+  const cx2 = 46,
+    cy2 = 3,
+    x2 = 44,
+    y2 = -7;
+  const cx3 = 30,
+    cy3 = -30,
+    x3 = 50,
+    y3 = -30;
+  const cx4 = 70,
+    cy4 = -30,
+    x4 = 100 - x2,
+    y4 = y2;
+  const cx5 = 100 - cx2,
+    cy5 = cy2,
+    x5 = 100 - x1,
+    y5 = y1;
+  const cx6 = 100 - cx1,
+    cy6 = cy1;
   const curvyCoords = [
-    0, 0, 35, 15, 37, 5, 37, 5, 40, 0, 38, -5, 38, -5, 20, -20, 50, -20, 50, -20, 80, -20, 62, -5, 62, -5, 60, 0, 63, 5,
-    63, 5, 65, 15, 100, 0,
+    0,
+    0,
+    cx1,
+    cy1,
+    x1,
+    y1,
+
+    x1,
+    y1,
+    cx2,
+    cy2,
+    x2,
+    y2,
+
+    x2,
+    y2,
+    cx3,
+    cy3,
+    x3,
+    y3,
+
+    x3,
+    y3,
+    cx4,
+    cy4,
+    x4,
+    y4,
+
+    x4,
+    y4,
+    cx5,
+    cy5,
+    x5,
+    y5,
+
+    x5,
+    y5,
+    cx6,
+    cy6,
+    100,
+    0,
   ];
+
+  // const cx1 = 20,
+  //   cy1 = 3,
+  //   x1 = 20,
+  //   y1 = 3;
+  // const cx2 = 46,
+  //   cy2 = 3,
+  //   x2 = 44,
+  //   y2 = -7;
+  // const cx3 = cx2,
+  //   cy3 = cy2,
+  //   x3 = x2,
+  //   y3 = y2;
+  // const cx4 = 30,
+  //   cy4 = -30,
+  //   x4 = 50,
+  //   y4 = -30;
+  // const curvyCoords = [
+  //   0,
+  //   0,
+  //   cx1,
+  //   cy1,
+  //   x1,
+  //   y1,
+
+  //   x1,
+  //   y1,
+  //   cx2,
+  //   cy2,
+  //   x2,
+  //   y2,
+
+  //   x2,
+  //   y2,
+  //   cx3,
+  //   cy3,
+  //   x3,
+  //   y3,
+
+  //   x3,
+  //   y3,
+  //   cx4,
+  //   cy4,
+  //   x4,
+  //   y4,
+
+  //   x4,
+  //   y4,
+  //   100 - cx4,
+  //   cy4,
+  //   100 - x3,
+  //   y3,
+
+  //   100 - x3,
+  //   y3,
+  //   100 - cx3,
+  //   cy3,
+  //   100 - x2,
+  //   y2,
+
+  //   100 - x2,
+  //   y2,
+  //   100 - cx2,
+  //   cy2,
+  //   100 - x1,
+  //   y1,
+
+  //   100 - x1,
+  //   y1,
+  //   100 - cx1,
+  //   cy1,
+  //   100,
+  //   0,
+  // ];
 
   const mask = new project.Path();
   const topLeftEdge = new Point(-imgWidth / 2, -imgHeight / 2);
