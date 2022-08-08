@@ -5,20 +5,23 @@ type shape = {
   bottomTab: number | undefined;
 };
 
+type img = {
+  src: string | Blob;
+  width: number;
+  height: number;
+};
+
 type Config = {
-  originHeight: number;
-  originWidth: number;
   imgWidth: number;
   imgHeight: number;
   tilesPerRow: number;
   tilesPerColumn: number;
   tileWidth: number;
-  imgName: String;
   groupTiles: any[];
   shapes: shape[];
   tiles: any[];
   project: any;
-  puzzleImage: any;
+  puzzleImage: img;
   tileIndexes: any[];
   groupArr: any[];
 };

@@ -1,3 +1,4 @@
+import paper from 'paper';
 import { Point } from 'paper/dist/paper-core';
 import puzzle from './moveTIle';
 
@@ -12,26 +13,28 @@ const config: Config = {
   project: '',
   imgWidth: 1000,
   imgHeight: 1000,
-  originWidth: 1000,
-  originHeight: 1000,
   tilesPerColumn: 8,
   tilesPerRow: 8,
   tileWidth: 1000 / 8,
-  puzzleImage: '',
-  imgName: '',
+  puzzleImage: { src: '', width: 0, height: 0 },
   tileIndexes: [],
   groupArr: [],
   groupTiles: [],
   tiles: [],
 };
 
-const setConfig = (Paper: any) => {
-  config.project = Paper;
+export const initConfig = (Paper: typeof paper, puzzleImage: img) => {
+  setConfig(Paper, puzzleImage);
+  getRandomShapes();
+  createTiles();
 };
 
-export const initConfig = (Paper: any) => {
-  setConfig(Paper);
-  getRandomShapes();
+const setConfig = (Paper: typeof paper, puzzleImage: img) => {
+  config.project = Paper;
+  config.puzzleImage = puzzleImage;
+};
+
+const createTiles = () => {
   const tileRatio = config.tileWidth / 100;
   for (let y = 0; y < config.tilesPerColumn; y++) {
     for (let x = 0; x < config.tilesPerRow; x++) {
@@ -52,9 +55,10 @@ export const initConfig = (Paper: any) => {
       mask.strokeColor = new config.project.Color('#ff0000');
 
       const img = getTileRaster(
+        config.puzzleImage.src,
         new Point(config.tileWidth * x, config.tileWidth * y),
-        Math.max(config.imgWidth / config.originWidth, config.imgHeight / config.originHeight),
-        Paper
+        Math.max(config.imgWidth / config.puzzleImage.width, config.imgHeight / config.puzzleImage.height),
+        config.project
       );
 
       const border = mask.clone();
@@ -66,15 +70,14 @@ export const initConfig = (Paper: any) => {
 
       const margin = getMargin(shape);
       tile.position = new Point(
-        Paper.view.center._x + (x - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.x,
-        Paper.view.center._y + (y - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.y
+        config.project.view.center.x + (x - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.x,
+        config.project.view.center.y + (y - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.y
       );
       config.tiles.push(tile);
       puzzle.moveTile(config);
     }
   }
 };
-
 const getMargin = (shape: shape) => {
   const margin = { x: 0, y: 0 };
   const marginP = (15 * config.tileWidth) / 100;
@@ -101,9 +104,8 @@ const getMargin = (shape: shape) => {
   }
   return margin;
 };
-
-const getTileRaster = (offset: paper.Point, scaleValue: number, Paper: any) => {
-  const targetRaster = new Paper.Raster('/test2.jpg');
+const getTileRaster = (puzzleImage: string | Blob, offset: paper.Point, scaleValue: number, Paper: any) => {
+  const targetRaster = new Paper.Raster(puzzleImage);
   targetRaster.scale(scaleValue);
   targetRaster.position = new Point(-offset.x, -offset.y);
 
