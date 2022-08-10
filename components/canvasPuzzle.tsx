@@ -5,7 +5,7 @@ import { initConfig } from '../libs/puzzle/createPuzzle';
 
 const PuzzleCanvas = (props: any) => {
   const canvasRef = useRef(null);
-  const [imgBase64, setImgBase64] = useState({ src: '/test2.jpg', width: 1000, height: 1000 }); // 파일 base64
+  const [imgBase64, setImgBase64] = useState({ src: '/test.jpg', width: 330, height: 330 }); // 파일 base64
 
   useEffect(() => {
     const canvas: any = canvasRef.current;
@@ -34,7 +34,6 @@ const PuzzleCanvas = (props: any) => {
     }
   };
   useEffect(() => {
-    Paper.project.activeLayer.removeChildren();
     initConfig(Paper, imgBase64);
   }, [imgBase64]);
 

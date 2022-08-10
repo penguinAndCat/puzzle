@@ -26,6 +26,7 @@ const config: Config = {
 export const initConfig = (Paper: typeof paper, puzzleImage: img) => {
   setConfig(Paper, puzzleImage);
   getRandomShapes();
+  Paper.project.activeLayer.removeChildren();
   createTiles();
 };
 
@@ -36,6 +37,7 @@ const setConfig = (Paper: typeof paper, puzzleImage: img) => {
 
 const createTiles = () => {
   const tileRatio = config.tileWidth / 100;
+  config.tiles = [];
   for (let y = 0; y < config.tilesPerColumn; y++) {
     for (let x = 0; x < config.tilesPerRow; x++) {
       const shape = config.shapes[y * config.tilesPerRow + x];
@@ -74,11 +76,12 @@ const createTiles = () => {
         config.project.view.center.y + (y - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.y
       );
       config.tiles.push(tile);
-      puzzle.moveTile(config);
     }
   }
+  config.groupTiles = config.tiles.map((x, i) => [x]);
+  puzzle.moveTile(config);
 };
-const getMargin = (shape: shape) => {
+export const getMargin = (shape: shape) => {
   const margin = { x: 0, y: 0 };
   const marginP = (15 * config.tileWidth) / 100;
   const marginM = (1.5 * config.tileWidth) / 100;
