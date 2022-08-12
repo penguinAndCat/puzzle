@@ -26,4 +26,5 @@ type Config = {
   puzzleImage: img;
   tileIndexes: any[];
   groupArr: any[];
+  groupCheck: boolean;
 };

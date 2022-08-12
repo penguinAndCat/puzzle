@@ -21,6 +21,7 @@ const config: Config = {
   groupArr: [],
   groupTiles: [],
   tiles: [],
+  groupCheck: false,
 };
 
 export const initConfig = (Paper: typeof paper, puzzleImage: img) => {
