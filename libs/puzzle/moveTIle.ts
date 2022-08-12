@@ -1,87 +1,156 @@
 import { getMargin } from './createPuzzle';
 
 const moveTile = (config: Config) => {
-  console.log('tiles', config.tiles);
   config.groupTiles.forEach((tiles, index) => {
-    tiles[0].onMouseDown = (event: any) => {
-      // console.log('group', config.groupTiles);
-      // console.log('down', event.target);
-      // config.project.project.activeLayer.addChild(tiles[0]);
-    };
+    tiles[0].onMouseDown = (event: any) => {};
     tiles[0].onMouseDrag = (event: any) => {
-      tiles[0].position.x += event.delta.x;
-      tiles[0].position.y += event.delta.y;
+      const groupIndex = tiles[1];
+      if (groupIndex === undefined) {
+        tiles[0].position.x += event.delta.x;
+        tiles[0].position.y += event.delta.y;
+      } else {
+        config.groupTiles.forEach((tiles, index) => {
+          if (tiles[1] === groupIndex) {
+            tiles[0].position.x += event.delta.x;
+            tiles[0].position.y += event.delta.y;
+          }
+        });
+      }
     };
     tiles[0].onMouseUp = (event: any) => {
-      fitTile(config, tiles[0]);
+      const groupIndex = tiles[1];
+      if (groupIndex === undefined) {
+        fitTile(config, tiles[0], tiles[1]);
+      } else {
+        config.groupTiles.forEach((tiles, index) => {
+          if (tiles[1] === groupIndex) {
+            fitTile(config, tiles[0], tiles[1]);
+          }
+        });
+      }
     };
-    // console.log('tile', tiles);
   });
 };
 
-const fitTile = (config: Config, currentTile: any) => {
-  let startIndex = config.tilesPerRow * config.tilesPerColumn + 1;
-  let index = (currentTile._index - 1) / 2;
-  console.log(index);
-  let diff = config.tileWidth;
-
-  let leftTile = index !== 0 ? config.tiles[index - 1] : undefined;
-  let rightTile = index % config.tilesPerRow !== config.tilesPerRow - 1 ? config.tiles[index + 1] : undefined;
-  let topTile = index >= config.tilesPerColumn ? config.tiles[index - config.tilesPerColumn] : undefined;
-  let bottomTile =
+const fitTile = (
+  config: Config,
+  currentTile: { _index: number; position: { x: number; y: number } },
+  groupIndex: index
+) => {
+  const index = (currentTile._index - 1) / 2;
+  const leftTile = index % config.tilesPerRow !== 0 ? config.tiles[index - 1] : undefined;
+  const rightTile = index % config.tilesPerRow !== config.tilesPerRow - 1 ? config.tiles[index + 1] : undefined;
+  const topTile = index >= config.tilesPerColumn ? config.tiles[index - config.tilesPerColumn] : undefined;
+  const bottomTile =
     index < config.tilesPerRow * config.tilesPerColumn - config.tilesPerRow
       ? config.tiles[index + config.tilesPerRow]
       : undefined;
-  console.log(leftTile, rightTile, topTile, bottomTile);
-  if (
-    leftTile &&
-    Math.abs(leftTile.position.x - currentTile.position.x) < diff * 1.2 &&
-    Math.abs(leftTile.position.x - currentTile.position.x) > diff * 0.8 &&
-    Math.abs(leftTile.position.y - currentTile.position.y) < diff * 1.2
-  ) {
-    currentTile.position.x = leftTile.position.x + config.tileWidth;
-    currentTile.position.y = leftTile.position.y;
-    setPosition(config, currentTile, leftTile, 'left');
-  } else if (
-    rightTile &&
-    Math.abs(rightTile.position.x - currentTile.position.x) < diff * 1.2 &&
-    Math.abs(rightTile.position.x - currentTile.position.x) > diff * 0.8 &&
-    Math.abs(rightTile.position.y - currentTile.position.y) < diff * 1.2
-  ) {
-    currentTile.position.x = rightTile.position.x - config.tileWidth;
-    currentTile.position.y = rightTile.position.y;
-    setPosition(config, currentTile, rightTile, 'right');
-  } else if (
-    topTile &&
-    Math.abs(topTile.position.x - currentTile.position.x) < diff * 1.2 &&
-    Math.abs(topTile.position.y - currentTile.position.y) < diff * 1.2 &&
-    Math.abs(topTile.position.y - currentTile.position.y) > diff * 0.8
-  ) {
-    currentTile.position.x = topTile.position.x;
-    currentTile.position.y = topTile.position.y + config.tileWidth;
-    setPosition(config, currentTile, topTile, 'top');
-  } else if (
-    bottomTile &&
-    Math.abs(bottomTile.position.x - currentTile.position.x) < diff * 1.2 &&
-    Math.abs(bottomTile.position.y - currentTile.position.y) < diff * 1.2 &&
-    Math.abs(bottomTile.position.y - currentTile.position.y) > diff * 0.8
-  ) {
-    currentTile.position.x = bottomTile.position.x;
-    currentTile.position.y = bottomTile.position.y - config.tileWidth;
-    setPosition(config, currentTile, bottomTile, 'bottom');
+
+  // 동작 설명
+  // 4개의 방향에 대해 근처에 그룹화 가능한 조각이 있는지 확인한다.
+  // 이미 그룹화 된 조각은 다시 그룹화 하지 않는다.
+  // 그룹화 가능한 조각이 두 개 이상 있을 경우, 하나의 조각만 그룹화한다.
+  config.groupCheck = false;
+  if (calculatePosition(currentTile, leftTile, config.tileWidth, 0) === true && config.groupCheck === false) {
+    setPosition(config, currentTile, leftTile, groupIndex, 'left');
+  }
+  if (calculatePosition(currentTile, rightTile, config.tileWidth, 0) === true && config.groupCheck === false) {
+    setPosition(config, currentTile, rightTile, groupIndex, 'right');
+  }
+  if (calculatePosition(currentTile, topTile, config.tileWidth, 1) === true && config.groupCheck === false) {
+    setPosition(config, currentTile, topTile, groupIndex, 'top');
+  }
+  if (calculatePosition(currentTile, bottomTile, config.tileWidth, 1) === true && config.groupCheck === false) {
+    setPosition(config, currentTile, bottomTile, groupIndex, 'bottom');
   }
 };
 
-const setPosition = (config: Config, tile: any, joinTile: any, joinType: string) => {
-  const index = (tile._index - 1) / 2;
+const calculatePosition = (currentTile: any, joinTile: any, tileWidth: number, type: number) => {
+  const diffMargin = 0.2;
+  if (joinTile === undefined) return false;
+  if (type === 0) {
+    if (
+      Math.abs(currentTile.position.x - joinTile.position.x) < tileWidth * (1 + diffMargin) &&
+      Math.abs(currentTile.position.x - joinTile.position.x) > tileWidth * (1 - diffMargin) &&
+      Math.abs(currentTile.position.y - joinTile.position.y) < tileWidth * diffMargin
+    ) {
+      return true;
+    }
+  } else {
+    if (
+      Math.abs(currentTile.position.x - joinTile.position.x) < tileWidth * diffMargin &&
+      Math.abs(currentTile.position.y - joinTile.position.y) < tileWidth * (1 + diffMargin) &&
+      Math.abs(currentTile.position.y - joinTile.position.y) > tileWidth * (1 - diffMargin)
+    ) {
+      return true;
+    }
+  }
+  return false;
+};
+
+const setPosition = (config: Config, currentTile: any, joinTile: any, groupIndex: index, type: string) => {
+  const index = (currentTile._index - 1) / 2;
   const joinIndex = (joinTile._index - 1) / 2;
   const shape = config.shapes[index];
   const joinShape = config.shapes[joinIndex];
-  const margin = getMargin(shape);
+  const currentMargin = getMargin(shape);
   const joinMargin = getMargin(joinShape);
+  const margin = {
+    x: joinTile.position.x - currentTile.position.x + currentMargin.x - joinMargin.x,
+    y: joinTile.position.y - currentTile.position.y + currentMargin.y - joinMargin.y,
+  };
+  if (type === 'left') {
+    margin.x += config.tileWidth;
+  } else if (type === 'right') {
+    margin.x -= config.tileWidth;
+  } else if (type === 'top') {
+    margin.y += config.tileWidth;
+  } else if (type === 'bottom') {
+    margin.y -= config.tileWidth;
+  }
+  if (groupIndex === undefined) {
+    currentTile.position.x += margin.x;
+    currentTile.position.y += margin.y;
+  } else {
+    config.groupTiles.forEach((tiles) => {
+      if (tiles[1] === groupIndex) {
+        tiles[0].position.x += margin.x;
+        tiles[0].position.y += margin.y;
+      }
+    });
+  }
+  setGroup(config, currentTile, joinTile);
+};
 
-  tile.position.x += margin.x - joinMargin.x;
-  tile.position.y += margin.y - joinMargin.y;
+const setGroup = (config: Config, tile: any, joinTile: any) => {
+  const index = (tile._index - 1) / 2;
+  const joinIndex = (joinTile._index - 1) / 2;
+  const groupIndex = config.groupTiles[index][1];
+  const joinGroupIndex = config.groupTiles[joinIndex][1];
+  if (groupIndex === joinGroupIndex && groupIndex !== undefined) return;
+  if (config.groupTiles[joinIndex][1] === undefined) {
+    config.groupTiles[joinIndex][1] = joinIndex;
+    if (config.groupTiles[index][1] === undefined) {
+      config.groupTiles[index][1] = joinIndex;
+    } else {
+      config.groupTiles.forEach((tiles) => {
+        if (tiles[1] === groupIndex) {
+          tiles[1] = joinIndex;
+        }
+      });
+    }
+  } else {
+    if (config.groupTiles[index][1] === undefined) {
+      config.groupTiles[index][1] = joinGroupIndex;
+    } else {
+      config.groupTiles.forEach((tiles) => {
+        if (tiles[1] === groupIndex) {
+          tiles[1] = joinGroupIndex;
+        }
+      });
+    }
+  }
+  config.groupCheck = true;
 };
 
 const puzzle = {

@@ -11,16 +11,17 @@ const constant = {
 const config: Config = {
   shapes: [],
   project: '',
-  imgWidth: 1000,
-  imgHeight: 1000,
-  tilesPerColumn: 8,
-  tilesPerRow: 8,
-  tileWidth: 1000 / 8,
+  imgWidth: 330,
+  imgHeight: 330,
+  tilesPerColumn: 3,
+  tilesPerRow: 3,
+  tileWidth: 330 / 3,
   puzzleImage: { src: '', width: 0, height: 0 },
   tileIndexes: [],
   groupArr: [],
   groupTiles: [],
   tiles: [],
+  groupCheck: false,
 };
 
 export const initConfig = (Paper: typeof paper, puzzleImage: img) => {
@@ -38,6 +39,7 @@ const setConfig = (Paper: typeof paper, puzzleImage: img) => {
 const createTiles = () => {
   const tileRatio = config.tileWidth / 100;
   config.tiles = [];
+  config.groupTiles = [];
   for (let y = 0; y < config.tilesPerColumn; y++) {
     for (let x = 0; x < config.tilesPerRow; x++) {
       const shape = config.shapes[y * config.tilesPerRow + x];
@@ -71,14 +73,15 @@ const createTiles = () => {
       tile.opacity = constant.tileOpacity;
 
       const margin = getMargin(shape);
-      tile.position = new Point(
-        config.project.view.center.x + (x - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.x,
-        config.project.view.center.y + (y - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.y
-      );
+      // tile.position = new Point(
+      //   config.project.view.center.x + (x - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.x,
+      //   config.project.view.center.y + (y - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.y
+      // );
+      tile.position = new Point(config.project.view.center.x, config.project.view.center.y);
       config.tiles.push(tile);
+      config.groupTiles.push([tile, undefined]);
     }
   }
-  config.groupTiles = config.tiles.map((x, i) => [x]);
   puzzle.moveTile(config);
 };
 export const getMargin = (shape: shape) => {

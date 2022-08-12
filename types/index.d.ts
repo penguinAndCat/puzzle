@@ -11,6 +11,8 @@ type img = {
   height: number;
 };
 
+type index = number | undefined;
+
 type Config = {
   imgWidth: number;
   imgHeight: number;
@@ -24,4 +26,5 @@ type Config = {
   puzzleImage: img;
   tileIndexes: any[];
   groupArr: any[];
+  groupCheck: boolean;
 };
