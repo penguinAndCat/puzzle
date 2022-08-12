@@ -1,5 +1,6 @@
 import paper from 'paper';
 import { Point } from 'paper/dist/paper-core';
+import createRandomNumber from '../createRandomNumber';
 import puzzle from './moveTIle';
 
 const constant = {
@@ -77,7 +78,11 @@ const createTiles = () => {
       //   config.project.view.center.x + (x - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.x,
       //   config.project.view.center.y + (y - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.y
       // );
-      tile.position = new Point(config.project.view.center.x, config.project.view.center.y);
+      // tile.position = new Point(config.project.view.center.x, config.project.view.center.y);
+      tile.position = new Point(
+        createRandomNumber(config.tileWidth, 1100 - config.tileWidth),
+        createRandomNumber(config.tileWidth, 1100 - config.tileWidth)
+      );
       config.tiles.push(tile);
       config.groupTiles.push([tile, undefined]);
     }
