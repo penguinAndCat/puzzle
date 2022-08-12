@@ -11,6 +11,8 @@ type img = {
   height: number;
 };
 
+type index = number | undefined;
+
 type Config = {
   imgWidth: number;
   imgHeight: number;
