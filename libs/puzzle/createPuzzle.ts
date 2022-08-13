@@ -79,10 +79,8 @@ const createTiles = () => {
       //   config.project.view.center.y + (y - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.y
       // );
       // tile.position = new Point(config.project.view.center.x, config.project.view.center.y);
-      tile.position = new Point(
-        createRandomNumber(config.tileWidth, 1100 - config.tileWidth),
-        createRandomNumber(config.tileWidth, 1100 - config.tileWidth)
-      );
+      const [xPos, yPos] = getRandomPos(config.tileWidth, 1100, config.imgWidth);
+      tile.position = new Point(xPos, yPos);
       config.tiles.push(tile);
       config.groupTiles.push([tile, undefined]);
     }
@@ -331,4 +329,18 @@ const getRandomShapes = () => {
 };
 const getRandomTabValue = () => {
   return Math.pow(-1, Math.floor(Math.random() * 2));
+};
+
+const getRandomPos = (tileWidth: number, canvasWidth: number, imgWidth: number) => {
+  const x = [
+    createRandomNumber(tileWidth, (canvasWidth - (imgWidth + 20)) / 2),
+    createRandomNumber((canvasWidth + (imgWidth + 20)) / 2, canvasWidth - tileWidth),
+  ];
+  const y = [
+    createRandomNumber(tileWidth, (canvasWidth - (imgWidth + 20)) / 2),
+    createRandomNumber((canvasWidth + (imgWidth + 20)) / 2, canvasWidth - tileWidth),
+  ];
+  const xIndex = Math.round(Math.random());
+  const yIndex = Math.round(Math.random());
+  return [x[xIndex], y[yIndex]];
 };
