@@ -4,13 +4,7 @@ const moveTile = (config: Config) => {
   config.groupTiles.forEach((tiles, index) => {
     tiles[0].onMouseDown = (event: any) => {
       const gIndex = tiles[1];
-      if (gIndex !== undefined) {
-        config.groupTiles.forEach(([tile, groupIndex]) => {
-          if (groupIndex === gIndex) {
-            config.project.project.activeLayer.addChild(tile);
-          }
-        });
-      } else {
+      if (gIndex === undefined) {
         config.project.project.activeLayer.addChild(event.target);
       }
     };
@@ -39,6 +33,36 @@ const moveTile = (config: Config) => {
           }
         });
       }
+
+      const copy = [...config.groupTiles];
+      const data = copy.reduce((acc, [tile, groupIndex]) => {
+        if (groupIndex !== undefined) {
+          acc[groupIndex] ? (acc[groupIndex] = [...acc[groupIndex], tile]) : (acc[groupIndex] = [tile]);
+        }
+        if (groupIndex === undefined) {
+          acc['notGroup'] ? (acc['notGroup'] = [...acc['notGroup'], tile]) : (acc['notGroup'] = [tile]);
+        }
+        return acc;
+      }, {});
+
+      const arr1: any[] = [];
+      const arr2: any[] = data['notGroup'];
+      Object.entries(data).forEach(([key, value]) => {
+        if (key !== 'notGroup') {
+          arr1.push(value);
+        }
+      });
+
+      arr1.sort((a, b) => b.length - a.length);
+
+      arr1?.forEach((tiles) => {
+        tiles.forEach((tile: any) => {
+          config.project.project.activeLayer.addChild(tile);
+        });
+      });
+      arr2?.forEach((tile: any) => {
+        config.project.project.activeLayer.addChild(tile);
+      });
     };
   });
 };
