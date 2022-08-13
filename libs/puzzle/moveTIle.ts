@@ -2,7 +2,18 @@ import { getMargin } from './createPuzzle';
 
 const moveTile = (config: Config) => {
   config.groupTiles.forEach((tiles, index) => {
-    tiles[0].onMouseDown = (event: any) => {};
+    tiles[0].onMouseDown = (event: any) => {
+      const gIndex = tiles[1];
+      if (gIndex !== undefined) {
+        config.groupTiles.forEach(([tile, groupIndex]) => {
+          if (groupIndex === gIndex) {
+            config.project.project.activeLayer.addChild(tile);
+          }
+        });
+      } else {
+        config.project.project.activeLayer.addChild(event.target);
+      }
+    };
     tiles[0].onMouseDrag = (event: any) => {
       const groupIndex = tiles[1];
       if (groupIndex === undefined) {
@@ -37,7 +48,7 @@ const fitTile = (
   currentTile: { _index: number; position: { x: number; y: number } },
   groupIndex: index
 ) => {
-  const index = (currentTile._index - 1) / 2;
+  const index = config.tiles.findIndex((tile) => tile === currentTile);
   const leftTile = index % config.tilesPerRow !== 0 ? config.tiles[index - 1] : undefined;
   const rightTile = index % config.tilesPerRow !== config.tilesPerRow - 1 ? config.tiles[index + 1] : undefined;
   const topTile = index >= config.tilesPerColumn ? config.tiles[index - config.tilesPerColumn] : undefined;
@@ -89,8 +100,8 @@ const calculatePosition = (currentTile: any, joinTile: any, tileWidth: number, t
 };
 
 const setPosition = (config: Config, currentTile: any, joinTile: any, groupIndex: index, type: string) => {
-  const index = (currentTile._index - 1) / 2;
-  const joinIndex = (joinTile._index - 1) / 2;
+  const index = config.tiles.findIndex((tile) => tile === currentTile);
+  const joinIndex = config.tiles.findIndex((tile) => tile === joinTile);
   const shape = config.shapes[index];
   const joinShape = config.shapes[joinIndex];
   const currentMargin = getMargin(shape);
@@ -123,8 +134,8 @@ const setPosition = (config: Config, currentTile: any, joinTile: any, groupIndex
 };
 
 const setGroup = (config: Config, tile: any, joinTile: any) => {
-  const index = (tile._index - 1) / 2;
-  const joinIndex = (joinTile._index - 1) / 2;
+  const index = config.tiles.findIndex((ctile) => ctile === tile);
+  const joinIndex = config.tiles.findIndex((tile) => tile === joinTile);
   const groupIndex = config.groupTiles[index][1];
   const joinGroupIndex = config.groupTiles[joinIndex][1];
   if (groupIndex === joinGroupIndex && groupIndex !== undefined) return;
