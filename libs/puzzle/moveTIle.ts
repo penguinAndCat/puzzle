@@ -4,7 +4,13 @@ const moveTile = (config: Config) => {
   config.groupTiles.forEach((tiles, index) => {
     tiles[0].onMouseDown = (event: any) => {
       const gIndex = tiles[1];
-      if (gIndex === undefined) {
+      if (gIndex !== undefined) {
+        config.groupTiles.forEach(([tile, groupIndex]) => {
+          if (groupIndex === gIndex) {
+            config.project.project.activeLayer.addChild(tile);
+          }
+        });
+      } else {
         config.project.project.activeLayer.addChild(event.target);
       }
     };
