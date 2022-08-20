@@ -6,14 +6,15 @@ import { initConfig } from '../libs/puzzle/createPuzzle';
 const PuzzleCanvas = (props: any) => {
   const canvasRef = useRef(null);
   const [imgBase64, setImgBase64] = useState({ src: '/test.jpg', width: 330, height: 330 }); // 파일 base64
+  const [puzzleLevel, setPuzzleLevel] = useState(2); // 퍼즐 레벨
 
   useEffect(() => {
     const canvas: any = canvasRef.current;
     if (canvas === null) return;
     Paper.setup(canvas);
 
-    initConfig(Paper, imgBase64);
-  }, []);
+    initConfig(Paper, imgBase64, puzzleLevel);
+  }, [imgBase64, puzzleLevel]);
 
   const handleChangeFile = (event: any) => {
     const reader = new FileReader();
@@ -33,18 +34,20 @@ const PuzzleCanvas = (props: any) => {
       reader.readAsDataURL(event.target.files[0]); // 1. 파일을 읽어 버퍼에 저장합니다.
     }
   };
-  useEffect(() => {
-    initConfig(Paper, imgBase64);
-  }, [imgBase64]);
 
   return (
     <Wrapper>
       <Canvas ref={canvasRef} id="canvas" />
-      <div className="button">
+      <ButtonBox className="button">
         <label htmlFor="chooseFile" className="label">
           👉 CLICK HERE! 👈
         </label>
-      </div>
+        <button onClick={() => setPuzzleLevel(1)}>1</button>
+        <button onClick={() => setPuzzleLevel(2)}>2</button>
+        <button onClick={() => setPuzzleLevel(3)}>3</button>
+        <button onClick={() => setPuzzleLevel(4)}>4</button>
+        <button onClick={() => setPuzzleLevel(5)}>5</button>
+      </ButtonBox>
       <Input type="file" id="chooseFile" name="chooseFile" accept="image/*" onChange={handleChangeFile} />
     </Wrapper>
   );
@@ -70,4 +73,11 @@ const Input = styled.input`
   display: none;
 `;
 
+const ButtonBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 200px;
+`;
 export default PuzzleCanvas;

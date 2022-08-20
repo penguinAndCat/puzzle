@@ -1,6 +1,7 @@
 import paper from 'paper';
 import { Point } from 'paper/dist/paper-core';
 import createRandomNumber from '../createRandomNumber';
+import getTilewidths from './getTileWidths';
 import puzzle from './moveTIle';
 
 const constant = {
@@ -25,10 +26,15 @@ const config: Config = {
   groupCheck: false,
 };
 
-export const initConfig = (Paper: typeof paper, puzzleImage: img) => {
+export const initConfig = (Paper: typeof paper, puzzleImage: img, level: number) => {
   setConfig(Paper, puzzleImage);
-  getRandomShapes();
   Paper.project.activeLayer.removeChildren();
+  const tileWidths = getTilewidths(config.imgWidth, config.imgHeight);
+  const currentLevel = tileWidths[level];
+  config.tileWidth = currentLevel;
+  config.tilesPerColumn = config.imgWidth / currentLevel;
+  config.tilesPerRow = config.imgHeight / currentLevel;
+  getRandomShapes();
   createTiles();
 };
 
