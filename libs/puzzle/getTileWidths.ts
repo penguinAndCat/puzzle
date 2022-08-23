@@ -13,6 +13,7 @@ const getTilewidths = (w: number, h: number): number[] => {
       tileWidths.push(i);
     }
   }
+
   return tileWidths.reverse();
 };
 
