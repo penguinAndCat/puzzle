@@ -3,7 +3,7 @@ import Paper from 'paper';
 import styled from 'styled-components';
 import { exportConfig, initConfig } from '../libs/puzzle/createPuzzle';
 
-const PuzzleCanvas = (props: any) => {
+const PuzzleCanvas = () => {
   const canvasRef = useRef(null);
   const [imgBase64, setImgBase64] = useState({ src: '/test2.jpg', width: 1000, height: 1000 }); // 파일 base64
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
@@ -13,7 +13,11 @@ const PuzzleCanvas = (props: any) => {
     if (canvas === null) return;
 
     const imgResize = () => {
-      setCanvasSize({ width: window.innerWidth, height: window.innerHeight - 60 });
+      if (window.innerWidth < window.innerHeight) {
+        setCanvasSize({ width: window.innerWidth, height: window.innerWidth });
+      } else {
+        setCanvasSize({ width: window.innerHeight, height: window.innerHeight });
+      }
     };
 
     window.addEventListener('resize', imgResize);
@@ -28,8 +32,8 @@ const PuzzleCanvas = (props: any) => {
     if (canvas === null) return;
     if (canvasSize.width === 0 || canvasSize.width === 0) return;
 
-    canvas.width = window.innerWidth - 60;
-    canvas.height = window.innerHeight;
+    canvas.width = canvasSize.width;
+    canvas.height = canvasSize.height;
     const config = exportConfig();
     if (config.firstClient === false) {
       Paper.projects = [];
@@ -84,6 +88,7 @@ const Wrapper = styled.div`
   width: 100%;
   height: calc(100% - 60px);
   display: flex;
+  justify-content: center;
 `;
 
 const Input = styled.input`

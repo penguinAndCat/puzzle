@@ -10,7 +10,7 @@ const Home: NextPage = () => {
   return (
     <Container>
       <Header />
-      <PuzzleCanvas puzzleImg={'/test.jpg'} />
+      <PuzzleCanvas />
     </Container>
   );
 };

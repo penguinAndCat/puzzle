@@ -91,13 +91,13 @@ const createTiles = () => {
       tile.opacity = constant.tileOpacity;
 
       const margin = getMargin(shape);
-      // tile.position = new Point(
-      //   config.project.view.center.x + (x - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.x,
-      //   config.project.view.center.y + (y - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.y
-      // );
+      tile.position = new Point(
+        config.project.view.center.x + (x - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.x,
+        config.project.view.center.y + (y - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.y
+      );
       // tile.position = new Point(config.project.view.center.x, config.project.view.center.y);
-      const [xPos, yPos] = getRandomPos(config.tileWidth, 1100, config.imgWidth);
-      tile.position = new Point(xPos, yPos);
+      // const [xPos, yPos] = getRandomPos(config.tileWidth, 1100, config.imgWidth);
+      // tile.position = new Point(xPos, yPos);
       config.groupTiles.push([tile, undefined]);
     }
   }
@@ -141,11 +141,10 @@ const createTiles2 = () => {
 
       console.log(groupTiles[y * config.tilesPerRow + x][0].children[0].position);
       const margin = getMargin(shape);
-      console.log(margin);
       tile.position = new Point(
-        ((groupTiles[y * config.tilesPerRow + x][0].children[0].position._x + 0) * config.canvasSize.width) /
+        (groupTiles[y * config.tilesPerRow + x][0].children[0].position._x * config.canvasSize.width) /
           config.canvasPreSize.width,
-        ((groupTiles[y * config.tilesPerRow + x][0].children[0].position._y + 0) * config.canvasSize.height) /
+        (groupTiles[y * config.tilesPerRow + x][0].children[0].position._y * config.canvasSize.height) /
           config.canvasPreSize.height
       );
       config.groupTiles.push([tile, groupTiles[y * config.tilesPerRow + x][1]]);
