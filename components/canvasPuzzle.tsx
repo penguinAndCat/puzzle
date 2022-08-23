@@ -5,15 +5,15 @@ import { exportConfig, initConfig } from '../libs/puzzle/createPuzzle';
 
 const PuzzleCanvas = (props: any) => {
   const canvasRef = useRef(null);
-  const [imgBase64, setImgBase64] = useState({ src: '/test.jpg', width: 330, height: 330 }); // 파일 base64
-  const [size, setSize] = useState({ width: 0, height: 0 });
+  const [imgBase64, setImgBase64] = useState({ src: '/test2.jpg', width: 1000, height: 1000 }); // 파일 base64
+  const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas === null) return;
 
     const imgResize = () => {
-      setSize({ width: window.innerWidth, height: window.innerHeight - 60 });
+      setCanvasSize({ width: window.innerWidth, height: window.innerHeight - 60 });
     };
 
     window.addEventListener('resize', imgResize);
@@ -26,7 +26,7 @@ const PuzzleCanvas = (props: any) => {
   useEffect(() => {
     const canvas: any = canvasRef.current;
     if (canvas === null) return;
-    if (size.width === 0 || size.width === 0) return;
+    if (canvasSize.width === 0 || canvasSize.width === 0) return;
 
     canvas.width = window.innerWidth - 60;
     canvas.height = window.innerHeight;
@@ -35,8 +35,8 @@ const PuzzleCanvas = (props: any) => {
       Paper.projects = [];
     }
     Paper.setup(canvas);
-    initConfig(Paper, imgBase64, config);
-  }, [size]);
+    initConfig(Paper, imgBase64, config, canvasSize);
+  }, [canvasSize]);
 
   // const handleChangeFile = (event: any) => {
   //   const reader = new FileReader();
@@ -62,7 +62,7 @@ const PuzzleCanvas = (props: any) => {
 
   return (
     <Wrapper>
-      <Canvas ref={canvasRef} id="canvas" style={{ width: size.width, height: size.height }} />
+      <Canvas ref={canvasRef} id="canvas" style={{ width: canvasSize.width, height: canvasSize.height }} />
       {/* <div className="button">
         <label htmlFor="chooseFile" className="label">
           👉 CLICK HERE! 👈

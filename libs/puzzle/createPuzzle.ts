@@ -12,32 +12,31 @@ const constant = {
 const config: Config = {
   shapes: [],
   project: '',
-  imgWidth: 330,
-  imgHeight: 330,
+  imgWidth: 500,
+  imgHeight: 500,
   tilesPerColumn: 3,
   tilesPerRow: 3,
-  tileWidth: 330 / 3,
-  puzzleImage: { src: '', width: 0, height: 0 },
+  tileWidth: 500 / 3,
+  puzzleImage: { src: '', width: 1000, height: 1000 },
   tileIndexes: [],
   groupArr: [],
   groupTiles: [],
   tiles: [],
   groupCheck: false,
   firstClient: true,
+  canvasSize: { width: 0, height: 0 },
+  canvasPreSize: { width: 0, height: 0 },
 };
 
-export const initConfig = (Paper: typeof paper, puzzleImage: img, config: Config) => {
+export const initConfig = (Paper: typeof paper, puzzleImage: img, config: Config, canvasSize: size) => {
   if (config.firstClient === false) {
-    config.project = Paper;
-    config.puzzleImage = puzzleImage;
-    Paper.project.activeLayer.removeChildren();
+    setConfig(Paper, puzzleImage, canvasSize);
     createTiles2();
     return;
   }
   config.firstClient = false;
-  setConfig(Paper, puzzleImage);
+  setConfig(Paper, puzzleImage, canvasSize);
   getRandomShapes();
-  Paper.project.activeLayer.removeChildren();
   createTiles();
 };
 
@@ -45,9 +44,15 @@ export const exportConfig = () => {
   return config;
 };
 
-const setConfig = (Paper: typeof paper, puzzleImage: img) => {
+const setConfig = (Paper: typeof paper, puzzleImage: img, canvasSize: size) => {
   config.project = Paper;
   config.puzzleImage = puzzleImage;
+  config.canvasPreSize = config.canvasSize;
+  config.canvasSize = canvasSize;
+  config.imgWidth = canvasSize.width / 2;
+  config.imgHeight = canvasSize.width / 2;
+  config.tileWidth = config.imgWidth / 3;
+  Paper.project.activeLayer.removeChildren();
 };
 
 const createTiles = () => {
@@ -134,7 +139,15 @@ const createTiles2 = () => {
       tile.clipped = true;
       tile.opacity = constant.tileOpacity;
 
-      tile.position = new Point(groupTiles[y * config.tilesPerRow + x][0].children[0].position);
+      console.log(groupTiles[y * config.tilesPerRow + x][0].children[0].position);
+      const margin = getMargin(shape);
+      console.log(margin);
+      tile.position = new Point(
+        ((groupTiles[y * config.tilesPerRow + x][0].children[0].position._x + 0) * config.canvasSize.width) /
+          config.canvasPreSize.width,
+        ((groupTiles[y * config.tilesPerRow + x][0].children[0].position._y + 0) * config.canvasSize.height) /
+          config.canvasPreSize.height
+      );
       config.groupTiles.push([tile, groupTiles[y * config.tilesPerRow + x][1]]);
     }
   }
