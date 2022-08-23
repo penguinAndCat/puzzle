@@ -1,6 +1,7 @@
 import paper from 'paper';
 import { Point } from 'paper/dist/paper-core';
 import createRandomNumber from '../createRandomNumber';
+import getTilewidths from './getTileWidths';
 import puzzle from './moveTIle';
 
 const constant = {
@@ -16,8 +17,8 @@ const config: Config = {
   imgHeight: 500,
   tilesPerColumn: 3,
   tilesPerRow: 3,
-  tileWidth: 500 / 3,
-  puzzleImage: { src: '', width: 1000, height: 1000 },
+  tileWidth: 0,
+  puzzleImage: { src: '', width: 0, height: 0 },
   tileIndexes: [],
   groupArr: [],
   groupTiles: [],
@@ -28,23 +29,24 @@ const config: Config = {
   canvasPreSize: { width: 0, height: 0 },
 };
 
-export const initConfig = (Paper: typeof paper, puzzleImage: img, config: Config, canvasSize: size) => {
+export const initConfig = (Paper: typeof paper, puzzleImage: img, config: Config, canvasSize: size, level: number) => {
   if (config.firstClient === false) {
-    setConfig(Paper, puzzleImage, canvasSize);
+    setConfig(Paper, puzzleImage, canvasSize, level);
     createTiles2();
     return;
   }
   config.firstClient = false;
-  setConfig(Paper, puzzleImage, canvasSize);
+  setConfig(Paper, puzzleImage, canvasSize, level);
   getRandomShapes();
   createTiles();
+  console.log(config);
 };
 
 export const exportConfig = () => {
   return config;
 };
 
-const setConfig = (Paper: typeof paper, puzzleImage: img, canvasSize: size) => {
+const setConfig = (Paper: typeof paper, puzzleImage: img, canvasSize: size, level: number) => {
   config.project = Paper;
   config.puzzleImage = puzzleImage;
   config.canvasPreSize = config.canvasSize;
@@ -52,7 +54,14 @@ const setConfig = (Paper: typeof paper, puzzleImage: img, canvasSize: size) => {
   config.imgWidth = canvasSize.width / 2;
   config.imgHeight = canvasSize.width / 2;
   config.tileWidth = config.imgWidth / 3;
+  const tileWidths = getTilewidths(config.imgWidth, config.imgHeight);
+  console.log(tileWidths);
+  const tileWidth = tileWidths[level];
+  config.tileWidth = tileWidth;
+  config.tilesPerColumn = config.imgWidth / tileWidth;
+  config.tilesPerRow = config.imgHeight / tileWidth;
   Paper.project.activeLayer.removeChildren();
+  console.log(config);
 };
 
 const createTiles = () => {
@@ -351,6 +360,7 @@ const getMask = (
 };
 
 const getRandomShapes = () => {
+  config.shapes = [];
   for (let y = 0; y < config.tilesPerColumn; y++) {
     for (let x = 0; x < config.tilesPerRow; x++) {
       let topTab: undefined | number;
@@ -380,13 +390,11 @@ const getRandomShapes = () => {
 
       const shapeBottom = y < config.tilesPerColumn - 1 ? config.shapes[(y + 1) * config.tilesPerRow + x] : undefined;
 
-      config.shapes[y * config.tilesPerRow + x].rightTab =
-        x < config.tilesPerRow - 1 ? getRandomTabValue() : shape.rightTab;
+      shape.rightTab = x < config.tilesPerRow - 1 ? getRandomTabValue() : shape.rightTab;
 
       if (shapeRight && shape.rightTab !== undefined) shapeRight.leftTab = -shape.rightTab;
 
-      config.shapes[y * config.tilesPerRow + x].bottomTab =
-        y < config.tilesPerColumn - 1 ? getRandomTabValue() : shape.bottomTab;
+      shape.bottomTab = y < config.tilesPerColumn - 1 ? getRandomTabValue() : shape.bottomTab;
 
       if (shapeBottom && shape.bottomTab !== undefined) shapeBottom.topTab = -shape.bottomTab;
     }
