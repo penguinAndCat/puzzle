@@ -1,6 +1,7 @@
 import paper from 'paper';
 import { Point } from 'paper/dist/paper-core';
 import createRandomNumber from '../createRandomNumber';
+import getTilewidths from './getTileWidths';
 import puzzle from './moveTIle';
 
 const constant = {
@@ -16,7 +17,7 @@ const config: Config = {
   imgHeight: 330,
   tilesPerColumn: 3,
   tilesPerRow: 3,
-  tileWidth: 330 / 3,
+  tileWidth: 0,
   puzzleImage: { src: '', width: 0, height: 0 },
   tileIndexes: [],
   groupArr: [],
@@ -25,11 +26,17 @@ const config: Config = {
   groupCheck: false,
 };
 
-export const initConfig = (Paper: typeof paper, puzzleImage: img) => {
+export const initConfig = (Paper: typeof paper, puzzleImage: img, level: number) => {
   setConfig(Paper, puzzleImage);
-  getRandomShapes();
   Paper.project.activeLayer.removeChildren();
+  const tileWidths = getTilewidths(config.imgWidth, config.imgHeight);
+  const tileWidth = tileWidths[level];
+  config.tileWidth = tileWidth;
+  config.tilesPerColumn = config.imgWidth / tileWidth;
+  config.tilesPerRow = config.imgHeight / tileWidth;
+  getRandomShapes();
   createTiles();
+  console.log(config);
 };
 
 const setConfig = (Paper: typeof paper, puzzleImage: img) => {
@@ -286,6 +293,7 @@ const getMask = (
 };
 
 const getRandomShapes = () => {
+  config.shapes = [];
   for (let y = 0; y < config.tilesPerColumn; y++) {
     for (let x = 0; x < config.tilesPerRow; x++) {
       let topTab: undefined | number;
@@ -315,13 +323,11 @@ const getRandomShapes = () => {
 
       const shapeBottom = y < config.tilesPerColumn - 1 ? config.shapes[(y + 1) * config.tilesPerRow + x] : undefined;
 
-      config.shapes[y * config.tilesPerRow + x].rightTab =
-        x < config.tilesPerRow - 1 ? getRandomTabValue() : shape.rightTab;
+      shape.rightTab = x < config.tilesPerRow - 1 ? getRandomTabValue() : shape.rightTab;
 
       if (shapeRight && shape.rightTab !== undefined) shapeRight.leftTab = -shape.rightTab;
 
-      config.shapes[y * config.tilesPerRow + x].bottomTab =
-        y < config.tilesPerColumn - 1 ? getRandomTabValue() : shape.bottomTab;
+      shape.bottomTab = y < config.tilesPerColumn - 1 ? getRandomTabValue() : shape.bottomTab;
 
       if (shapeBottom && shape.bottomTab !== undefined) shapeBottom.topTab = -shape.bottomTab;
     }
