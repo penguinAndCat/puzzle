@@ -27,4 +27,5 @@ type Config = {
   tileIndexes: any[];
   groupArr: any[];
   groupCheck: boolean;
+  firstClient: boolean;
 };

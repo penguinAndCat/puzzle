@@ -23,13 +23,26 @@ const config: Config = {
   groupTiles: [],
   tiles: [],
   groupCheck: false,
+  firstClient: true,
 };
 
-export const initConfig = (Paper: typeof paper, puzzleImage: img) => {
+export const initConfig = (Paper: typeof paper, puzzleImage: img, config: Config) => {
+  if (config.firstClient === false) {
+    config.project = Paper;
+    config.puzzleImage = puzzleImage;
+    Paper.project.activeLayer.removeChildren();
+    createTiles2();
+    return;
+  }
+  config.firstClient = false;
   setConfig(Paper, puzzleImage);
   getRandomShapes();
   Paper.project.activeLayer.removeChildren();
   createTiles();
+};
+
+export const exportConfig = () => {
+  return config;
 };
 
 const setConfig = (Paper: typeof paper, puzzleImage: img) => {
@@ -39,7 +52,6 @@ const setConfig = (Paper: typeof paper, puzzleImage: img) => {
 
 const createTiles = () => {
   const tileRatio = config.tileWidth / 100;
-  config.tiles = [];
   config.groupTiles = [];
   for (let y = 0; y < config.tilesPerColumn; y++) {
     for (let x = 0; x < config.tilesPerRow; x++) {
@@ -81,8 +93,49 @@ const createTiles = () => {
       // tile.position = new Point(config.project.view.center.x, config.project.view.center.y);
       const [xPos, yPos] = getRandomPos(config.tileWidth, 1100, config.imgWidth);
       tile.position = new Point(xPos, yPos);
-      config.tiles.push(tile);
       config.groupTiles.push([tile, undefined]);
+    }
+  }
+  puzzle.moveTile(config);
+};
+const createTiles2 = () => {
+  const tileRatio = config.tileWidth / 100;
+  const groupTiles = config.groupTiles;
+  config.groupTiles = [];
+  for (let y = 0; y < config.tilesPerColumn; y++) {
+    for (let x = 0; x < config.tilesPerRow; x++) {
+      const shape = config.shapes[y * config.tilesPerRow + x];
+      const mask = getMask(
+        tileRatio,
+        shape.topTab,
+        shape.rightTab,
+        shape.bottomTab,
+        shape.leftTab,
+        config.tileWidth,
+        config.project,
+        config.imgWidth,
+        config.imgHeight
+      );
+      if (mask === undefined) continue;
+      mask.opacity = constant.maskOpacity;
+      mask.strokeColor = new config.project.Color('#ff0000');
+
+      const img = getTileRaster(
+        config.puzzleImage.src,
+        new Point(config.tileWidth * x, config.tileWidth * y),
+        Math.max(config.imgWidth / config.puzzleImage.width, config.imgHeight / config.puzzleImage.height),
+        config.project
+      );
+
+      const border = mask.clone();
+      border.strokeColor = new config.project.Color('#333333');
+      border.strokeWidth = constant.borderStrokeWidth;
+      const tile = new config.project.Group([mask, img]);
+      tile.clipped = true;
+      tile.opacity = constant.tileOpacity;
+
+      tile.position = new Point(groupTiles[y * config.tilesPerRow + x][0].children[0].position);
+      config.groupTiles.push([tile, groupTiles[y * config.tilesPerRow + x][1]]);
     }
   }
   puzzle.moveTile(config);
