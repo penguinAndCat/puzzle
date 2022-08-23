@@ -11,6 +11,11 @@ type img = {
   height: number;
 };
 
+type size = {
+  width: number;
+  height: number;
+};
+
 type index = number | undefined;
 
 type Config = {
@@ -27,4 +32,7 @@ type Config = {
   tileIndexes: any[];
   groupArr: any[];
   groupCheck: boolean;
+  firstClient: boolean;
+  canvasSize: size;
+  canvasPreSize: size;
 };

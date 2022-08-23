@@ -2,18 +2,7 @@ import { getMargin } from './createPuzzle';
 
 const moveTile = (config: Config) => {
   config.groupTiles.forEach((tiles, index) => {
-    tiles[0].onMouseDown = (event: any) => {
-      const gIndex = tiles[1];
-      if (gIndex !== undefined) {
-        config.groupTiles.forEach(([tile, groupIndex]) => {
-          if (groupIndex === gIndex) {
-            config.project.project.activeLayer.addChild(tile);
-          }
-        });
-      } else {
-        config.project.project.activeLayer.addChild(event.target);
-      }
-    };
+    tiles[0].onMouseDown = (event: any) => {};
     tiles[0].onMouseDrag = (event: any) => {
       const groupIndex = tiles[1];
       if (groupIndex === undefined) {
@@ -39,36 +28,6 @@ const moveTile = (config: Config) => {
           }
         });
       }
-
-      const copy = [...config.groupTiles];
-      const data = copy.reduce((acc, [tile, groupIndex]) => {
-        if (groupIndex !== undefined) {
-          acc[groupIndex] ? (acc[groupIndex] = [...acc[groupIndex], tile]) : (acc[groupIndex] = [tile]);
-        }
-        if (groupIndex === undefined) {
-          acc['notGroup'] ? (acc['notGroup'] = [...acc['notGroup'], tile]) : (acc['notGroup'] = [tile]);
-        }
-        return acc;
-      }, {});
-
-      const arr1: any[] = [];
-      const arr2: any[] = data['notGroup'];
-      Object.entries(data).forEach(([key, value]) => {
-        if (key !== 'notGroup') {
-          arr1.push(value);
-        }
-      });
-
-      arr1.sort((a, b) => b.length - a.length);
-
-      arr1?.forEach((tiles) => {
-        tiles.forEach((tile: any) => {
-          config.project.project.activeLayer.addChild(tile);
-        });
-      });
-      arr2?.forEach((tile: any) => {
-        config.project.project.activeLayer.addChild(tile);
-      });
     };
   });
 };
@@ -78,13 +37,13 @@ const fitTile = (
   currentTile: { _index: number; position: { x: number; y: number } },
   groupIndex: index
 ) => {
-  const index = config.tiles.findIndex((tile) => tile === currentTile);
-  const leftTile = index % config.tilesPerRow !== 0 ? config.tiles[index - 1] : undefined;
-  const rightTile = index % config.tilesPerRow !== config.tilesPerRow - 1 ? config.tiles[index + 1] : undefined;
-  const topTile = index >= config.tilesPerColumn ? config.tiles[index - config.tilesPerColumn] : undefined;
+  const index = (currentTile._index - 1) / 2;
+  const leftTile = index % config.tilesPerRow !== 0 ? config.groupTiles[index - 1][0] : undefined;
+  const rightTile = index % config.tilesPerRow !== config.tilesPerRow - 1 ? config.groupTiles[index + 1][0] : undefined;
+  const topTile = index >= config.tilesPerColumn ? config.groupTiles[index - config.tilesPerColumn][0] : undefined;
   const bottomTile =
     index < config.tilesPerRow * config.tilesPerColumn - config.tilesPerRow
-      ? config.tiles[index + config.tilesPerRow]
+      ? config.groupTiles[index + config.tilesPerRow][0]
       : undefined;
 
   // 동작 설명
@@ -130,8 +89,8 @@ const calculatePosition = (currentTile: any, joinTile: any, tileWidth: number, t
 };
 
 const setPosition = (config: Config, currentTile: any, joinTile: any, groupIndex: index, type: string) => {
-  const index = config.tiles.findIndex((tile) => tile === currentTile);
-  const joinIndex = config.tiles.findIndex((tile) => tile === joinTile);
+  const index = (currentTile._index - 1) / 2;
+  const joinIndex = (joinTile._index - 1) / 2;
   const shape = config.shapes[index];
   const joinShape = config.shapes[joinIndex];
   const currentMargin = getMargin(shape);
@@ -164,8 +123,8 @@ const setPosition = (config: Config, currentTile: any, joinTile: any, groupIndex
 };
 
 const setGroup = (config: Config, tile: any, joinTile: any) => {
-  const index = config.tiles.findIndex((ctile) => ctile === tile);
-  const joinIndex = config.tiles.findIndex((tile) => tile === joinTile);
+  const index = (tile._index - 1) / 2;
+  const joinIndex = (joinTile._index - 1) / 2;
   const groupIndex = config.groupTiles[index][1];
   const joinGroupIndex = config.groupTiles[joinIndex][1];
   if (groupIndex === joinGroupIndex && groupIndex !== undefined) return;
