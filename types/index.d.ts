@@ -16,6 +16,11 @@ type size = {
   height: number;
 };
 
+type position = {
+  x: number;
+  y: number;
+};
+
 type index = number | undefined;
 
 type Config = {
@@ -24,6 +29,7 @@ type Config = {
   tilesPerRow: number;
   tilesPerColumn: number;
   tileWidth: number;
+  tileHeight: number;
   groupTiles: any[];
   shapes: shape[];
   tiles: any[];
@@ -35,4 +41,5 @@ type Config = {
   firstClient: boolean;
   canvasSize: size;
   canvasPreSize: size;
+  positionArr: position[];
 };

@@ -15,9 +15,10 @@ const config: Config = {
   project: '',
   imgWidth: 500,
   imgHeight: 500,
-  tilesPerColumn: 3,
-  tilesPerRow: 3,
+  tilesPerColumn: 8,
+  tilesPerRow: 8,
   tileWidth: 0,
+  tileHeight: 0,
   puzzleImage: { src: '', width: 0, height: 0 },
   tileIndexes: [],
   groupArr: [],
@@ -27,6 +28,7 @@ const config: Config = {
   firstClient: true,
   canvasSize: { width: 0, height: 0 },
   canvasPreSize: { width: 0, height: 0 },
+  positionArr: [],
 };
 
 export const initConfig = (Paper: typeof paper, puzzleImage: img, config: Config, canvasSize: size, level: number) => {
@@ -51,15 +53,56 @@ const setConfig = (Paper: typeof paper, puzzleImage: img, canvasSize: size, leve
   config.puzzleImage = puzzleImage;
   config.canvasPreSize = config.canvasSize;
   config.canvasSize = canvasSize;
-  config.imgWidth = canvasSize.width / 2;
-  config.imgHeight = canvasSize.width / 2;
-  config.tileWidth = config.imgWidth / 3;
-  const tileWidths = getTilewidths(config.imgWidth, config.imgHeight);
-  console.log(tileWidths);
-  const tileWidth = tileWidths[level];
-  config.tileWidth = tileWidth;
-  config.tilesPerColumn = config.imgWidth / tileWidth;
-  config.tilesPerRow = config.imgHeight / tileWidth;
+  config.tilesPerRow = 5;
+  config.tilesPerColumn = 5;
+  const positionMargin = 1.2;
+  config.imgWidth = puzzleImage.width / 2;
+  config.imgHeight = puzzleImage.height / 2;
+  // config.imgWidth = (canvasSize.width * (config.tilesPerRow / Math.ceil(config.tilesPerRow * 1.5))) / positionMargin;
+  // config.imgHeight =
+  //   (canvasSize.height * (config.tilesPerColumn / Math.ceil(config.tilesPerColumn * 1.5))) / positionMargin;
+  config.tileWidth = config.imgWidth / config.tilesPerRow;
+  config.tileHeight = config.imgHeight / config.tilesPerColumn;
+
+  // row 퍼즐 개수에 따른 배치(괄호 친 부분 비우기)
+  // 3(퍼즐 수) 5(배치 빈칸) =>  1 (2 3 4) 5
+  // 4 6 =>  1 (2 3 4 5) 6
+  // 5 8 =>  1 2 (3 4 5 6 7) 8
+  // 6 9 =>  1 2 (3 4 5 6 7) 8 9
+  // 7 11 => 1 2 (3 4 5 6 7 8 9) 10 11
+  const position = {
+    width: config.tileWidth * positionMargin,
+    height: config.tileHeight * positionMargin,
+  };
+  const standard = {
+    x: Math.ceil(Math.ceil(config.tilesPerRow * 1.5) / 2),
+    y: Math.ceil(Math.ceil(config.tilesPerColumn * 1.5) / 2),
+  };
+  let correction = 0;
+  if (config.tilesPerRow % 2 === 0) {
+    correction = 1;
+  }
+  for (let y = 0; y < Math.ceil(config.tilesPerColumn * 1.5); y++) {
+    for (let x = 0; x < Math.ceil(config.tilesPerRow * 1.5); x++) {
+      if (
+        x >= standard.x - Math.floor(config.tilesPerRow / 2) + correction - 1 &&
+        x <= standard.x + Math.floor(config.tilesPerRow / 2) - 1 &&
+        y >= standard.y - Math.floor(config.tilesPerColumn / 2) + correction - 1 &&
+        y <= standard.y + Math.floor(config.tilesPerColumn / 2) - 1
+      ) {
+      } else {
+        const x1 = (x + 1 / 2) * position.width;
+        const y1 = (y + 1 / 2) * position.height;
+        config.positionArr.push({ x: x1, y: y1 });
+      }
+    }
+  }
+  // const tileWidths = getTilewidths(config.imgWidth, config.imgHeight);
+  // console.log(tileWidths);
+  // const tileWidth = tileWidths[level];
+  // config.tileWidth = tileWidth;
+  // config.tilesPerColumn = config.imgWidth / tileWidth;
+  // config.tilesPerRow = config.imgHeight / tileWidth;
   Paper.project.activeLayer.removeChildren();
   console.log(config);
 };
@@ -100,11 +143,14 @@ const createTiles = () => {
       tile.opacity = constant.tileOpacity;
 
       const margin = getMargin(shape);
+      // tile.position = new Point(
+      //   config.project.view.center.x + (x - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.x,
+      //   config.project.view.center.y + (y - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.y
+      // );
       tile.position = new Point(
-        config.project.view.center.x + (x - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.x,
-        config.project.view.center.y + (y - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.y
+        config.positionArr[y * config.tilesPerRow + x].x + margin.x,
+        config.positionArr[y * config.tilesPerRow + x].y + margin.y
       );
-      // tile.position = new Point(config.project.view.center.x, config.project.view.center.y);
       // const [xPos, yPos] = getRandomPos(config.tileWidth, 1100, config.imgWidth);
       // tile.position = new Point(xPos, yPos);
       config.groupTiles.push([tile, undefined]);
