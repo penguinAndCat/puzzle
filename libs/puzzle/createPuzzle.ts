@@ -41,7 +41,6 @@ export const initConfig = (Paper: typeof paper, puzzleImage: img, config: Config
   setConfig(Paper, puzzleImage, canvasSize, level);
   getRandomShapes();
   createTiles();
-  console.log(config);
 };
 
 export const exportConfig = () => {
@@ -53,8 +52,8 @@ const setConfig = (Paper: typeof paper, puzzleImage: img, canvasSize: size, leve
   config.puzzleImage = puzzleImage;
   config.canvasPreSize = config.canvasSize;
   config.canvasSize = canvasSize;
-  config.tilesPerRow = 8;
-  config.tilesPerColumn = 9;
+  config.tilesPerRow = 7;
+  config.tilesPerColumn = 7;
   const positionMargin = 1.1;
   config.imgWidth = (canvasSize.width * (config.tilesPerRow / Math.ceil(config.tilesPerRow * 1.5))) / positionMargin;
   config.imgHeight =
@@ -80,6 +79,8 @@ const setConfig = (Paper: typeof paper, puzzleImage: img, canvasSize: size, leve
   if (config.tilesPerRow % 2 === 0) {
     correction = 1;
   }
+  let tilesCount = config.tilesPerRow * config.tilesPerColumn;
+  config.positionArr = [];
   for (let y = 0; y < Math.ceil(config.tilesPerColumn * 1.5); y++) {
     for (let x = 0; x < Math.ceil(config.tilesPerRow * 1.5); x++) {
       if (
@@ -89,6 +90,8 @@ const setConfig = (Paper: typeof paper, puzzleImage: img, canvasSize: size, leve
         y <= standard.y + Math.floor(config.tilesPerColumn / 2) - 1
       ) {
       } else {
+        if (tilesCount === 0) break;
+        tilesCount--;
         const x1 = (x + 1 / 2) * position.width;
         const y1 = (y + 1 / 2) * position.height;
         config.positionArr.push({ x: x1, y: y1 });
@@ -96,13 +99,17 @@ const setConfig = (Paper: typeof paper, puzzleImage: img, canvasSize: size, leve
     }
   }
   // const tileWidths = getTilewidths(config.imgWidth, config.imgHeight);
-  // console.log(tileWidths);
   // const tileWidth = tileWidths[level];
   // config.tileWidth = tileWidth;
   // config.tilesPerColumn = config.imgWidth / tileWidth;
   // config.tilesPerRow = config.imgHeight / tileWidth;
   Paper.project.activeLayer.removeChildren();
-  console.log(config);
+};
+
+const popRandom = (array: position[]) => {
+  const random = Math.floor(Math.random() * array.length);
+  const el = array.splice(random, 1)[0];
+  return el;
 };
 
 const createTiles = () => {
@@ -148,10 +155,8 @@ const createTiles = () => {
       //   config.project.view.center.x + (x - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.x,
       //   config.project.view.center.y + (y - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.y
       // );
-      tile.position = new Point(
-        config.positionArr[y * config.tilesPerRow + x].x + margin.x,
-        config.positionArr[y * config.tilesPerRow + x].y + margin.y
-      );
+      const position = popRandom(config.positionArr);
+      tile.position = new Point(position.x + margin.x, position.y + margin.y);
       // const [xPos, yPos] = getRandomPos(config.tileWidth, 1100, config.imgWidth);
       // tile.position = new Point(xPos, yPos);
       config.groupTiles.push([tile, undefined]);

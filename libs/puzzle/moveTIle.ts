@@ -45,13 +45,7 @@ const fitTile = (
     index < config.tilesPerRow * config.tilesPerColumn - config.tilesPerRow
       ? config.groupTiles[index + config.tilesPerRow][0]
       : undefined;
-  console.log(
-    index,
-    (leftTile?._index - 1) / 2,
-    (topTile?._index - 1) / 2,
-    (rightTile?._index - 1) / 2,
-    (bottomTile?._index - 1) / 2
-  );
+
   // 동작 설명
   // 4개의 방향에 대해 근처에 그룹화 가능한 조각이 있는지 확인한다.
   // 이미 그룹화 된 조각은 다시 그룹화 하지 않는다.
