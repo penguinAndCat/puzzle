@@ -15,9 +15,10 @@ const config: Config = {
   project: '',
   imgWidth: 500,
   imgHeight: 500,
-  tilesPerColumn: 3,
-  tilesPerRow: 3,
+  tilesPerColumn: 8,
+  tilesPerRow: 8,
   tileWidth: 0,
+  tileHeight: 0,
   puzzleImage: { src: '', width: 0, height: 0 },
   tileIndexes: [],
   groupArr: [],
@@ -27,19 +28,19 @@ const config: Config = {
   firstClient: true,
   canvasSize: { width: 0, height: 0 },
   canvasPreSize: { width: 0, height: 0 },
+  positionArr: [],
 };
 
 export const initConfig = (Paper: typeof paper, puzzleImage: img, config: Config, canvasSize: size, level: number) => {
   if (config.firstClient === false) {
     setConfig(Paper, puzzleImage, canvasSize, level);
-    createTiles2();
+    recreateTiles();
     return;
   }
   config.firstClient = false;
   setConfig(Paper, puzzleImage, canvasSize, level);
   getRandomShapes();
   createTiles();
-  console.log(config);
 };
 
 export const exportConfig = () => {
@@ -51,32 +52,82 @@ const setConfig = (Paper: typeof paper, puzzleImage: img, canvasSize: size, leve
   config.puzzleImage = puzzleImage;
   config.canvasPreSize = config.canvasSize;
   config.canvasSize = canvasSize;
-  config.imgWidth = canvasSize.width / 2;
-  config.imgHeight = canvasSize.width / 2;
-  config.tileWidth = config.imgWidth / 3;
-  const tileWidths = getTilewidths(config.imgWidth, config.imgHeight);
-  console.log(tileWidths);
-  const tileWidth = tileWidths[level];
-  config.tileWidth = tileWidth;
-  config.tilesPerColumn = config.imgWidth / tileWidth;
-  config.tilesPerRow = config.imgHeight / tileWidth;
+  config.tilesPerRow = 7;
+  config.tilesPerColumn = 7;
+  const positionMargin = 1.1;
+  config.imgWidth = (canvasSize.width * (config.tilesPerRow / Math.ceil(config.tilesPerRow * 1.5))) / positionMargin;
+  config.imgHeight =
+    (canvasSize.height * (config.tilesPerColumn / Math.ceil(config.tilesPerColumn * 1.5))) / positionMargin;
+  config.tileWidth = config.imgWidth / config.tilesPerRow;
+  config.tileHeight = config.imgHeight / config.tilesPerColumn;
+
+  // row 퍼즐 개수에 따른 배치(괄호 친 부분 비우기)
+  // 3(퍼즐 수) 5(배치 빈칸) =>  1 (2 3 4) 5
+  // 4 6 =>  1 (2 3 4 5) 6
+  // 5 8 =>  1 2 (3 4 5 6 7) 8
+  // 6 9 =>  1 2 (3 4 5 6 7) 8 9
+  // 7 11 => 1 2 (3 4 5 6 7 8 9) 10 11
+  const position = {
+    width: config.tileWidth * positionMargin,
+    height: config.tileHeight * positionMargin,
+  };
+  const standard = {
+    x: Math.ceil(Math.ceil(config.tilesPerRow * 1.5) / 2),
+    y: Math.ceil(Math.ceil(config.tilesPerColumn * 1.5) / 2),
+  };
+  let correction = 0;
+  if (config.tilesPerRow % 2 === 0) {
+    correction = 1;
+  }
+  let tilesCount = config.tilesPerRow * config.tilesPerColumn;
+  config.positionArr = [];
+  for (let y = 0; y < Math.ceil(config.tilesPerColumn * 1.5); y++) {
+    for (let x = 0; x < Math.ceil(config.tilesPerRow * 1.5); x++) {
+      if (
+        x >= standard.x - Math.floor(config.tilesPerRow / 2) + correction - 1 &&
+        x <= standard.x + Math.floor(config.tilesPerRow / 2) - 1 &&
+        y >= standard.y - Math.floor(config.tilesPerColumn / 2) + correction - 1 &&
+        y <= standard.y + Math.floor(config.tilesPerColumn / 2) - 1
+      ) {
+      } else {
+        if (tilesCount === 0) break;
+        tilesCount--;
+        const x1 = (x + 1 / 2) * position.width;
+        const y1 = (y + 1 / 2) * position.height;
+        config.positionArr.push({ x: x1, y: y1 });
+      }
+    }
+  }
+  // const tileWidths = getTilewidths(config.imgWidth, config.imgHeight);
+  // const tileWidth = tileWidths[level];
+  // config.tileWidth = tileWidth;
+  // config.tilesPerColumn = config.imgWidth / tileWidth;
+  // config.tilesPerRow = config.imgHeight / tileWidth;
   Paper.project.activeLayer.removeChildren();
-  console.log(config);
+};
+
+const popRandom = (array: position[]) => {
+  const random = Math.floor(Math.random() * array.length);
+  const el = array.splice(random, 1)[0];
+  return el;
 };
 
 const createTiles = () => {
   const tileRatio = config.tileWidth / 100;
+  const tileRatio2 = config.tileHeight / 100;
   config.groupTiles = [];
   for (let y = 0; y < config.tilesPerColumn; y++) {
     for (let x = 0; x < config.tilesPerRow; x++) {
       const shape = config.shapes[y * config.tilesPerRow + x];
       const mask = getMask(
         tileRatio,
+        tileRatio2,
         shape.topTab,
         shape.rightTab,
         shape.bottomTab,
         shape.leftTab,
         config.tileWidth,
+        config.tileHeight,
         config.project,
         config.imgWidth,
         config.imgHeight
@@ -87,7 +138,7 @@ const createTiles = () => {
 
       const img = getTileRaster(
         config.puzzleImage.src,
-        new Point(config.tileWidth * x, config.tileWidth * y),
+        new Point(config.tileWidth * x, config.tileHeight * y),
         Math.max(config.imgWidth / config.puzzleImage.width, config.imgHeight / config.puzzleImage.height),
         config.project
       );
@@ -100,11 +151,12 @@ const createTiles = () => {
       tile.opacity = constant.tileOpacity;
 
       const margin = getMargin(shape);
-      tile.position = new Point(
-        config.project.view.center.x + (x - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.x,
-        config.project.view.center.y + (y - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.y
-      );
-      // tile.position = new Point(config.project.view.center.x, config.project.view.center.y);
+      // tile.position = new Point(
+      //   config.project.view.center.x + (x - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.x,
+      //   config.project.view.center.y + (y - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.y
+      // );
+      const position = popRandom(config.positionArr);
+      tile.position = new Point(position.x + margin.x, position.y + margin.y);
       // const [xPos, yPos] = getRandomPos(config.tileWidth, 1100, config.imgWidth);
       // tile.position = new Point(xPos, yPos);
       config.groupTiles.push([tile, undefined]);
@@ -112,8 +164,9 @@ const createTiles = () => {
   }
   puzzle.moveTile(config);
 };
-const createTiles2 = () => {
+const recreateTiles = () => {
   const tileRatio = config.tileWidth / 100;
+  const tileRatio2 = config.tileHeight / 100;
   const groupTiles = config.groupTiles;
   config.groupTiles = [];
   for (let y = 0; y < config.tilesPerColumn; y++) {
@@ -121,11 +174,13 @@ const createTiles2 = () => {
       const shape = config.shapes[y * config.tilesPerRow + x];
       const mask = getMask(
         tileRatio,
+        tileRatio2,
         shape.topTab,
         shape.rightTab,
         shape.bottomTab,
         shape.leftTab,
         config.tileWidth,
+        config.tileHeight,
         config.project,
         config.imgWidth,
         config.imgHeight
@@ -136,7 +191,7 @@ const createTiles2 = () => {
 
       const img = getTileRaster(
         config.puzzleImage.src,
-        new Point(config.tileWidth * x, config.tileWidth * y),
+        new Point(config.tileWidth * x, config.tileHeight * y),
         Math.max(config.imgWidth / config.puzzleImage.width, config.imgHeight / config.puzzleImage.height),
         config.project
       );
@@ -148,8 +203,6 @@ const createTiles2 = () => {
       tile.clipped = true;
       tile.opacity = constant.tileOpacity;
 
-      console.log(groupTiles[y * config.tilesPerRow + x][0].children[0].position);
-      const margin = getMargin(shape);
       tile.position = new Point(
         (groupTiles[y * config.tilesPerRow + x][0].children[0].position._x * config.canvasSize.width) /
           config.canvasPreSize.width,
@@ -163,27 +216,33 @@ const createTiles2 = () => {
 };
 export const getMargin = (shape: shape) => {
   const margin = { x: 0, y: 0 };
-  const marginP = (15 * config.tileWidth) / 100;
-  const marginM = (1.5 * config.tileWidth) / 100;
+  const marginP = {
+    x: (15 * config.tileHeight) / 100,
+    y: (15 * config.tileWidth) / 100,
+  };
+  const marginM = {
+    x: (1.5 * config.tileHeight) / 100,
+    y: (1.5 * config.tileWidth) / 100,
+  };
   if (shape.rightTab === 1) {
-    margin.x += marginP;
+    margin.x += marginP.x;
   } else if (shape.rightTab === -1) {
-    margin.x += marginM;
+    margin.x += marginM.x;
   }
   if (shape.leftTab === 1) {
-    margin.x -= marginP;
+    margin.x -= marginP.x;
   } else if (shape.leftTab === -1) {
-    margin.x -= marginM;
+    margin.x -= marginM.x;
   }
   if (shape.topTab === 1) {
-    margin.y -= marginP;
+    margin.y -= marginP.y;
   } else if (shape.topTab === -1) {
-    margin.y -= marginM;
+    margin.y -= marginM.y;
   }
   if (shape.bottomTab === 1) {
-    margin.y += marginP;
+    margin.y += marginP.y;
   } else if (shape.bottomTab === -1) {
-    margin.y += marginM;
+    margin.y += marginM.y;
   }
   return margin;
 };
@@ -197,11 +256,13 @@ const getTileRaster = (puzzleImage: string | Blob, offset: paper.Point, scaleVal
 
 const getMask = (
   tileRatio: number,
+  tileRatio2: number,
   topTab: number | undefined,
   rightTab: number | undefined,
   bottomTab: number | undefined,
   leftTab: number | undefined,
   tileWidth: number,
+  tileHeight: number,
   project: any,
   imgWidth: number,
   imgHeight: number
@@ -303,23 +364,23 @@ const getMask = (
   const topRightEdge = new Point(topLeftEdge.x + tileWidth, topLeftEdge.y);
   for (let i = 0; i < curvyCoords.length / 6; i++) {
     const p1 = new Point(
-      topRightEdge.x - rightTab * curvyCoords[i * 6 + 1] * tileRatio,
-      topRightEdge.y + curvyCoords[i * 6 + 0] * tileRatio
+      topRightEdge.x - rightTab * curvyCoords[i * 6 + 1] * tileRatio2,
+      topRightEdge.y + curvyCoords[i * 6 + 0] * tileRatio2
     );
     const p2 = new Point(
-      topRightEdge.x - rightTab * curvyCoords[i * 6 + 3] * tileRatio,
-      topRightEdge.y + curvyCoords[i * 6 + 2] * tileRatio
+      topRightEdge.x - rightTab * curvyCoords[i * 6 + 3] * tileRatio2,
+      topRightEdge.y + curvyCoords[i * 6 + 2] * tileRatio2
     );
     const p3 = new Point(
-      topRightEdge.x - rightTab * curvyCoords[i * 6 + 5] * tileRatio,
-      topRightEdge.y + curvyCoords[i * 6 + 4] * tileRatio
+      topRightEdge.x - rightTab * curvyCoords[i * 6 + 5] * tileRatio2,
+      topRightEdge.y + curvyCoords[i * 6 + 4] * tileRatio2
     );
 
     mask.cubicCurveTo(p1, p2, p3);
   }
 
   //Bottom
-  const bottomRightEdge = new Point(topRightEdge.x, topRightEdge.y + tileWidth);
+  const bottomRightEdge = new Point(topRightEdge.x, topRightEdge.y + tileHeight);
   for (let i = 0; i < curvyCoords.length / 6; i++) {
     const p1 = new Point(
       bottomRightEdge.x - curvyCoords[i * 6 + 0] * tileRatio,
@@ -341,16 +402,16 @@ const getMask = (
   const bottomLeftEdge = new Point(bottomRightEdge.x - tileWidth, bottomRightEdge.y);
   for (let i = 0; i < curvyCoords.length / 6; i++) {
     const p1 = new Point(
-      bottomLeftEdge.x + leftTab * curvyCoords[i * 6 + 1] * tileRatio,
-      bottomLeftEdge.y - curvyCoords[i * 6 + 0] * tileRatio
+      bottomLeftEdge.x + leftTab * curvyCoords[i * 6 + 1] * tileRatio2,
+      bottomLeftEdge.y - curvyCoords[i * 6 + 0] * tileRatio2
     );
     const p2 = new Point(
-      bottomLeftEdge.x + leftTab * curvyCoords[i * 6 + 3] * tileRatio,
-      bottomLeftEdge.y - curvyCoords[i * 6 + 2] * tileRatio
+      bottomLeftEdge.x + leftTab * curvyCoords[i * 6 + 3] * tileRatio2,
+      bottomLeftEdge.y - curvyCoords[i * 6 + 2] * tileRatio2
     );
     const p3 = new Point(
-      bottomLeftEdge.x + leftTab * curvyCoords[i * 6 + 5] * tileRatio,
-      bottomLeftEdge.y - curvyCoords[i * 6 + 4] * tileRatio
+      bottomLeftEdge.x + leftTab * curvyCoords[i * 6 + 5] * tileRatio2,
+      bottomLeftEdge.y - curvyCoords[i * 6 + 4] * tileRatio2
     );
 
     mask.cubicCurveTo(p1, p2, p3);
