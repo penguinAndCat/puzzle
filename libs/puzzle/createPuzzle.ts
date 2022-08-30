@@ -1,7 +1,6 @@
 import paper from 'paper';
 import { Point } from 'paper/dist/paper-core';
 import createRandomNumber from '../createRandomNumber';
-import getTilewidths from './getTileWidths';
 import puzzle from './moveTIle';
 
 const constant = {
@@ -29,22 +28,44 @@ const config: Config = {
   canvasSize: { width: 0, height: 0 },
   canvasPreSize: { width: 0, height: 0 },
   positionArr: [],
+  levels: [],
 };
 
 export const initConfig = (Paper: typeof paper, puzzleImage: img, config: Config, canvasSize: size, level: number) => {
-  if (config.firstClient === false) {
-    setConfig(Paper, puzzleImage, canvasSize, level);
-    recreateTiles();
-    return;
-  }
   config.firstClient = false;
+  setPuzzleRowColumn(puzzleImage);
   setConfig(Paper, puzzleImage, canvasSize, level);
   getRandomShapes();
   createTiles();
 };
 
+export const restartConfig = (Paper: typeof paper, puzzleImage: img, canvasSize: size, level: number) => {
+  setConfig(Paper, puzzleImage, canvasSize, level);
+  recreateTiles();
+};
+
 export const exportConfig = () => {
   return config;
+};
+
+const setPuzzleRowColumn = (puzzleImage: img) => {
+  const { width, height } = puzzleImage;
+  const levels = [];
+  for (let i = 2; i < width; i++) {
+    for (let j = 2; j < height; j++) {
+      if (i * j >= 600) continue;
+      if (width % i !== 0 || height % j !== 0) continue;
+      let ratio = width / i / (height / j);
+      if (ratio < 0.9 || ratio > 1.1) continue;
+      levels.push([i, j]);
+    }
+  }
+  config.levels = levels;
+};
+
+const setPuzzleLevel = (level: number) => {
+  config.tilesPerRow = config.levels[level][0];
+  config.tilesPerColumn = config.levels[level][1];
 };
 
 const setConfig = (Paper: typeof paper, puzzleImage: img, canvasSize: size, level: number) => {
@@ -52,8 +73,7 @@ const setConfig = (Paper: typeof paper, puzzleImage: img, canvasSize: size, leve
   config.puzzleImage = puzzleImage;
   config.canvasPreSize = config.canvasSize;
   config.canvasSize = canvasSize;
-  config.tilesPerRow = 7;
-  config.tilesPerColumn = 7;
+  setPuzzleLevel(level);
   const positionMargin = 1.1;
   config.imgWidth = (canvasSize.width * (config.tilesPerRow / Math.ceil(config.tilesPerRow * 1.5))) / positionMargin;
   config.imgHeight =
@@ -98,11 +118,6 @@ const setConfig = (Paper: typeof paper, puzzleImage: img, canvasSize: size, leve
       }
     }
   }
-  // const tileWidths = getTilewidths(config.imgWidth, config.imgHeight);
-  // const tileWidth = tileWidths[level];
-  // config.tileWidth = tileWidth;
-  // config.tilesPerColumn = config.imgWidth / tileWidth;
-  // config.tilesPerRow = config.imgHeight / tileWidth;
   Paper.project.activeLayer.removeChildren();
 };
 
