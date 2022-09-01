@@ -17,10 +17,10 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
     if (canvas === null) return;
 
     const imgResize = () => {
-      if (window.innerWidth < window.innerHeight) {
+      if (window.innerWidth < window.innerHeight - 60) {
         setCanvasSize({ width: window.innerWidth, height: window.innerWidth });
       } else {
-        setCanvasSize({ width: window.innerHeight, height: window.innerHeight });
+        setCanvasSize({ width: window.innerHeight - 60, height: window.innerHeight - 60 });
       }
     };
 
@@ -41,20 +41,20 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
     const config = exportConfig();
     Paper.setup(canvas);
     initConfig(Paper, puzzleImg, config, canvasSize, puzzleLv);
-  }, [puzzleImg, puzzleLv, canvasSize]);
+  }, [puzzleImg, puzzleLv]);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (canvas === null) return;
-    if (canvasSize.width === 0 || canvasSize.width === 0) return;
-    canvas.width = canvasSize.width;
-    canvas.height = canvasSize.height;
-    const config = exportConfig();
-    if (!config.firstClient) {
-      Paper.projects = [];
-      restartConfig(Paper, puzzleImg, canvasSize, puzzleLv);
-    }
-  }, [canvasSize]);
+  // useEffect(() => {
+  //   const canvas = canvasRef.current;
+  //   if (canvas === null) return;
+  //   if (canvasSize.width === 0 || canvasSize.width === 0) return;
+  //   canvas.width = canvasSize.width;
+  //   canvas.height = canvasSize.height;
+  //   const config = exportConfig();
+  //   if (!config.firstClient) {
+  //     Paper.projects = [];
+  //     restartConfig(Paper, puzzleImg, canvasSize, puzzleLv);
+  //   }
+  // }, [canvasSize]);
 
   return (
     <Wrapper>
