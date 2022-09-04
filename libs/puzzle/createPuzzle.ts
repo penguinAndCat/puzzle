@@ -173,6 +173,7 @@ const createTiles = () => {
       // );
       const position = popRandom(config.positionArr);
       tile.position = new Point(position.x + margin.x, position.y + margin.y);
+      config.tiles.push(tile);
       config.groupTiles.push([tile, undefined]);
     }
   }
