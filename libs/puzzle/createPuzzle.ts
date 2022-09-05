@@ -1,7 +1,6 @@
 import paper from 'paper';
 import { Point } from 'paper/dist/paper-core';
 import createRandomNumber from '../createRandomNumber';
-import getTilewidths from './getTileWidths';
 import puzzle from './moveTIle';
 
 const constant = {
@@ -29,22 +28,44 @@ const config: Config = {
   canvasSize: { width: 0, height: 0 },
   canvasPreSize: { width: 0, height: 0 },
   positionArr: [],
+  levels: [],
 };
 
 export const initConfig = (Paper: typeof paper, puzzleImage: img, config: Config, canvasSize: size, level: number) => {
-  if (config.firstClient === false) {
-    setConfig(Paper, puzzleImage, canvasSize, level);
-    recreateTiles();
-    return;
-  }
   config.firstClient = false;
+  setPuzzleRowColumn(puzzleImage);
   setConfig(Paper, puzzleImage, canvasSize, level);
   getRandomShapes();
   createTiles();
 };
 
+export const restartConfig = (Paper: typeof paper, puzzleImage: img, canvasSize: size, level: number) => {
+  setConfig(Paper, puzzleImage, canvasSize, level);
+  recreateTiles();
+};
+
 export const exportConfig = () => {
   return config;
+};
+
+const setPuzzleRowColumn = (puzzleImage: img) => {
+  const { width, height } = puzzleImage;
+  const levels = [];
+  for (let i = 2; i < width; i++) {
+    for (let j = 2; j < height; j++) {
+      if (i * j >= 600) continue;
+      let ratio = width / i / (height / j);
+      if (ratio < 0.9 || ratio > 1.1) continue;
+      levels.push([i, j]);
+    }
+  }
+  config.levels = levels;
+};
+
+const setPuzzleLevel = (level: number) => {
+  if (level > config.levels.length - 1) level = config.levels.length - 1;
+  config.tilesPerRow = config.levels[level][0];
+  config.tilesPerColumn = config.levels[level][1];
 };
 
 const setConfig = (Paper: typeof paper, puzzleImage: img, canvasSize: size, level: number) => {
@@ -52,12 +73,12 @@ const setConfig = (Paper: typeof paper, puzzleImage: img, canvasSize: size, leve
   config.puzzleImage = puzzleImage;
   config.canvasPreSize = config.canvasSize;
   config.canvasSize = canvasSize;
-  config.tilesPerRow = 7;
-  config.tilesPerColumn = 7;
+  setPuzzleLevel(level);
   const positionMargin = 1.1;
-  config.imgWidth = (canvasSize.width * (config.tilesPerRow / Math.ceil(config.tilesPerRow * 1.5))) / positionMargin;
-  config.imgHeight =
-    (canvasSize.height * (config.tilesPerColumn / Math.ceil(config.tilesPerColumn * 1.5))) / positionMargin;
+  const batchStandard = Math.ceil(Math.sqrt(config.tilesPerRow * config.tilesPerColumn));
+  const batchTiles = Math.ceil(batchStandard * 1.5);
+  config.imgWidth = (canvasSize.width * (config.tilesPerRow / batchTiles)) / positionMargin;
+  config.imgHeight = (config.imgWidth / puzzleImage.width) * puzzleImage.height;
   config.tileWidth = config.imgWidth / config.tilesPerRow;
   config.tileHeight = config.imgHeight / config.tilesPerColumn;
 
@@ -72,22 +93,22 @@ const setConfig = (Paper: typeof paper, puzzleImage: img, canvasSize: size, leve
     height: config.tileHeight * positionMargin,
   };
   const standard = {
-    x: Math.ceil(Math.ceil(config.tilesPerRow * 1.5) / 2),
-    y: Math.ceil(Math.ceil(config.tilesPerColumn * 1.5) / 2),
+    x: Math.ceil(batchTiles / 2),
+    y: Math.ceil(batchTiles / 2),
   };
   let correction = 0;
-  if (config.tilesPerRow % 2 === 0) {
+  if (batchStandard % 2 === 0) {
     correction = 1;
   }
   let tilesCount = config.tilesPerRow * config.tilesPerColumn;
   config.positionArr = [];
-  for (let y = 0; y < Math.ceil(config.tilesPerColumn * 1.5); y++) {
-    for (let x = 0; x < Math.ceil(config.tilesPerRow * 1.5); x++) {
+  for (let y = 0; y < batchTiles; y++) {
+    for (let x = 0; x < batchTiles; x++) {
       if (
-        x >= standard.x - Math.floor(config.tilesPerRow / 2) + correction - 1 &&
-        x <= standard.x + Math.floor(config.tilesPerRow / 2) - 1 &&
-        y >= standard.y - Math.floor(config.tilesPerColumn / 2) + correction - 1 &&
-        y <= standard.y + Math.floor(config.tilesPerColumn / 2) - 1
+        x >= standard.x - Math.floor(batchStandard / 2) + correction - 1 &&
+        x <= standard.x + Math.floor(batchStandard / 2) - 1 &&
+        y >= standard.y - Math.floor(batchStandard / 2) + correction - 1 &&
+        y <= standard.y + Math.floor(batchStandard / 2) - 1
       ) {
       } else {
         if (tilesCount === 0) break;
@@ -98,11 +119,6 @@ const setConfig = (Paper: typeof paper, puzzleImage: img, canvasSize: size, leve
       }
     }
   }
-  // const tileWidths = getTilewidths(config.imgWidth, config.imgHeight);
-  // const tileWidth = tileWidths[level];
-  // config.tileWidth = tileWidth;
-  // config.tilesPerColumn = config.imgWidth / tileWidth;
-  // config.tilesPerRow = config.imgHeight / tileWidth;
   Paper.project.activeLayer.removeChildren();
 };
 
@@ -157,8 +173,7 @@ const createTiles = () => {
       // );
       const position = popRandom(config.positionArr);
       tile.position = new Point(position.x + margin.x, position.y + margin.y);
-      // const [xPos, yPos] = getRandomPos(config.tileWidth, 1100, config.imgWidth);
-      // tile.position = new Point(xPos, yPos);
+      config.tiles.push(tile);
       config.groupTiles.push([tile, undefined]);
     }
   }

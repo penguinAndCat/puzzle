@@ -6,7 +6,7 @@ type shape = {
 };
 
 type img = {
-  src: string | Blob;
+  src: string;
   width: number;
   height: number;
 };
@@ -42,4 +42,5 @@ type Config = {
   canvasSize: size;
   canvasPreSize: size;
   positionArr: position[];
+  levels: number[][];
 };
