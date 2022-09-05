@@ -132,6 +132,7 @@ const createTiles = () => {
   const tileRatio = config.tileWidth / 100;
   const tileRatio2 = config.tileHeight / 100;
   config.groupTiles = [];
+  config.tiles = [];
   for (let y = 0; y < config.tilesPerColumn; y++) {
     for (let x = 0; x < config.tilesPerRow; x++) {
       const shape = config.shapes[y * config.tilesPerRow + x];
@@ -165,7 +166,6 @@ const createTiles = () => {
       const tile = new config.project.Group([mask, img]);
       tile.clipped = true;
       tile.opacity = constant.tileOpacity;
-
       const margin = getMargin(shape);
       // tile.position = new Point(
       //   config.project.view.center.x + (x - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.x,

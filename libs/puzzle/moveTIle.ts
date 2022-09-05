@@ -75,7 +75,6 @@ const moveTile = (config: Config) => {
 
 const fitTile = (config: Config, currentTile: any, groupIndex: index) => {
   const index = config.tiles.findIndex((tile) => tile === currentTile);
-  console.log(config.tiles);
   const leftTile = index % config.tilesPerRow !== 0 ? config.tiles[index - 1] : undefined;
   const rightTile = index % config.tilesPerRow !== config.tilesPerRow - 1 ? config.tiles[index + 1] : undefined;
   const topTile = index >= config.tilesPerColumn ? config.tiles[index - config.tilesPerColumn] : undefined;
