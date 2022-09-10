@@ -15,8 +15,7 @@ const Card = ({ image }: Props) => {
 export default Card;
 
 const Wrapper = styled.div`
-  width: 400px;
-  heigth: 400px;
+  cursor: pointer;
 `;
 
 const Img = styled.img`
