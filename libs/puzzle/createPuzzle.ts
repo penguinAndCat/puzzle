@@ -1,7 +1,7 @@
 import paper from 'paper';
 import { Point } from 'paper/dist/paper-core';
 import createRandomNumber from '../createRandomNumber';
-import puzzle from './moveTIle';
+import puzzle from './moveTile';
 
 const constant = {
   borderStrokeWidth: 2,

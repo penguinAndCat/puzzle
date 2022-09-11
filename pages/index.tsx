@@ -1,4 +1,5 @@
 import type { NextPage } from 'next';
+import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import PuzzleCanvas from '../components/canvasPuzzle';
@@ -6,6 +7,8 @@ import Header from '../components/common/header';
 import { exportConfig } from '../libs/puzzle/createPuzzle';
 
 const Home: NextPage = () => {
+  const { data, status } = useSession();
+
   const [puzzleLevel, setPuzzleLevel] = useState(2);
   const [puzzleImg, setPuzzleImg] = useState<img>({ src: '/test2.jpg', width: 1000, height: 1000 });
   const [showLevel, setShowLevel] = useState(false);
@@ -24,6 +27,10 @@ const Home: NextPage = () => {
       setShowLevel(true);
     }
   }, [display]);
+
+  useEffect(() => {
+    console.log(data, status);
+  }, [data, status]);
 
   return (
     <Container onClick={() => setShowLevel(false)}>

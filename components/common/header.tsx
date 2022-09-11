@@ -1,3 +1,4 @@
+import { signIn, signOut, useSession } from 'next-auth/react';
 import { Dispatch, SetStateAction, useRef } from 'react';
 import styled from 'styled-components';
 
@@ -10,6 +11,7 @@ interface Props {
 }
 
 const Header = ({ setPuzzleImg, puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) => {
+  const { status } = useSession();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleChangeFile = (event: any) => {
@@ -34,6 +36,11 @@ const Header = ({ setPuzzleImg, puzzleImg, showLevel, setShowLevel, setShowLvMen
     <>
       <Wrapper>
         <ButtonBox className="button">
+          {status === 'authenticated' ? (
+            <button onClick={() => signOut()}>logout</button>
+          ) : (
+            <button onClick={() => signIn()}>login</button>
+          )}
           <button
             onClick={(e) => {
               e.stopPropagation();
