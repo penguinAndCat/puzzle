@@ -1,5 +1,5 @@
+import useTheme from 'hooks/useTheme';
 import { theme } from 'libs/theme/theme';
-import { useTheme } from 'libs/theme/themeProvider';
 import { useState } from 'react';
 import styled from 'styled-components';
 

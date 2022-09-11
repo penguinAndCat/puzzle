@@ -44,8 +44,6 @@ const CardImg = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
-  // box-shadow: 0 3px 3px 0 rgba(#000, 0.05), 0 5px 15px 0 rgba(#000, 0.05);
-  box-shadow: inset 1px 1px 1px 0 rgba(#000, 0.05);
   border-radius: 2px;
 `;
 

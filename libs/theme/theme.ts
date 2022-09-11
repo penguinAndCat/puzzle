@@ -31,7 +31,7 @@ const common = {
   `,
 };
 
-export const silverTheme = {
+export const silverTheme: Theme = {
   bgColor: colors.silver,
   textColor: colors.dark,
   borderColor: `solid ${colors.dark}`,
@@ -39,7 +39,7 @@ export const silverTheme = {
   headerTextColor: colors.dark,
 };
 
-export const darkTheme = {
+export const darkTheme: Theme = {
   bgColor: colors.dark,
   textColor: colors.white,
   borderColor: `solid ${colors.dark}`,
@@ -47,7 +47,7 @@ export const darkTheme = {
   headerTextColor: colors.dark,
 };
 
-export const pinkTheme = {
+export const pinkTheme: Theme = {
   bgColor: colors.pink,
   textColor: colors.white,
   borderColor: `solid ${colors.pink}`,
@@ -55,7 +55,7 @@ export const pinkTheme = {
   headerTextColor: colors.pink,
 };
 
-export const mintTheme = {
+export const mintTheme: Theme = {
   bgColor: colors.mint,
   textColor: colors.white,
   borderColor: `solid ${colors.mint}`,
