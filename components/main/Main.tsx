@@ -56,7 +56,7 @@ const Title = styled.div`
   width: 100%;
   font-weight: 600;
   text-align: center;
-  margin-bottom: 20px;
+  margin: 20px 0;
 `;
 
 const PuzzleContainer = styled.div`
