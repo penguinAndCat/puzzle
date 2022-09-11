@@ -26,7 +26,7 @@ const Card = ({ image }: Props) => {
     <Wrapper onMouseOver={(e) => onMouseOver(e)} onMouseLeave={onMouseLeave} onMouseMove={(e) => onMouseMove(e)}>
       <CardImg src={image} />
       {thumbImage !== '' && (
-        <ThumbImage mousePosition={mousePosition}>
+        <ThumbImage style={{ top: `${mousePosition.y}px`, left: `${mousePosition.x}px` }}>
           <Img src={thumbImage} alt="" width={width} />
         </ThumbImage>
       )}
@@ -49,17 +49,8 @@ const CardImg = styled.img`
   border-radius: 2px;
 `;
 
-type ThumbImageProps = {
-  mousePosition: {
-    x: number;
-    y: number;
-  };
-};
-
-const ThumbImage = styled.div<ThumbImageProps>`
+const ThumbImage = styled.div`
   position: fixed;
-  top: ${({ mousePosition }) => mousePosition.y}px;
-  left: ${({ mousePosition }) => mousePosition.x}px;
   z-index: 100;
   pointer-events: none;
 `;
