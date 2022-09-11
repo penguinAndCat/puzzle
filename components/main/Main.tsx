@@ -1,4 +1,5 @@
 import Card from 'components/common/Card';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 const images = ['/cp.png', '/cp2.png', '/cp3.png', '/cp4.png'];
@@ -59,7 +60,7 @@ const Title = styled.div`
 `;
 
 const PuzzleContainer = styled.div`
-  width: 96%;
+  width: 80%;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   column-gap: 16px;
