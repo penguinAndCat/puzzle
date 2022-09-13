@@ -4,8 +4,10 @@ import styled from 'styled-components';
 import PuzzleCanvas from '../../components/PuzzleCanvas';
 import Header from '../../components/puzzle/Header';
 import { exportConfig } from '../../libs/puzzle/createPuzzle';
+import { useModal } from 'libs/zustand/store';
 
 const Home: NextPage = () => {
+  const { modalImage, number } = useModal();
   const [puzzleLevel, setPuzzleLevel] = useState(2);
   const [puzzleImg, setPuzzleImg] = useState<img>({ src: '/test2.jpg', width: 1000, height: 1000 });
   const [showLevel, setShowLevel] = useState(false);
@@ -24,6 +26,12 @@ const Home: NextPage = () => {
       setShowLevel(true);
     }
   }, [display]);
+
+  useEffect(() => {
+    if (modalImage.src !== '') {
+      console.log(number);
+    }
+  }, [modalImage]);
 
   return (
     <Container onClick={() => setShowLevel(false)}>
@@ -64,7 +72,7 @@ const Home: NextPage = () => {
           </OverflowBox>
         </Levels>
       )}
-      <PuzzleCanvas puzzleLv={puzzleLevel} puzzleImg={puzzleImg} />
+      <PuzzleCanvas puzzleLv={number} puzzleImg={modalImage} />
     </Container>
   );
 };

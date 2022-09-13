@@ -83,7 +83,7 @@ const fitTile = (config: Config, currentTile: any, groupIndex: index) => {
       ? config.tiles[index + config.tilesPerRow]
       : undefined;
 
-  // 동작 설명
+  // 동작 설명!!
   // 4개의 방향에 대해 근처에 그룹화 가능한 조각이 있는지 확인한다.
   // 이미 그룹화 된 조각은 다시 그룹화 하지 않는다.
   // 그룹화 가능한 조각이 두 개 이상 있을 경우, 하나의 조각만 그룹화한다.

@@ -48,8 +48,10 @@ type Config = {
 type ModalProps = {
   modalDisplay: boolean;
   modalImage: img;
+  number: number;
   onModal: () => void;
   offModal: () => void;
   setModalImage: (value: img) => void;
   initialModalImage: () => void;
+  setNumber: (value: number) => void;
 };

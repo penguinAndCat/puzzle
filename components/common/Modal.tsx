@@ -1,16 +1,18 @@
 import { setPuzzleRowColumn } from 'libs/puzzle/createPuzzle';
 import { theme } from 'libs/theme/theme';
 import { useModal } from 'libs/zustand/store';
-import { ChangeEvent, SetStateAction, useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/router';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { CloseIcon } from './Icon';
 
 const Modal = () => {
-  const { offModal, modalImage, setModalImage, initialModalImage } = useModal();
+  const { offModal, modalImage, setModalImage, initialModalImage, setNumber } = useModal();
   const [roomName, setRoomName] = useState('');
   const [puzzleNumber, setPuzzleNumber] = useState(0);
   const [puzzleNumbers, setPuzzleNumbers] = useState<number[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
   const closeModal = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent> | React.MouseEvent<SVGSVGElement, MouseEvent>
@@ -62,6 +64,12 @@ const Modal = () => {
     }
   };
 
+  const createPuzzle = () => {
+    offModal();
+    setNumber(puzzleNumber);
+    router.push('/puzzle');
+  };
+
   return (
     <>
       <OuterContainer onClick={closeModal} />
@@ -92,7 +100,7 @@ const Modal = () => {
           <Select onChange={(e) => setPuzzleNumber(parseInt(e.target.value))} value={puzzleNumber}>
             {puzzleNumbers.length !== 0 ? (
               puzzleNumbers.map((props, index) => (
-                <option key={index} value={props}>
+                <option key={index} value={index}>
                   {props}
                 </option>
               ))
@@ -102,7 +110,7 @@ const Modal = () => {
           </Select>
         </PuzzleNumberWrapper>
         <CreateWrapper>
-          <CreateButton>퍼즐 만들기</CreateButton>
+          <CreateButton onClick={createPuzzle}>퍼즐 만들기</CreateButton>
         </CreateWrapper>
       </Container>
     </>

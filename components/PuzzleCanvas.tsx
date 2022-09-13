@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, Dispatch, SetStateAction } from 'react';
 import Paper from 'paper';
 import styled from 'styled-components';
-import { exportConfig, initConfig, restartConfig } from '../libs/puzzle/createPuzzle';
+import { exportConfig, initConfig } from '../libs/puzzle/createPuzzle';
 
 interface Props {
   puzzleLv: number;
@@ -41,7 +41,7 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
     const config = exportConfig();
     Paper.setup(canvas);
     initConfig(Paper, puzzleImg, config, canvasSize, puzzleLv);
-  }, [puzzleImg, puzzleLv]);
+  }, [canvasSize, puzzleImg, puzzleLv]);
 
   // useEffect(() => {
   //   const canvas = canvasRef.current;
