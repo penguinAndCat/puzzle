@@ -1,3 +1,4 @@
+import { useModal } from 'libs/zustand/store';
 import { Dispatch, MouseEvent, SetStateAction, useState } from 'react';
 import styled from 'styled-components';
 
@@ -6,6 +7,7 @@ interface Props {
 }
 
 const Card = ({ image }: Props) => {
+  const { onModal, setModalImage } = useModal();
   const [thumbImage, setThumbImage] = useState('');
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [width, setWidth] = useState(0);
@@ -22,8 +24,21 @@ const Card = ({ image }: Props) => {
   const onMouseLeave = () => {
     setThumbImage('');
   };
+  const onClick = () => {
+    onModal();
+    const img = new Image();
+    img.src = image;
+    img.onload = function () {
+      setModalImage({ src: image, width: img.width, height: img.height }); // 파일 base64 상태 업데이트
+    };
+  };
   return (
-    <Wrapper onMouseOver={(e) => onMouseOver(e)} onMouseLeave={onMouseLeave} onMouseMove={(e) => onMouseMove(e)}>
+    <Wrapper
+      onMouseOver={(e) => onMouseOver(e)}
+      onMouseLeave={onMouseLeave}
+      onMouseMove={(e) => onMouseMove(e)}
+      onClick={onClick}
+    >
       <CardImg src={image} />
       {thumbImage !== '' && (
         <ThumbImage style={{ top: `${mousePosition.y}px`, left: `${mousePosition.x}px` }}>

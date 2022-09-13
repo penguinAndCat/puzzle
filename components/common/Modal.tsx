@@ -2,7 +2,7 @@ import { setPuzzleRowColumn } from 'libs/puzzle/createPuzzle';
 import { theme } from 'libs/theme/theme';
 import { useModal } from 'libs/zustand/store';
 import { ChangeEvent, SetStateAction, useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { CloseIcon } from './Icon';
 
 const Modal = () => {
@@ -25,6 +25,17 @@ const Modal = () => {
     document.body.style.overflow = 'hidden';
   }, []);
 
+  useEffect(() => {
+    if (modalImage.src === '') return;
+    const rowColumn = setPuzzleRowColumn(modalImage);
+    setPuzzleNumbers(
+      rowColumn.map(([row, col]) => {
+        return row * col;
+      })
+    );
+    setPuzzleNumber(rowColumn[0][0] * rowColumn[0][1]);
+  }, [modalImage]);
+
   const onchangeRoomName = (e: ChangeEvent<HTMLInputElement>) => {
     setRoomName(e.target.value);
   };
@@ -43,13 +54,6 @@ const Modal = () => {
         img.src = base64.toString();
         img.onload = function () {
           setModalImage({ src: base64.toString(), width: img.width, height: img.height }); // 파일 base64 상태 업데이트
-          const rowColumn = setPuzzleRowColumn({ src: base64.toString(), width: img.width, height: img.height });
-          setPuzzleNumbers(
-            rowColumn.map(([row, col]) => {
-              return row * col;
-            })
-          );
-          setPuzzleNumber(rowColumn[0][0] * rowColumn[0][1]);
         };
       }
     };
@@ -65,7 +69,7 @@ const Modal = () => {
         <TitleWrapper>
           <Close />
           <Title>Create</Title>
-          <Close onClick={closeModal}>
+          <Close onClick={closeModal} style={{ cursor: 'pointer' }}>
             <CloseIcon />
           </Close>
         </TitleWrapper>
@@ -150,6 +154,12 @@ const Container = styled.div`
   color: ${({ theme }) => theme.modalTextColor};
 `;
 
+const ModalTheme = css`
+  background-color: ${({ theme }) => theme.modalColor};
+  color: ${({ theme }) => theme.modalTextColor};
+  border: solid 2px ${({ theme }) => theme.modalTextColor};
+`;
+
 const TitleWrapper = styled.div`
   width: 100%;
   height: 30px;
@@ -165,7 +175,6 @@ const Close = styled.div`
   width: 30px;
   height: 30px;
   ${theme.common.flexCenter}
-  cursor: pointer
 `;
 
 const ImgWrapper = styled.div`
@@ -181,10 +190,8 @@ const ImageButton = styled.button`
   width: 200px;
   height: 200px;
   text-align: center;
-  background-color: ${({ theme }) => theme.modalColor};
-  color: ${({ theme }) => theme.modalTextColor};
-  border: solid 2px ${({ theme }) => theme.modalTextColor};
   cursor: pointer;
+  ${ModalTheme}
 `;
 
 const Img = styled.img`
@@ -201,9 +208,10 @@ const Input = styled.input`
 const Select = styled.select`
   height: 24px;
   margin-top: 4px;
-  background-color: ${({ theme }) => theme.modalColor};
-  color: ${({ theme }) => theme.modalTextColor};
-  border: solid 2px ${({ theme }) => theme.modalTextColor};
+  ${ModalTheme}
+  &:focus {
+    outline: none;
+  }
 `;
 
 const RoomNameWrapper = styled.div`
@@ -219,7 +227,10 @@ const SubTitle = styled.div`
 
 const RoomNameInput = styled.input`
   width: 120px;
-  border: solid 1px ${({ theme }) => theme.modalTextColor};
+  ${ModalTheme}
+  &:focus {
+    outline: none;
+  }
 `;
 
 const PuzzleNumberWrapper = styled.div`
@@ -237,8 +248,6 @@ const CreateWrapper = styled.div`
 const CreateButton = styled.button`
   width: 240px;
   height: 30px;
-  background-color: ${({ theme }) => theme.modalColor};
-  color: ${({ theme }) => theme.modalTextColor};
-  border: solid 2px ${({ theme }) => theme.modalTextColor};
   cursor: pointer;
+  ${ModalTheme}
 `;
