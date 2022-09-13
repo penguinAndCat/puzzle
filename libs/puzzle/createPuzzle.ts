@@ -48,7 +48,7 @@ export const exportConfig = () => {
   return config;
 };
 
-const setPuzzleRowColumn = (puzzleImage: img) => {
+export const setPuzzleRowColumn = (puzzleImage: img) => {
   const { width, height } = puzzleImage;
   const levels = [];
   for (let i = 2; i < width; i++) {
@@ -60,6 +60,7 @@ const setPuzzleRowColumn = (puzzleImage: img) => {
     }
   }
   config.levels = levels;
+  return levels;
 };
 
 const setPuzzleLevel = (level: number) => {

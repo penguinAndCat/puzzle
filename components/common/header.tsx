@@ -47,7 +47,6 @@ const Header = () => {
 export default Header;
 
 const Container = styled.div`
-  width: 100%;
   height: 110px;
   display: flex;
   justify-content: center;

@@ -6,4 +6,6 @@ interface Theme {
   borderColor: string;
   headerColor: string;
   headerTextColor: string;
+  modalColor: string;
+  modalTextColor: string;
 }
