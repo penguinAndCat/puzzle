@@ -1,5 +1,5 @@
 import { silverTheme, darkTheme, pinkTheme, mintTheme } from './theme';
-import React, { useState, useContext, useCallback, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ThemeContext, ThemeProvider as StyledProvider } from 'styled-components';
 
 interface Props {

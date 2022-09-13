@@ -44,3 +44,14 @@ type Config = {
   positionArr: position[];
   levels: number[][];
 };
+
+type ModalProps = {
+  modalDisplay: boolean;
+  modalImage: img;
+  number: number;
+  onModal: () => void;
+  offModal: () => void;
+  setModalImage: (value: img) => void;
+  initialModalImage: () => void;
+  setNumber: (value: number) => void;
+};

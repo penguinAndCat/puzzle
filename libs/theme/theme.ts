@@ -1,6 +1,3 @@
-import styled from 'styled-components';
-
-// 반응형 디자인을 위한 픽셀 컨버팅 함수
 const pixelToRem = (size: number) => `${size / 16}rem`;
 
 const fontSizes = {
@@ -10,23 +7,24 @@ const fontSizes = {
 };
 
 const colors = {
-  dark: '#000000',
+  dark: '#2b2a2b',
   mint: '#03DBA4',
   pink: '#FFC0CB',
   silver: '#e9e6e4',
   white: '#FFFFFF',
+  black: '#000000',
 };
 
 const common = {
   flexCenter: `
     display: flex;
-    justify-contents: center;
+    justify-content: center;
     align-items: center;
   `,
   flexCenterColumn: `
     display: flex;
     flex-direction: column;
-    justify-contents: center;
+    justify-content: center;
     align-items: center;
   `,
 };
@@ -37,6 +35,8 @@ export const silverTheme: Theme = {
   borderColor: `solid ${colors.dark}`,
   headerColor: colors.silver,
   headerTextColor: colors.dark,
+  modalColor: colors.silver,
+  modalTextColor: colors.dark,
 };
 
 export const darkTheme: Theme = {
@@ -45,6 +45,8 @@ export const darkTheme: Theme = {
   borderColor: `solid ${colors.dark}`,
   headerColor: colors.white,
   headerTextColor: colors.dark,
+  modalColor: colors.dark,
+  modalTextColor: colors.white,
 };
 
 export const pinkTheme: Theme = {
@@ -53,6 +55,8 @@ export const pinkTheme: Theme = {
   borderColor: `solid ${colors.pink}`,
   headerColor: colors.white,
   headerTextColor: colors.pink,
+  modalColor: colors.white,
+  modalTextColor: colors.pink,
 };
 
 export const mintTheme: Theme = {
@@ -61,9 +65,10 @@ export const mintTheme: Theme = {
   borderColor: `solid ${colors.mint}`,
   headerColor: colors.white,
   headerTextColor: colors.mint,
+  modalColor: colors.white,
+  modalTextColor: colors.mint,
 };
 
-// theme 객체에 감싸서 반환한다.
 export const theme = {
   fontSizes,
   common,
@@ -73,5 +78,3 @@ export const theme = {
   mintTheme,
   colors,
 };
-
-// export default theme;
