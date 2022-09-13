@@ -47,12 +47,17 @@ const Header = () => {
 export default Header;
 
 const Container = styled.div`
-  height: 110px;
   display: flex;
   justify-content: center;
   padding: 20px 60px;
   border-bottom: 3px ${({ theme }) => theme.borderColor};
   background-color: ${({ theme }) => theme.headerColor};
+  @media (max-width: 720px) {
+    padding: 20px 20px;
+  }
+  @media (max-width: 600px) {
+    padding: 20px 10px;
+  }
 `;
 
 const Wrapper = styled.div`
@@ -67,6 +72,12 @@ const Left = styled.div`
   min-width: 130px;
   display: flex;
   margin-right: 80px;
+  @media (max-width: 900px) {
+    margin-right: 20px;
+  }
+  @media (max-width: 600px) {
+    margin: 0;
+  }
 `;
 
 const Logo = styled.div`
@@ -80,6 +91,12 @@ const Logo = styled.div`
   font-weight: 600;
   color: ${({ theme }) => theme.headerTextColor};
   cursor: pointer;
+  @media (max-width: 900px) {
+    margin: 0 20px;
+  }
+  @media (max-width: 600px) {
+    margin: 0;
+  }
 `;
 
 const Bar = styled.div`
@@ -88,12 +105,21 @@ const Bar = styled.div`
   display: flex;
   background-image: linear-gradient(transparent 50%, ${({ theme }) => theme.headerTextColor} 50%);
   background-size: 12px 12px;
+  @media (max-width: 720px) {
+    display: none;
+  }
 `;
 
 const Right = styled.div`
   min-width: 130px;
   ${theme.common.flexCenter};
   margin-left: 80px;
+  @media (max-width: 900px) {
+    margin-left: 20px;
+  }
+  @media (max-width: 600px) {
+    margin: 0;
+  }
 `;
 
 const Button = styled.button`
@@ -110,6 +136,7 @@ const Button = styled.button`
 
 const Colors = styled.button`
   border: 1px solid #ffffff;
+  ${theme.common.flexCenter}
   width: 30px;
   height: 30px;
   background-color: ${({ theme }) => theme.headerTextColor};
@@ -125,6 +152,9 @@ const ColorsWrapper = styled.div`
   position: relative;
   margin-left: 20px;
   height: 30px;
+  @media (max-width: 600px) {
+    margin-left: 5px;
+  }
 `;
 
 const Palette = styled.div`
