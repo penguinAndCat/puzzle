@@ -10,3 +10,14 @@ export const useModal = create<ModalProps>((set) => ({
   initialModalImage: () => set({ modalImage: { src: '', width: 0, height: 0 } }),
   setNumber: (number) => set({ number: number }),
 }));
+
+export const useToastState = create<ToastProps>((set) => ({
+  toast: {
+    id: '',
+    content: '',
+    duration: 0,
+    top: 0,
+    bottom: 0,
+  },
+  setToast: (toast) => set({ toast: toast }),
+}));

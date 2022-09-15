@@ -1,22 +1,23 @@
+import { useToast } from 'hooks/useToast';
 import { setPuzzleRowColumn } from 'libs/puzzle/createPuzzle';
 import { theme } from 'libs/theme/theme';
 import { useModal } from 'libs/zustand/store';
 import { useRouter } from 'next/router';
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { CloseIcon } from './Icon';
 
 const Modal = () => {
   const { offModal, modalImage, setModalImage, initialModalImage, setNumber } = useModal();
+  const { fireToast } = useToast();
   const [roomName, setRoomName] = useState('');
   const [puzzleNumber, setPuzzleNumber] = useState(0);
   const [puzzleNumbers, setPuzzleNumbers] = useState<number[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
 
-  const closeModal = (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent> | React.MouseEvent<SVGSVGElement, MouseEvent>
-  ) => {
+  const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     e.preventDefault();
     document.body.style.overflow = 'unset';
     offModal();
@@ -68,19 +69,22 @@ const Modal = () => {
   };
 
   const createPuzzle = () => {
+    if (roomName === '') {
+      fireToast({ content: '방 이름을 지어 주세요.', top: buttonRef.current?.getBoundingClientRect().top });
+      return;
+    }
     offModal();
     setNumber(puzzleNumber);
     router.push('/puzzle');
   };
 
   return (
-    <>
-      <OuterContainer onClick={closeModal} />
-      <Container>
+    <OuterContainer onClick={(e) => closeModal(e)}>
+      <Container onClick={(e) => e.stopPropagation()}>
         <TitleWrapper>
           <Close />
           <Title>Create</Title>
-          <Close onClick={closeModal} style={{ cursor: 'pointer' }}>
+          <Close onClick={(e) => closeModal(e)} style={{ cursor: 'pointer' }}>
             <CloseIcon />
           </Close>
         </TitleWrapper>
@@ -113,10 +117,12 @@ const Modal = () => {
           </Select>
         </PuzzleNumberWrapper>
         <CreateWrapper>
-          <CreateButton onClick={createPuzzle}>퍼즐 만들기</CreateButton>
+          <CreateButton ref={buttonRef} onClick={createPuzzle}>
+            퍼즐 만들기
+          </CreateButton>
         </CreateWrapper>
       </Container>
-    </>
+    </OuterContainer>
   );
 };
 
@@ -189,8 +195,8 @@ const Close = styled.div`
 `;
 
 const ImgWrapper = styled.div`
-  max-height: min(calc(100vw - 332px), 600px);
-  max-width: min(calc(100vw - 332px), 600px);
+  // max-height: min(calc(100vw - 332px), 600px);
+  // max-width: min(calc(100vw - 332px), 600px);
   min-height: 300px;
   min-width: 300px;
   ${theme.common.flexCenter}
@@ -206,9 +212,9 @@ const ImageButton = styled.button`
 `;
 
 const Img = styled.img`
-  width: 70%;
-  height: 70%;
-  object-fit: cover;
+  width: 280px;
+  height: 280px;
+  object-fit: contain;
   cursor: pointer;
 `;
 

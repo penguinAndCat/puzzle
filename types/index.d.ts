@@ -55,3 +55,16 @@ type ModalProps = {
   initialModalImage: () => void;
   setNumber: (value: number) => void;
 };
+
+interface Toast {
+  id?: string;
+  content: string;
+  duration?: number;
+  top?: number;
+  bottom?: number;
+}
+
+type ToastProps = {
+  toast: Toast;
+  setToast: (value: Toast) => void;
+};

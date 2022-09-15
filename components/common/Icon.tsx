@@ -30,6 +30,6 @@ export const CloseIcon = () => {
 };
 
 const Svg = styled.svg`
-  color: ${({ theme }) => theme.textColor};
-  fill: ${({ theme }) => theme.textColor};
+  color: ${({ theme }) => theme.modalTextColor};
+  fill: ${({ theme }) => theme.modalTextColor};
 `;
