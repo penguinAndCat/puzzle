@@ -7,9 +7,7 @@ import { exportConfig } from '../../libs/puzzle/createPuzzle';
 import { useModal } from 'libs/zustand/store';
 
 const Home: NextPage = () => {
-  const { modalImage, number } = useModal();
-  const [puzzleLevel, setPuzzleLevel] = useState(2);
-  const [puzzleImg, setPuzzleImg] = useState<img>({ src: '/test2.jpg', width: 1000, height: 1000 });
+  const { modalImage, number, setNumber } = useModal();
   const [showLevel, setShowLevel] = useState(false);
   const [display, setDisplay] = useState(false);
   const [list, setList] = useState<number[][]>([]);
@@ -27,21 +25,9 @@ const Home: NextPage = () => {
     }
   }, [display]);
 
-  useEffect(() => {
-    if (modalImage.src !== '') {
-      console.log(number);
-    }
-  }, [modalImage]);
-
   return (
     <Container onClick={() => setShowLevel(false)}>
-      <Header
-        puzzleImg={puzzleImg}
-        setPuzzleImg={setPuzzleImg}
-        setShowLevel={setShowLevel}
-        showLevel={showLevel}
-        setShowLvMenu={setDisplay}
-      />
+      <Header puzzleImg={modalImage} setShowLevel={setShowLevel} showLevel={showLevel} setShowLvMenu={setDisplay} />
       {display && (
         <Levels
           show={showLevel}
@@ -57,10 +43,10 @@ const Home: NextPage = () => {
               {list.map(([row, col], index) => {
                 return (
                   <Item
-                    selected={index === puzzleLevel}
+                    selected={index === number}
                     key={index}
                     onClick={() => {
-                      setPuzzleLevel(() => index);
+                      setNumber(index);
                       setShowLevel(false);
                     }}
                   >
@@ -92,17 +78,21 @@ const Levels = styled.div<{ show: boolean }>`
   top: 0;
   left: 0;
   color: black;
-  background-color: white;
   box-shadow: 0 0 20px 1px gray;
   transform: translateX(-100%);
   transform: translateX(${({ show }) => (show ? '0' : '-100%')});
   transition: transform 0.3s ease-in-out;
+  background-color: ${({ theme }) => theme.headerColor};
 `;
 
 const Title = styled.h1`
   width: 100%;
   height: 40px;
   text-align: center;
+  color: ${({ theme }) => theme.headerTextColor};
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 40px;
 `;
 
 const OverflowBox = styled.div`
@@ -133,11 +123,14 @@ const Item = styled.li<{ selected: boolean }>`
   width: 100px;
   padding: 10px;
   cursor: pointer;
-  border-bottom: 5px solid ${({ selected }) => (selected ? 'black' : 'rgba(0, 0, 0, 0.1)')};
-  background-color: ${({ selected }) => (selected ? 'rgba(0, 0, 0, 0.1)' : 'white')};
+  // border-bottom: 5px solid ${({ selected }) => (selected ? ({ theme }) => theme.headerTextColor : '#FFF')};
+  background-color: ${({ selected }) =>
+    selected ? ({ theme }) => theme.headerTextColor : ({ theme }) => theme.headerColor};
+  color: ${({ selected }) => (selected ? ({ theme }) => theme.headerColor : ({ theme }) => theme.headerTextColor)};
   text-align: center;
   &:hover {
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: ${({ theme }) => theme.headerTextColor};
+    color: ${({ theme }) => theme.headerColor};
   }
 `;
 

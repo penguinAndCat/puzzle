@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, Dispatch, SetStateAction } from 'react';
 import Paper from 'paper';
 import styled from 'styled-components';
-import { exportConfig, initConfig } from '../libs/puzzle/createPuzzle';
+import { exportConfig, initConfig, restartConfig } from '../libs/puzzle/createPuzzle';
 
 interface Props {
   puzzleLv: number;
@@ -41,7 +41,7 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
     const config = exportConfig();
     Paper.setup(canvas);
     initConfig(Paper, puzzleImg, config, canvasSize, puzzleLv);
-  }, [canvasSize, puzzleImg, puzzleLv]);
+  }, [puzzleImg, puzzleLv, canvasSize]);
 
   // useEffect(() => {
   //   const canvas = canvasRef.current;
@@ -67,7 +67,10 @@ const Canvas = styled.canvas`
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  border: 2px solid #000000;
+  border-left: 3px solid ${({ theme }) => theme.textColor};
+  border-right: 3px solid ${({ theme }) => theme.textColor};
+  border-bottom: 3px solid ${({ theme }) => theme.textColor};
+  background-color: ${({ theme }) => theme.bgColor};
 `;
 
 const Wrapper = styled.div`
