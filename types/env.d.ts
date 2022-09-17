@@ -6,5 +6,7 @@ declare namespace NodeJS {
     KAKAO_CLIENT_SECRET: string;
     NAVER_CLIENT_ID: string;
     NAVER_CLIENT_SECRET: string;
+    MONGODB_URI: string;
+    NEXTAUTH_SECRET: string;
   }
 }

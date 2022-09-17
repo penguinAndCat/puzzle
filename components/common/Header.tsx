@@ -1,8 +1,11 @@
 import { theme } from 'libs/theme/theme';
+import { signOut, useSession } from 'next-auth/react';
+import Link from 'next/link';
 import styled from 'styled-components';
 import Palette from './Palette';
 
 const Header = () => {
+  const { data: session, status } = useSession();
   return (
     <Container>
       <Wrapper>
@@ -16,7 +19,13 @@ const Header = () => {
         </Logo>
         <Bar />
         <Right>
-          <Button>로그인</Button>
+          <Button>
+            {status === 'authenticated' ? (
+              <span onClick={() => signOut()}>{session.user.name}</span>
+            ) : (
+              <Link href="/api/auth/signin">로그인</Link>
+            )}
+          </Button>
           <Palette />
         </Right>
       </Wrapper>
