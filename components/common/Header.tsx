@@ -1,5 +1,5 @@
 import { theme } from 'libs/theme/theme';
-import { signOut, useSession } from 'next-auth/react';
+import { signIn, signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import styled from 'styled-components';
 import Palette from './Palette';
@@ -23,7 +23,7 @@ const Header = () => {
             {status === 'authenticated' ? (
               <span onClick={() => signOut()}>{session.user.name}</span>
             ) : (
-              <Link href="/signin">로그인</Link>
+              <span onClick={() => signIn('kakao')}>로그인</span>
             )}
           </Button>
           <Palette />
