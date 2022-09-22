@@ -23,7 +23,7 @@ const Header = () => {
             {status === 'authenticated' ? (
               <span onClick={() => signOut()}>{session.user.name}</span>
             ) : (
-              <Link href="/api/auth/signin">로그인</Link>
+              <Link href="/signin">로그인</Link>
             )}
           </Button>
           <Palette />

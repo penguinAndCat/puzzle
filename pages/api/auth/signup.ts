@@ -8,7 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { name, email, password } = req.body;
     try {
       await dbConnect();
-      const isExist = await User.findOne({ email, provider: 'custom-email' });
+      const isExist = await User.exists({ email, provider: 'custom-email' });
       if (isExist) {
         throw new Error('aleady exist user');
       }

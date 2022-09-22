@@ -50,6 +50,12 @@ export default NextAuth({
     }),
   ],
   session: { strategy: 'jwt' },
+  jwt: {
+    maxAge: 60 * 60 * 2,
+  },
+  pages: {
+    signIn: '/signin',
+  },
   // adapter: MongoDBAdapter(clientPromise),
   callbacks: {
     async jwt({ token, account, user }) {
