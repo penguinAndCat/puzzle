@@ -1,6 +1,9 @@
+import axios from 'axios';
 import Palette from 'components/common/Palette';
+import { exportConfig } from 'libs/puzzle/createPuzzle';
 import { theme } from 'libs/theme/theme';
-import { Dispatch, MouseEvent, SetStateAction, useRef } from 'react';
+import { useSession } from 'next-auth/react';
+import { Dispatch, MouseEvent, SetStateAction, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
 interface Props {
@@ -11,6 +14,7 @@ interface Props {
 }
 
 const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) => {
+  const { data: session, status } = useSession();
   const onClick = (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
     e.stopPropagation();
     if (!showLevel) {
@@ -19,6 +23,27 @@ const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) =>
       setShowLevel(false);
     }
   };
+
+  const handleSave = async () => {
+    try {
+      if (!session) return;
+      const { user } = session;
+      const puzzleData = exportConfig();
+      const response = await axios.post('/api/puzzle', {
+        data: {
+          ...puzzleData,
+          userId: user.id,
+        },
+      });
+      const { item, message } = response.data;
+      console.log(item._id);
+      console.log(message);
+    } catch (err) {
+      alert('failed');
+      console.log(err);
+    }
+  };
+
   return (
     <Container>
       <Wrapper>
@@ -32,6 +57,7 @@ const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) =>
         <Right>
           <Button>완성본</Button>
           <Palette />
+          {status === 'authenticated' && <Button onClick={handleSave}>저장</Button>}
         </Right>
       </Wrapper>
     </Container>

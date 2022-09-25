@@ -21,9 +21,19 @@ export default NextAuth({
       clientSecret: process.env.NAVER_CLIENT_SECRET,
     }),
   ],
+
   adapter: MongoDBAdapter(clientPromise),
+  session: {
+    strategy: 'jwt',
+  },
+  jwt: {
+    maxAge: 60 * 60 * 2,
+  },
   callbacks: {
     async jwt({ token, account, user }) {
+      if (user) {
+        token.userId = user.id;
+      }
       if (account) {
         token.accessToken = account.access_token;
         token.provider = account.provider;
@@ -34,6 +44,7 @@ export default NextAuth({
     async session({ session, token }) {
       session.accessToken = token.accessToken;
       session.user.provider = token.provider;
+      session.user.id = token.userId;
       return session;
     },
   },

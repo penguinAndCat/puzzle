@@ -1,11 +1,15 @@
 import { theme } from 'libs/theme/theme';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { useState } from 'react';
 import styled from 'styled-components';
+import Auth from './Auth';
 import Palette from './Palette';
 
 const Header = () => {
   const { data: session, status } = useSession();
+  const [showAuth, setShowAuth] = useState(false);
+
   return (
     <Container>
       <Wrapper>
@@ -19,13 +23,16 @@ const Header = () => {
         </Logo>
         <Bar />
         <Right>
-          <Button>
-            {status === 'authenticated' ? (
-              <span onClick={() => signOut()}>{session.user.name}</span>
-            ) : (
-              <span onClick={() => signIn('kakao')}>로그인</span>
-            )}
-          </Button>
+          {status === 'authenticated' ? (
+            <Button onClick={() => signOut()}>{session.user.name}</Button>
+          ) : (
+            <Button onClick={() => setShowAuth((prev) => !prev)}>로그인</Button>
+          )}
+          {showAuth && (
+            <AuthContainer>
+              <Auth />
+            </AuthContainer>
+          )}
           <Palette />
         </Right>
       </Wrapper>
@@ -100,6 +107,7 @@ const Bar = styled.div`
 `;
 
 const Right = styled.div`
+  position: relative;
   min-width: 130px;
   ${theme.common.flexCenter};
   margin-left: 80px;
@@ -121,4 +129,11 @@ const Button = styled.button`
   font-weight: 600;
   text-align: center;
   cursor: pointer;
+  padding: 0;
+`;
+
+const AuthContainer = styled.div`
+  position: absolute;
+  top: 40px;
+  right: 10%;
 `;
