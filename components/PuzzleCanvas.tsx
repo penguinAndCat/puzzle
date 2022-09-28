@@ -51,7 +51,7 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
         const response = await axios.get(`/api/puzzle?id=${router.query.id}`);
         const item = response.data.item;
         console.log('item', item);
-        restartConfig(Paper, item.config.puzzleImg, item.config, canvasSize, item.level);
+        restartConfig(Paper, item.config.puzzleImage, item.config, canvasSize, item.level);
       }
     };
     setPuzzle();

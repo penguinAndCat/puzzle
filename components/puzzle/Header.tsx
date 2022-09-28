@@ -34,6 +34,7 @@ const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) =>
       if (!session) return;
       const { user }: any = session;
       const puzzleData = exportConfig();
+      delete puzzleData.project;
       const data = {
         config: puzzleData,
         userId: user.id,

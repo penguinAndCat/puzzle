@@ -60,23 +60,6 @@ const PuzzleSchema = new mongoose.Schema(
           type: Number,
         },
       },
-      project: {
-        settings: {
-          type: Schema.Types.Mixed,
-        },
-        project: {
-          type: Schema.Types.Mixed,
-        },
-        projects: {
-          type: Schema.Types.Mixed,
-        },
-        tools: {
-          type: Schema.Types.Mixed,
-        },
-        _id: {
-          type: Number,
-        },
-      },
       shapes: {
         type: [Schema.Types.Mixed],
       },
@@ -111,4 +94,4 @@ const PuzzleSchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.models.Puzzle || mongoose.model('Puzzle', PuzzleSchema, 'puzzle');
+export default mongoose.models.Puzzle || mongoose.model('Puzzle', PuzzleSchema, 'puzzles');
