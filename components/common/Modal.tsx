@@ -8,7 +8,7 @@ import styled, { css } from 'styled-components';
 import { CloseIcon } from './Icon';
 
 const Modal = () => {
-  const { offModal, modalImage, setModalImage, initialModalImage, setNumber } = useModal();
+  const { offModal, modalImage, setModalImage, initialModalImage, setNumber, setTitle } = useModal();
   const { fireToast } = useToast();
   const [roomName, setRoomName] = useState('');
   const [puzzleNumber, setPuzzleNumber] = useState(0);
@@ -79,6 +79,7 @@ const Modal = () => {
     }
     offModal();
     setNumber(puzzleNumber);
+    setTitle(roomName);
     router.push('/puzzle');
   };
 

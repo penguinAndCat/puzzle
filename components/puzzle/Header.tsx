@@ -1,9 +1,12 @@
 import axios from 'axios';
 import Palette from 'components/common/Palette';
-import { exportConfig } from 'libs/puzzle/createPuzzle';
+import { exportConfig, initConfig } from 'libs/puzzle/createPuzzle';
 import { theme } from 'libs/theme/theme';
+import { useModal } from 'libs/zustand/store';
 import { useSession } from 'next-auth/react';
-import { Dispatch, MouseEvent, SetStateAction, useEffect, useRef } from 'react';
+import { useRouter } from 'next/router';
+import Paper from 'paper';
+import { Dispatch, MouseEvent, SetStateAction } from 'react';
 import styled from 'styled-components';
 
 interface Props {
@@ -15,6 +18,8 @@ interface Props {
 
 const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) => {
   const { data: session, status } = useSession();
+  const { number, title } = useModal();
+  const router = useRouter();
   const onClick = (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
     e.stopPropagation();
     if (!showLevel) {
@@ -27,17 +32,20 @@ const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) =>
   const handleSave = async () => {
     try {
       if (!session) return;
-      const { user } = session;
+      const { user }: any = session;
       const puzzleData = exportConfig();
+      const data = {
+        config: puzzleData,
+        userId: user.id,
+        level: number,
+        title: title,
+      };
       const response = await axios.post('/api/puzzle', {
-        data: {
-          ...puzzleData,
-          userId: user.id,
-        },
+        data: data,
       });
       const { item, message } = response.data;
-      console.log(item._id);
-      console.log(message);
+      console.log(item);
+      router.push(`/puzzle/${item._id}`);
     } catch (err) {
       alert('failed');
       console.log(err);
@@ -57,7 +65,9 @@ const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) =>
         <Right>
           <Button>완성본</Button>
           <Palette />
-          {status === 'authenticated' && <Button onClick={handleSave}>저장</Button>}
+          {status === 'authenticated' && router.query.id === undefined && (
+            <Button onClick={handleSave}>방 만들기</Button>
+          )}
         </Right>
       </Wrapper>
     </Container>

@@ -8,8 +8,7 @@ const constant = {
   tileOpacity: 1,
   maskOpacity: 0.2,
 };
-
-const config: Config = {
+let config: Config = {
   shapes: [],
   project: '',
   imgWidth: 500,
@@ -39,7 +38,16 @@ export const initConfig = (Paper: typeof paper, puzzleImage: img, config: Config
   createTiles();
 };
 
-export const restartConfig = (Paper: typeof paper, puzzleImage: img, canvasSize: size, level: number) => {
+export const restartConfig = (
+  Paper: typeof paper,
+  puzzleImage: img,
+  config2: Config,
+  canvasSize: size,
+  level: number
+) => {
+  console.log(config2);
+  config = config2;
+  console.log(config);
   setConfig(Paper, puzzleImage, canvasSize, level);
   recreateTiles();
 };

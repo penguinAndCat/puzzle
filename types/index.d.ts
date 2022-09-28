@@ -49,11 +49,13 @@ type ModalProps = {
   modalDisplay: boolean;
   modalImage: img;
   number: number;
+  title: string;
   onModal: () => void;
   offModal: () => void;
   setModalImage: (value: img) => void;
   initialModalImage: () => void;
   setNumber: (value: number) => void;
+  setTitle: (value: string) => void;
 };
 
 interface Toast {
