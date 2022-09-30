@@ -1,99 +1,80 @@
-import { ObjectId } from 'mongodb';
 import mongoose, { Schema } from 'mongoose';
 
 const PuzzleSchema = new mongoose.Schema(
   {
     userId: {
-      type: ObjectId,
+      type: Schema.Types.ObjectId,
     },
-    canvasPreSize: {
-      width: {
-        type: Number,
+    config: {
+      canvasPreSize: {
+        width: {
+          type: Number,
+        },
+        height: {
+          type: Number,
+        },
       },
-      height: {
-        type: Number,
+      canvasSize: {
+        width: {
+          type: Number,
+        },
+        height: {
+          type: Number,
+        },
       },
-    },
-    canvasSize: {
-      width: {
-        type: Number,
+      firstClient: {
+        type: Boolean,
       },
-      height: {
-        type: Number,
+      groupCheck: {
+        type: Boolean,
       },
-    },
-    firstClient: {
-      type: Boolean,
-    },
-    groupArr: {
-      type: [Schema.Types.Mixed],
-    },
-    groupCheck: {
-      type: Boolean,
-    },
-    groupTile: {
-      type: Schema.Types.Mixed,
-    },
-    imgHeight: {
-      type: Number,
-    },
-    imgWidth: {
-      type: Number,
-    },
-    levels: {
-      type: [Schema.Types.Mixed],
-    },
-    positionArr: {
-      type: [Schema.Types.Mixed],
-    },
-    puzzleImage: {
-      src: {
-        type: String,
-      },
-      width: {
-        type: Number,
-      },
-      height: {
-        type: Number,
-      },
-    },
-    project: {
-      settings: {
+      groupTile: {
         type: Schema.Types.Mixed,
       },
-      project: {
+      groupTiles: {
         type: Schema.Types.Mixed,
       },
-      projects: {
-        type: Schema.Types.Mixed,
+      imgHeight: {
+        type: Number,
       },
-      tools: {
-        type: Schema.Types.Mixed,
+      imgWidth: {
+        type: Number,
       },
-      _id: {
+      puzzleImage: {
+        src: {
+          type: String,
+        },
+        width: {
+          type: Number,
+        },
+        height: {
+          type: Number,
+        },
+      },
+      shapes: {
+        type: [Schema.Types.Mixed],
+      },
+      tileHeight: {
+        type: Number,
+      },
+      tileWidth: {
+        type: Number,
+      },
+      tiles: {
+        type: [Schema.Types.Mixed],
+      },
+      tilesPerColumn: {
+        type: Number,
+      },
+      tilesPerRow: {
         type: Number,
       },
     },
-    shapes: {
-      type: [Schema.Types.Mixed],
-    },
-    tileHeight: {
+    level: {
       type: Number,
     },
-    tileWidth: {
-      type: Number,
-    },
-    tileIndexes: {
-      type: [Schema.Types.Mixed],
-    },
-    tiles: {
-      type: [Schema.Types.Mixed],
-    },
-    tilesPerColumn: {
-      type: Number,
-    },
-    tilesPerRow: {
-      type: Number,
+    title: {
+      type: String,
     },
   },
   {
@@ -101,4 +82,4 @@ const PuzzleSchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.models.Puzzle || mongoose.model('Puzzle', PuzzleSchema);
+export default mongoose.models.Puzzle || mongoose.model('Puzzle', PuzzleSchema, 'puzzles');

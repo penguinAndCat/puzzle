@@ -32,28 +32,25 @@ type Config = {
   tileHeight: number;
   groupTiles: any[];
   shapes: shape[];
-  tiles: any[];
   project: any;
   puzzleImage: img;
-  tileIndexes: any[];
-  groupArr: any[];
   groupCheck: boolean;
   firstClient: boolean;
   canvasSize: size;
   canvasPreSize: size;
-  positionArr: position[];
-  levels: number[][];
 };
 
 type ModalProps = {
   modalDisplay: boolean;
   modalImage: img;
   number: number;
+  title: string;
   onModal: () => void;
   offModal: () => void;
   setModalImage: (value: img) => void;
   initialModalImage: () => void;
   setNumber: (value: number) => void;
+  setTitle: (value: string) => void;
 };
 
 interface Toast {

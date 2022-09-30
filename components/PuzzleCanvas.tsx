@@ -1,7 +1,9 @@
-import { useRef, useState, useEffect, Dispatch, SetStateAction } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import Paper from 'paper';
 import styled from 'styled-components';
 import { exportConfig, initConfig, restartConfig } from '../libs/puzzle/createPuzzle';
+import { useRouter } from 'next/router';
+import axios from 'axios';
 
 interface Props {
   puzzleLv: number;
@@ -9,8 +11,10 @@ interface Props {
 }
 
 const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
+  const router = useRouter();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
+  const [first, setFirst] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -35,26 +39,27 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
     const canvas = canvasRef.current;
     if (canvas === null) return;
     if (canvasSize.width === 0 || canvasSize.width === 0) return;
+    if (!router.isReady) return;
+    if (first) return;
+    setFirst(true);
 
-    canvas.width = canvasSize.width;
-    canvas.height = canvasSize.height;
-    const config = exportConfig();
-    Paper.setup(canvas);
-    initConfig(Paper, puzzleImg, config, canvasSize, puzzleLv);
-  }, [puzzleImg, puzzleLv, canvasSize]);
-
-  // useEffect(() => {
-  //   const canvas = canvasRef.current;
-  //   if (canvas === null) return;
-  //   if (canvasSize.width === 0 || canvasSize.width === 0) return;
-  //   canvas.width = canvasSize.width;
-  //   canvas.height = canvasSize.height;
-  //   const config = exportConfig();
-  //   if (!config.firstClient) {
-  //     Paper.projects = [];
-  //     restartConfig(Paper, puzzleImg, canvasSize, puzzleLv);
-  //   }
-  // }, [canvasSize]);
+    const setPuzzle = async () => {
+      canvas.width = canvasSize.width;
+      canvas.height = canvasSize.height;
+      Paper.setup(canvas);
+      if (router.query.id === undefined) {
+        const config = exportConfig();
+        initConfig(Paper, puzzleImg, config, canvasSize, puzzleLv);
+      } else {
+        const response = await axios.get(`/api/puzzle?id=${router.query.id}`);
+        const item = response.data.item;
+        const config = { ...item.config };
+        const puzzleImage = { ...config.puzzleImage };
+        restartConfig(Paper, puzzleImage, config, canvasSize, item.level, router.query.id);
+      }
+    };
+    setPuzzle();
+  }, [puzzleLv, router.isReady, puzzleImg, canvasSize, router.query.id, first]);
 
   return (
     <Wrapper>

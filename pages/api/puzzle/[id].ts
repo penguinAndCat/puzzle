@@ -17,28 +17,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   }
   const { method } = req;
   await dbConnect();
-  if (method === 'POST') {
+  if (method === 'PUT') {
     try {
-      const puzzle = new Puzzle(req.body.data);
-      puzzle.save((err: any, doc: any) => {
-        if (err) {
-          console.log(err);
-          return res.status(500).json({ message: 'failed', error: err });
+      const { id } = req.query;
+      console.log(req.body.data, id);
+      await Puzzle.updateOne(
+        { _id: id },
+        {
+          $set: {
+            config: { groupTiles: req.body.data.groupTiles },
+          },
         }
-        res.status(201).json({ item: doc, message: 'success' });
-      });
+      );
+      res.status(201).json({ message: 'success' });
     } catch (err) {
       res.status(500).json({ message: 'failed', error: err });
-    }
-  }
-  if (method === 'GET') {
-    const { id } = req.query;
-    try {
-      const puzzle = await Puzzle.findById(id);
-      console.log(puzzle);
-      res.status(201).json({ item: puzzle, message: 'success' });
-    } catch (err) {
-      res.status(500).json({ error: err, message: 'failed' });
     }
   }
 }
