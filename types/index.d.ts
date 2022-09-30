@@ -35,14 +35,10 @@ type Config = {
   tiles: any[];
   project: any;
   puzzleImage: img;
-  tileIndexes: any[];
-  groupArr: any[];
   groupCheck: boolean;
   firstClient: boolean;
   canvasSize: size;
   canvasPreSize: size;
-  positionArr: position[];
-  levels: number[][];
 };
 
 type ModalProps = {

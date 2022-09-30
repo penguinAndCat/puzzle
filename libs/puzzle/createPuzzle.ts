@@ -1,5 +1,5 @@
 import paper from 'paper';
-import { Point } from 'paper/dist/paper-core';
+import { Group, Point } from 'paper/dist/paper-core';
 import createRandomNumber from '../createRandomNumber';
 import puzzle from './moveTile';
 
@@ -18,17 +18,16 @@ let config: Config = {
   tileWidth: 0,
   tileHeight: 0,
   puzzleImage: { src: '', width: 0, height: 0 },
-  tileIndexes: [],
-  groupArr: [],
   groupTiles: [],
   tiles: [],
   groupCheck: false,
   firstClient: true,
   canvasSize: { width: 0, height: 0 },
   canvasPreSize: { width: 0, height: 0 },
-  positionArr: [],
-  levels: [],
 };
+
+let levels: number[][] = [];
+let positionArr: position[] = [];
 
 export const initConfig = (Paper: typeof paper, puzzleImage: img, config: Config, canvasSize: size, level: number) => {
   config.firstClient = false;
@@ -45,11 +44,10 @@ export const restartConfig = (
   canvasSize: size,
   level: number
 ) => {
-  console.log(config2);
   config = config2;
-  console.log(config);
+  setPuzzleRowColumn(puzzleImage);
   setConfig(Paper, puzzleImage, canvasSize, level);
-  recreateTiles();
+  serverCreateTiles();
 };
 
 export const exportConfig = () => {
@@ -58,7 +56,7 @@ export const exportConfig = () => {
 
 export const setPuzzleRowColumn = (puzzleImage: img) => {
   const { width, height } = puzzleImage;
-  const levels = [];
+  levels = [];
   for (let i = 2; i < width; i++) {
     for (let j = 2; j < height; j++) {
       if (i * j >= 600) continue;
@@ -67,14 +65,13 @@ export const setPuzzleRowColumn = (puzzleImage: img) => {
       levels.push([i, j]);
     }
   }
-  config.levels = levels;
   return levels;
 };
 
 const setPuzzleLevel = (level: number) => {
-  if (level > config.levels.length - 1) level = config.levels.length - 1;
-  config.tilesPerRow = config.levels[level][0];
-  config.tilesPerColumn = config.levels[level][1];
+  if (level > levels.length - 1) level = levels.length - 1;
+  config.tilesPerRow = levels[level][0];
+  config.tilesPerColumn = levels[level][1];
 };
 
 const setConfig = (Paper: typeof paper, puzzleImage: img, canvasSize: size, level: number) => {
@@ -110,7 +107,7 @@ const setConfig = (Paper: typeof paper, puzzleImage: img, canvasSize: size, leve
     correction = 1;
   }
   let tilesCount = config.tilesPerRow * config.tilesPerColumn;
-  config.positionArr = [];
+  positionArr = [];
   for (let y = 0; y < batchTiles; y++) {
     for (let x = 0; x < batchTiles; x++) {
       if (
@@ -124,7 +121,7 @@ const setConfig = (Paper: typeof paper, puzzleImage: img, canvasSize: size, leve
         tilesCount--;
         const x1 = (x + 1 / 2) * position.width;
         const y1 = (y + 1 / 2) * position.height;
-        config.positionArr.push({ x: x1, y: y1 });
+        positionArr.push({ x: x1, y: y1 });
       }
     }
   }
@@ -180,7 +177,7 @@ const createTiles = () => {
       //   config.project.view.center.x + (x - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.x,
       //   config.project.view.center.y + (y - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.y
       // );
-      const position = popRandom(config.positionArr);
+      const position = popRandom(positionArr);
       tile.position = new Point(position.x + margin.x, position.y + margin.y);
       config.tiles.push(tile);
       config.groupTiles.push([tile, undefined]);
@@ -236,6 +233,58 @@ const recreateTiles = () => {
       config.groupTiles.push([tile, groupTiles[y * config.tilesPerRow + x][1]]);
     }
   }
+  puzzle.moveTile(config);
+};
+const serverCreateTiles = () => {
+  const tileRatio = config.tileWidth / 100;
+  const tileRatio2 = config.tileHeight / 100;
+  const groupTiles = config.groupTiles;
+  config.groupTiles = [];
+  for (let y = 0; y < config.tilesPerColumn; y++) {
+    for (let x = 0; x < config.tilesPerRow; x++) {
+      const shape = config.shapes[y * config.tilesPerRow + x];
+      const mask = getMask(
+        tileRatio,
+        tileRatio2,
+        shape.topTab,
+        shape.rightTab,
+        shape.bottomTab,
+        shape.leftTab,
+        config.tileWidth,
+        config.tileHeight,
+        config.project,
+        config.imgWidth,
+        config.imgHeight
+      );
+      if (mask === undefined) continue;
+      mask.opacity = constant.maskOpacity;
+      mask.strokeColor = new config.project.Color('#ff0000');
+
+      const img = getTileRaster(
+        config.puzzleImage.src,
+        new Point(config.tileWidth * x, config.tileHeight * y),
+        Math.max(config.imgWidth / config.puzzleImage.width, config.imgHeight / config.puzzleImage.height),
+        config.project
+      );
+
+      const border = mask.clone();
+      border.strokeColor = new config.project.Color('#333333');
+      border.strokeWidth = constant.borderStrokeWidth;
+      const tile = new config.project.Group([mask, img]);
+      tile.clipped = true;
+      tile.opacity = constant.tileOpacity;
+
+      tile.position = new Point(
+        (groupTiles[y * config.tilesPerRow + x][0] * config.canvasSize.width) / config.canvasPreSize.width,
+        (groupTiles[y * config.tilesPerRow + x][1] * config.canvasSize.height) / config.canvasPreSize.height
+      );
+      config.groupTiles.push([
+        tile,
+        groupTiles[y * config.tilesPerRow + x][2] !== null ? groupTiles[y * config.tilesPerRow + x][2] : undefined,
+      ]);
+    }
+  }
+  console.log(config.groupTiles);
   puzzle.moveTile(config);
 };
 export const getMargin = (shape: shape) => {

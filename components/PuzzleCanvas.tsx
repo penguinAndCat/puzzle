@@ -50,12 +50,14 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
       } else {
         const response = await axios.get(`/api/puzzle?id=${router.query.id}`);
         const item = response.data.item;
+        const config = { ...item.config };
+        const pimage = { ...config.puzzleImage };
         console.log('item', item);
-        restartConfig(Paper, item.config.puzzleImage, item.config, canvasSize, item.level);
+        restartConfig(Paper, pimage, config, canvasSize, item.level);
       }
     };
     setPuzzle();
-  }, [puzzleLv, router.isReady, puzzleImg, canvasSize]);
+  }, [puzzleLv, router.isReady, puzzleImg, canvasSize, router.query.id]);
 
   // useEffect(() => {
   //   const canvas = canvasRef.current;

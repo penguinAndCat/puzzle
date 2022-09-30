@@ -25,9 +25,6 @@ const PuzzleSchema = new mongoose.Schema(
       firstClient: {
         type: Boolean,
       },
-      groupArr: {
-        type: [Schema.Types.Mixed],
-      },
       groupCheck: {
         type: Boolean,
       },
@@ -35,19 +32,13 @@ const PuzzleSchema = new mongoose.Schema(
         type: Schema.Types.Mixed,
       },
       groupTiles: {
-        type: [Schema.Types.Mixed],
+        type: Schema.Types.Mixed,
       },
       imgHeight: {
         type: Number,
       },
       imgWidth: {
         type: Number,
-      },
-      levels: {
-        type: [Schema.Types.Mixed],
-      },
-      positionArr: {
-        type: [Schema.Types.Mixed],
       },
       puzzleImage: {
         src: {
@@ -68,9 +59,6 @@ const PuzzleSchema = new mongoose.Schema(
       },
       tileWidth: {
         type: Number,
-      },
-      tileIndexes: {
-        type: [Schema.Types.Mixed],
       },
       tiles: {
         type: [Schema.Types.Mixed],
