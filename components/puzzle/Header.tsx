@@ -36,28 +36,22 @@ const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) =>
       const { user }: any = session;
       const puzzleData = exportConfig();
       delete puzzleData.project;
-      console.log(puzzleData.groupTiles[0][0]._children[0]);
-      for (let i = 0; i < 9; i++) {
-        console.log(puzzleData.groupTiles[i][0]._children[0]._position?.x);
-      }
       const data = {
         config: {
           ...puzzleData,
           groupTiles: puzzleData.groupTiles.map((element) => {
-            return [element[0]._children[0]._position.x, element[0]._children[0]._position.y, element[1]];
+            return [element[0].position._x, element[0].position._y, element[1]];
           }),
         },
         userId: user.id,
         level: number,
         title: title,
       };
-      console.log(data.config.groupTiles);
-      // const response = await axios.post('/api/puzzle', {
-      //   data: data,
-      // });
-      // const { item, message } = response.data;
-      // console.log(item);
-      // router.push(`/puzzle/${item._id}`);
+      const response = await axios.post('/api/puzzle', {
+        data: data,
+      });
+      const { item, message } = response.data;
+      router.push(`/puzzle/${item._id}`);
     } catch (err) {
       alert('failed');
       console.log(err);

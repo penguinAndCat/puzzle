@@ -50,9 +50,8 @@ export const restartConfig = (
   serverCreateTiles();
 };
 
-export const exportConfig = () => {
-  return config;
-};
+export const exportConfig = () => config;
+export const exportLevels = () => levels;
 
 export const setPuzzleRowColumn = (puzzleImage: img) => {
   const { width, height } = puzzleImage;
@@ -284,7 +283,6 @@ const serverCreateTiles = () => {
       ]);
     }
   }
-  console.log(config.groupTiles);
   puzzle.moveTile(config);
 };
 export const getMargin = (shape: shape) => {

@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import PuzzleCanvas from '../../components/PuzzleCanvas';
 import Header from '../../components/puzzle/Header';
-import { exportConfig } from '../../libs/puzzle/createPuzzle';
+import { exportLevels } from '../../libs/puzzle/createPuzzle';
 import { useModal } from 'libs/zustand/store';
 
 const Home: NextPage = () => {
@@ -17,8 +17,8 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if (showLevel) {
-      const config = exportConfig();
-      setList(config.levels);
+      const levels = exportLevels();
+      setList(levels);
     }
   }, [showLevel]);
 

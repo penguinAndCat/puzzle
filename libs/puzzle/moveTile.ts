@@ -19,7 +19,6 @@ const moveTile = (config: Config) => {
       if (groupIndex === undefined) {
         tiles[0].position.x += event.delta.x;
         tiles[0].position.y += event.delta.y;
-        console.log(config.groupTiles[index][0]._children[0]._position?.x);
       } else {
         config.groupTiles.forEach((tiles, index) => {
           if (tiles[1] === groupIndex) {
