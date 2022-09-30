@@ -32,7 +32,6 @@ type Config = {
   tileHeight: number;
   groupTiles: any[];
   shapes: shape[];
-  tiles: any[];
   project: any;
   puzzleImage: img;
   groupCheck: boolean;

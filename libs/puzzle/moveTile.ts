@@ -1,6 +1,7 @@
+import axios from 'axios';
 import { getMargin } from './createPuzzle';
 
-const moveTile = (config: Config) => {
+const moveTile = (config: Config, query?: string | string[]) => {
   config.groupTiles.forEach((tiles, index) => {
     tiles[0].onMouseDown = (event: any) => {
       const gIndex = tiles[1];
@@ -40,6 +41,16 @@ const moveTile = (config: Config) => {
         });
       }
 
+      if (query !== undefined) {
+        axios.put(`/api/puzzle/${query}`, {
+          data: {
+            groupTiles: config.groupTiles.map((item) => {
+              return [item[0].position._x, item[0].position._y, item[1]];
+            }),
+          },
+        });
+      }
+
       const copy = [...config.groupTiles];
       const data = copy.reduce((acc, [tile, groupIndex]) => {
         if (groupIndex !== undefined) {
@@ -74,13 +85,13 @@ const moveTile = (config: Config) => {
 };
 
 const fitTile = (config: Config, currentTile: any, groupIndex: index) => {
-  const index = config.tiles.findIndex((tile) => tile === currentTile);
-  const leftTile = index % config.tilesPerRow !== 0 ? config.tiles[index - 1] : undefined;
-  const rightTile = index % config.tilesPerRow !== config.tilesPerRow - 1 ? config.tiles[index + 1] : undefined;
-  const topTile = index >= config.tilesPerColumn ? config.tiles[index - config.tilesPerColumn] : undefined;
+  const index = config.groupTiles.findIndex((tile) => tile[0] === currentTile);
+  const leftTile = index % config.tilesPerRow !== 0 ? config.groupTiles[index - 1][0] : undefined;
+  const rightTile = index % config.tilesPerRow !== config.tilesPerRow - 1 ? config.groupTiles[index + 1][0] : undefined;
+  const topTile = index >= config.tilesPerColumn ? config.groupTiles[index - config.tilesPerColumn][0] : undefined;
   const bottomTile =
     index < config.tilesPerRow * config.tilesPerColumn - config.tilesPerRow
-      ? config.tiles[index + config.tilesPerRow]
+      ? config.groupTiles[index + config.tilesPerRow][0]
       : undefined;
 
   // 동작 설명!!
@@ -126,8 +137,8 @@ const calculatePosition = (currentTile: any, joinTile: any, tileSize: number, ty
 };
 
 const setPosition = (config: Config, currentTile: any, joinTile: any, groupIndex: index, type: string) => {
-  const index = config.tiles.findIndex((tile) => tile === currentTile);
-  const joinIndex = config.tiles.findIndex((tile) => tile === joinTile);
+  const index = config.groupTiles.findIndex((tile) => tile[0] === currentTile);
+  const joinIndex = config.groupTiles.findIndex((tile) => tile[0] === joinTile);
   const shape = config.shapes[index];
   const joinShape = config.shapes[joinIndex];
   const currentMargin = getMargin(shape);
@@ -160,8 +171,8 @@ const setPosition = (config: Config, currentTile: any, joinTile: any, groupIndex
 };
 
 const setGroup = (config: Config, tile: any, joinTile: any) => {
-  const index = config.tiles.findIndex((ctile) => ctile === tile);
-  const joinIndex = config.tiles.findIndex((tile) => tile === joinTile);
+  const index = config.groupTiles.findIndex((ctile) => ctile[0] === tile);
+  const joinIndex = config.groupTiles.findIndex((tile) => tile[0] === joinTile);
   const groupIndex = config.groupTiles[index][1];
   const joinGroupIndex = config.groupTiles[joinIndex][1];
   if (groupIndex === joinGroupIndex && groupIndex !== undefined) return;

@@ -1,12 +1,10 @@
 import axios from 'axios';
 import Palette from 'components/common/Palette';
-import { exportConfig, initConfig } from 'libs/puzzle/createPuzzle';
+import { exportConfig } from 'libs/puzzle/createPuzzle';
 import { theme } from 'libs/theme/theme';
 import { useModal } from 'libs/zustand/store';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import Paper from 'paper';
-import { config } from 'process';
 import { Dispatch, MouseEvent, SetStateAction } from 'react';
 import styled from 'styled-components';
 
@@ -63,16 +61,18 @@ const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) =>
       <Wrapper>
         <Left>
           <Button onClick={(e) => onClick(e)}>퍼즐수</Button>
+          <Button>완성본</Button>
         </Left>
         <Logo>
           <div>PENGCAT</div>
           <div>PUZZLE</div>
         </Logo>
         <Right>
-          <Button>완성본</Button>
           <Palette />
-          {status === 'authenticated' && router.query.id === undefined && (
+          {status === 'authenticated' && router.query.id === undefined ? (
             <Button onClick={handleSave}>방 만들기</Button>
+          ) : (
+            <Button onClick={handleSave}>공유하기</Button>
           )}
         </Right>
       </Wrapper>
@@ -100,8 +100,9 @@ const Wrapper = styled.div`
 `;
 
 const Left = styled.div`
-  min-width: 130px;
+  min-width: 170px;
   display: flex;
+  justify-content: space-between;
   margin-right: 80px;
   @media (max-width: 900px) {
     margin-right: 20px;

@@ -19,7 +19,6 @@ let config: Config = {
   tileHeight: 0,
   puzzleImage: { src: '', width: 0, height: 0 },
   groupTiles: [],
-  tiles: [],
   groupCheck: false,
   firstClient: true,
   canvasSize: { width: 0, height: 0 },
@@ -42,12 +41,13 @@ export const restartConfig = (
   puzzleImage: img,
   config2: Config,
   canvasSize: size,
-  level: number
+  level: number,
+  query: string | string[]
 ) => {
   config = config2;
   setPuzzleRowColumn(puzzleImage);
   setConfig(Paper, puzzleImage, canvasSize, level);
-  serverCreateTiles();
+  serverCreateTiles(query);
 };
 
 export const exportConfig = () => config;
@@ -137,7 +137,6 @@ const createTiles = () => {
   const tileRatio = config.tileWidth / 100;
   const tileRatio2 = config.tileHeight / 100;
   config.groupTiles = [];
-  config.tiles = [];
   for (let y = 0; y < config.tilesPerColumn; y++) {
     for (let x = 0; x < config.tilesPerRow; x++) {
       const shape = config.shapes[y * config.tilesPerRow + x];
@@ -178,7 +177,6 @@ const createTiles = () => {
       // );
       const position = popRandom(positionArr);
       tile.position = new Point(position.x + margin.x, position.y + margin.y);
-      config.tiles.push(tile);
       config.groupTiles.push([tile, undefined]);
     }
   }
@@ -234,7 +232,7 @@ const recreateTiles = () => {
   }
   puzzle.moveTile(config);
 };
-const serverCreateTiles = () => {
+const serverCreateTiles = (query: string | string[]) => {
   const tileRatio = config.tileWidth / 100;
   const tileRatio2 = config.tileHeight / 100;
   const groupTiles = config.groupTiles;
@@ -283,7 +281,7 @@ const serverCreateTiles = () => {
       ]);
     }
   }
-  puzzle.moveTile(config);
+  puzzle.moveTile(config, query);
 };
 export const getMargin = (shape: shape) => {
   const margin = { x: 0, y: 0 };
