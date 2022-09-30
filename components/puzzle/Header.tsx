@@ -37,8 +37,8 @@ const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) =>
       const data = {
         config: {
           ...puzzleData,
-          groupTiles: puzzleData.groupTiles.map((element) => {
-            return [element[0].position._x, element[0].position._y, element[1]];
+          groupTiles: puzzleData.groupTiles.map((item) => {
+            return [item[0].position._x, item[0].position._y, item[1]];
           }),
         },
         userId: user.id,

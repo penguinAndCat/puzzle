@@ -44,9 +44,12 @@ const moveTile = (config: Config, query?: string | string[]) => {
       if (query !== undefined) {
         axios.put(`/api/puzzle/${query}`, {
           data: {
-            groupTiles: config.groupTiles.map((item) => {
-              return [item[0].position._x, item[0].position._y, item[1]];
-            }),
+            config: {
+              ...config,
+              groupTiles: config.groupTiles.map((item) => {
+                return [item[0].position._x, item[0].position._y, item[1]];
+              }),
+            },
           },
         });
       }
