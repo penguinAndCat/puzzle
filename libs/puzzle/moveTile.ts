@@ -41,6 +41,18 @@ const moveTile = (config: Config, query?: string | string[]) => {
         });
       }
 
+      let indexArr = [];
+      if (groupIndex === undefined) {
+        indexArr.push(index);
+      } else {
+        config.groupTiles.forEach((tiles, index) => {
+          if (tiles[1] === groupIndex) {
+            indexArr.push(index);
+          }
+        });
+      }
+      console.log(config.groupTiles);
+
       if (query !== undefined) {
         axios.put(`/api/puzzle/${query}`, {
           data: {
@@ -50,6 +62,7 @@ const moveTile = (config: Config, query?: string | string[]) => {
                 return [item[0].position._x, item[0].position._y, item[1]];
               }),
             },
+            indexArr: indexArr,
           },
         });
       }

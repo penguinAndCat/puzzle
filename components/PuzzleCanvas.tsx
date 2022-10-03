@@ -1,9 +1,11 @@
 import { useRef, useState, useEffect } from 'react';
 import Paper from 'paper';
 import styled from 'styled-components';
-import { exportConfig, initConfig, restartConfig } from '../libs/puzzle/createPuzzle';
+import { exportConfig, initConfig, moveIndex, restartConfig } from '../libs/puzzle/createPuzzle';
 import { useRouter } from 'next/router';
+
 import axios from 'axios';
+import * as SocketIOClient from 'socket.io-client';
 
 interface Props {
   puzzleLv: number;
@@ -40,8 +42,6 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
     if (canvas === null) return;
     if (canvasSize.width === 0 || canvasSize.width === 0) return;
     if (!router.isReady) return;
-    if (first) return;
-    setFirst(true);
 
     const setPuzzle = async () => {
       canvas.width = canvasSize.width;
@@ -60,6 +60,28 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
     };
     setPuzzle();
   }, [puzzleLv, router.isReady, puzzleImg, canvasSize, router.query.id, first]);
+
+  useEffect((): any => {
+    console.log('useEffect');
+    // connect to socket server
+    const socket = SocketIOClient.connect('http://localhost:3000/', {
+      path: '/api/socketio',
+    });
+
+    // log socket connection
+    // socket.on('connect', () => {
+    //   console.log('SOCKET CONNECTED!', socket.id);
+    // });
+
+    // update chat on new message dispatched
+    socket.on('groupTiles', (data) => {
+      console.log(data);
+      moveIndex(data.groupTiles, data.indexArr, data.socketCanvasSize);
+    });
+
+    // socket disconnet onUnmount if exists
+    if (socket) return () => socket.disconnect();
+  }, []);
 
   return (
     <Wrapper>

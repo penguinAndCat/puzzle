@@ -547,3 +547,13 @@ const getRandomPos = (tileWidth: number, canvasWidth: number, imgWidth: number) 
   const yIndex = Math.round(Math.random());
   return [x[xIndex], y[yIndex]];
 };
+
+export const moveIndex = (groupTiles: any, indexArr: number[], socketCanvasSize: size) => {
+  config.groupTiles.forEach((tiles, tilesIndex) => {
+    tiles[1] = groupTiles[tilesIndex][2] === null ? undefined : groupTiles[tilesIndex][2];
+  });
+  indexArr.forEach((index) => {
+    config.groupTiles[index][0].position.x = (groupTiles[index][0] / socketCanvasSize.width) * config.canvasSize.width;
+    config.groupTiles[index][0].position.y = (groupTiles[index][1] / socketCanvasSize.width) * config.canvasSize.width;
+  });
+};
