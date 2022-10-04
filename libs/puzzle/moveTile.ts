@@ -51,7 +51,6 @@ const moveTile = (config: Config, query?: string | string[]) => {
           }
         });
       }
-      console.log(config.groupTiles);
 
       if (query !== undefined) {
         axios.put(`/api/puzzle/${query}`, {

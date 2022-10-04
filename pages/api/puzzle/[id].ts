@@ -21,7 +21,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
   if (method === 'PUT') {
     try {
       const { id } = req.query;
-      console.log(req.body.data, id);
       await Puzzle.updateOne(
         { _id: id },
         {
@@ -32,11 +31,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
       );
       const groupTiles = req.body.data.config.groupTiles;
       const socketCanvasSize = req.body.data.config.canvasSize;
-      res?.socket?.server?.io?.emit('groupTiles', {
-        groupTiles: groupTiles,
-        indexArr: req.body.data.indexArr,
-        socketCanvasSize: socketCanvasSize,
-      });
+      if (id !== undefined)
+        res?.socket?.server?.io?.to(id).emit('groupTiles', {
+          groupTiles: groupTiles,
+          indexArr: req.body.data.indexArr,
+          socketCanvasSize: socketCanvasSize,
+        });
       res.status(201).json({ message: 'success' });
     } catch (err) {
       res.status(500).json({ message: 'failed', error: err });

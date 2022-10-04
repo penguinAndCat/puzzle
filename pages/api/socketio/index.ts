@@ -19,6 +19,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
     });
     // append SocketIO server to Next.js socket server response
     res.socket.server.io = io;
+
+    io.on('connection', (socket) => {
+      console.log('hi');
+      socket.on('join', (roomId) => {
+        console.log(`join ${roomId}`);
+        socket.join(roomId);
+      });
+    });
   }
   res.end();
 }

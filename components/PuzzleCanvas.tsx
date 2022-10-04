@@ -61,27 +61,27 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
     setPuzzle();
   }, [puzzleLv, router.isReady, puzzleImg, canvasSize, router.query.id, first]);
 
-  useEffect((): any => {
+  useEffect(() => {
+    if (!router.isReady) return;
     console.log('useEffect');
     // connect to socket server
     const socket = SocketIOClient.connect('http://localhost:3000/', {
       path: '/api/socketio',
     });
 
-    // log socket connection
-    // socket.on('connect', () => {
-    //   console.log('SOCKET CONNECTED!', socket.id);
-    // });
+    socket.emit('join', router.query.id);
 
-    // update chat on new message dispatched
     socket.on('groupTiles', (data) => {
-      console.log(data);
       moveIndex(data.groupTiles, data.indexArr, data.socketCanvasSize);
     });
 
     // socket disconnet onUnmount if exists
-    if (socket) return () => socket.disconnect();
-  }, []);
+    return () => {
+      if (socket) {
+        socket.disconnect();
+      }
+    };
+  }, [router.query.id]);
 
   return (
     <Wrapper>
