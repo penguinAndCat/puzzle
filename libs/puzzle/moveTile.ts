@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getMargin } from './createPuzzle';
 
-const moveTile = (config: Config, query?: string | string[]) => {
+const moveTile = (config: Config, query?: string | string[], socket?: any) => {
   config.groupTiles.forEach((tiles, index) => {
     tiles[0].onMouseDown = (event: any) => {
       const gIndex = tiles[1];
@@ -62,6 +62,7 @@ const moveTile = (config: Config, query?: string | string[]) => {
               }),
             },
             indexArr: indexArr,
+            socketId: socket.id,
           },
         });
       }

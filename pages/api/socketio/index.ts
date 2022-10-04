@@ -21,9 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
     res.socket.server.io = io;
 
     io.on('connection', (socket) => {
-      console.log('hi');
       socket.on('join', (roomId) => {
-        console.log(`join ${roomId}`);
         socket.join(roomId);
       });
     });

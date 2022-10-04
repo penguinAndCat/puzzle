@@ -1,11 +1,11 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useContext } from 'react';
 import Paper from 'paper';
 import styled from 'styled-components';
 import { exportConfig, initConfig, moveIndex, restartConfig } from '../libs/puzzle/createPuzzle';
 import { useRouter } from 'next/router';
 
 import axios from 'axios';
-import * as SocketIOClient from 'socket.io-client';
+import { SocketContext } from 'libs/context/socket';
 
 interface Props {
   puzzleLv: number;
@@ -16,7 +16,7 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
   const router = useRouter();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
-  const [first, setFirst] = useState(false);
+  const socket = useContext(SocketContext);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -55,24 +55,21 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
         const item = response.data.item;
         const config = { ...item.config };
         const puzzleImage = { ...config.puzzleImage };
-        restartConfig(Paper, puzzleImage, config, canvasSize, item.level, router.query.id);
+        restartConfig(Paper, puzzleImage, config, canvasSize, item.level, router.query.id, socket);
       }
     };
     setPuzzle();
-  }, [puzzleLv, router.isReady, puzzleImg, canvasSize, router.query.id, first]);
+  }, [puzzleLv, router.isReady, puzzleImg, canvasSize, router.query.id, socket]);
 
   useEffect(() => {
     if (!router.isReady) return;
-    console.log('useEffect');
-    // connect to socket server
-    const socket = SocketIOClient.connect('http://localhost:3000/', {
-      path: '/api/socketio',
-    });
 
     socket.emit('join', router.query.id);
 
     socket.on('groupTiles', (data) => {
-      moveIndex(data.groupTiles, data.indexArr, data.socketCanvasSize);
+      if (data.socketId !== socket.id) {
+        moveIndex(data.groupTiles, data.indexArr, data.socketCanvasSize);
+      }
     });
 
     // socket disconnet onUnmount if exists
@@ -81,7 +78,7 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
         socket.disconnect();
       }
     };
-  }, [router.query.id]);
+  }, [router.isReady, router.query.id, socket]);
 
   return (
     <Wrapper>

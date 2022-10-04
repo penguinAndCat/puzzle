@@ -36,6 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
           groupTiles: groupTiles,
           indexArr: req.body.data.indexArr,
           socketCanvasSize: socketCanvasSize,
+          socketId: req.body.data.socketId,
         });
       res.status(201).json({ message: 'success' });
     } catch (err) {
