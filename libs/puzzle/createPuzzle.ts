@@ -42,12 +42,13 @@ export const restartConfig = (
   config2: Config,
   canvasSize: size,
   level: number,
-  query: string | string[]
+  query: string | string[],
+  socket: any
 ) => {
   config = config2;
   setPuzzleRowColumn(puzzleImage);
   setConfig(Paper, puzzleImage, canvasSize, level);
-  serverCreateTiles(query);
+  serverCreateTiles(query, socket);
 };
 
 export const exportConfig = () => config;
@@ -177,7 +178,7 @@ const createTiles = () => {
       // );
       const position = popRandom(positionArr);
       tile.position = new Point(position.x + margin.x, position.y + margin.y);
-      config.groupTiles.push([tile, undefined]);
+      config.groupTiles.push({ tile: tile, groupIndex: null, movable: true });
     }
   }
   puzzle.moveTile(config);
@@ -222,17 +223,20 @@ const recreateTiles = () => {
       tile.opacity = constant.tileOpacity;
 
       tile.position = new Point(
-        (groupTiles[y * config.tilesPerRow + x][0].children[0].position._x * config.canvasSize.width) /
-          config.canvasPreSize.width,
-        (groupTiles[y * config.tilesPerRow + x][0].children[0].position._y * config.canvasSize.height) /
+        (groupTiles[y * config.tilesPerRow + x].tile.position.x * config.canvasSize.width) / config.canvasPreSize.width,
+        (groupTiles[y * config.tilesPerRow + x].tile.position.y * config.canvasSize.height) /
           config.canvasPreSize.height
       );
-      config.groupTiles.push([tile, groupTiles[y * config.tilesPerRow + x][1]]);
+      config.groupTiles.push({
+        tile: tile,
+        groupIndex: groupTiles[y * config.tilesPerRow + x].groupIndex,
+        movable: groupTiles[y * config.tilesPerRow + x].movable,
+      });
     }
   }
   puzzle.moveTile(config);
 };
-const serverCreateTiles = (query: string | string[]) => {
+const serverCreateTiles = (query: string | string[], socket: any) => {
   const tileRatio = config.tileWidth / 100;
   const tileRatio2 = config.tileHeight / 100;
   const groupTiles = config.groupTiles;
@@ -275,13 +279,14 @@ const serverCreateTiles = (query: string | string[]) => {
         (groupTiles[y * config.tilesPerRow + x][0] * config.canvasSize.width) / config.canvasPreSize.width,
         (groupTiles[y * config.tilesPerRow + x][1] * config.canvasSize.height) / config.canvasPreSize.height
       );
-      config.groupTiles.push([
-        tile,
-        groupTiles[y * config.tilesPerRow + x][2] !== null ? groupTiles[y * config.tilesPerRow + x][2] : undefined,
-      ]);
+      config.groupTiles.push({
+        tile: tile,
+        groupIndex: groupTiles[y * config.tilesPerRow + x][2],
+        movable: true,
+      });
     }
   }
-  puzzle.moveTile(config, query);
+  puzzle.moveTile(config, query, socket);
 };
 export const getMargin = (shape: shape) => {
   const margin = { x: 0, y: 0 };
@@ -546,4 +551,45 @@ const getRandomPos = (tileWidth: number, canvasWidth: number, imgWidth: number) 
   const xIndex = Math.round(Math.random());
   const yIndex = Math.round(Math.random());
   return [x[xIndex], y[yIndex]];
+};
+
+export const moveIndex = (groupTiles: any, indexArr: number[], socketCanvasSize: size) => {
+  console.log(groupTiles, indexArr);
+  config.groupTiles.forEach((tiles, tilesIndex) => {
+    tiles[1] = groupTiles[tilesIndex][2];
+  });
+  let counter = 0;
+  let movePositionX: number[] = [];
+  let movePositionY: number[] = [];
+  indexArr.forEach((index) => {
+    movePositionX.push(
+      ((groupTiles[index][0] / socketCanvasSize.width) * config.canvasSize.width -
+        config.groupTiles[index].tile.position.x) /
+        31
+    );
+    movePositionY.push(
+      ((groupTiles[index][1] / socketCanvasSize.width) * config.canvasSize.width -
+        config.groupTiles[index].tile.position.y) /
+        31
+    );
+  });
+  const moveAnimation: any = () => {
+    if (counter > 30) {
+      indexArr.forEach((index) => {
+        config.groupTiles[index].tile.position.x =
+          (groupTiles[index][0] / socketCanvasSize.width) * config.canvasSize.width;
+        config.groupTiles[index].tile.position.y =
+          (groupTiles[index][1] / socketCanvasSize.width) * config.canvasSize.width;
+      });
+      cancelAnimationFrame(moveAnimation);
+      return;
+    }
+    counter++;
+    indexArr.forEach((index, i) => {
+      config.groupTiles[index].tile.position.x += movePositionX[i];
+      config.groupTiles[index].tile.position.y += movePositionY[i];
+    });
+    requestAnimationFrame(moveAnimation);
+  };
+  moveAnimation();
 };

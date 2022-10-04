@@ -1,12 +1,12 @@
 import axios from 'axios';
 import { getMargin } from './createPuzzle';
 
-const moveTile = (config: Config, query?: string | string[]) => {
-  config.groupTiles.forEach((tiles, index) => {
-    tiles[0].onMouseDown = (event: any) => {
-      const gIndex = tiles[1];
-      if (gIndex !== undefined) {
-        config.groupTiles.forEach(([tile, groupIndex]) => {
+const moveTile = (config: Config, query?: string | string[], socket?: any) => {
+  config.groupTiles.forEach((item, index) => {
+    item.tile.onMouseDown = (event: any) => {
+      const gIndex = item.groupIndex;
+      if (gIndex !== null) {
+        config.groupTiles.forEach(({ tile, groupIndex }) => {
           if (groupIndex === gIndex) {
             config.project.project.activeLayer.addChild(tile);
           }
@@ -15,28 +15,40 @@ const moveTile = (config: Config, query?: string | string[]) => {
         config.project.project.activeLayer.addChild(event.target);
       }
     };
-    tiles[0].onMouseDrag = (event: any) => {
-      const groupIndex = tiles[1];
-      if (groupIndex === undefined) {
-        tiles[0].position.x += event.delta.x;
-        tiles[0].position.y += event.delta.y;
+    item.tile.onMouseDrag = (event: any) => {
+      const groupIndex = item.groupIndex;
+      if (groupIndex === null) {
+        item.tile.position.x += event.delta.x;
+        item.tile.position.y += event.delta.y;
       } else {
-        config.groupTiles.forEach((tiles, index) => {
-          if (tiles[1] === groupIndex) {
-            tiles[0].position.x += event.delta.x;
-            tiles[0].position.y += event.delta.y;
+        config.groupTiles.forEach((item, index) => {
+          if (item.groupIndex === groupIndex) {
+            item.tile.position.x += event.delta.x;
+            item.tile.position.y += event.delta.y;
           }
         });
       }
     };
-    tiles[0].onMouseUp = (event: any) => {
-      const groupIndex = tiles[1];
-      if (groupIndex === undefined) {
-        fitTile(config, tiles[0], tiles[1]);
+    item.tile.onMouseUp = (event: any) => {
+      const groupIndex = item.groupIndex;
+      if (groupIndex === null) {
+        fitTile(config, item.tile, item.groupIndex);
       } else {
-        config.groupTiles.forEach((tiles, index) => {
-          if (tiles[1] === groupIndex) {
-            fitTile(config, tiles[0], tiles[1]);
+        config.groupTiles.forEach((item, index) => {
+          if (item.groupIndex === groupIndex) {
+            fitTile(config, item.tile, item.groupIndex);
+          }
+        });
+      }
+
+      const newGroupIndex = item.groupIndex;
+      let indexArr = [];
+      if (newGroupIndex === null) {
+        indexArr.push(index);
+      } else {
+        config.groupTiles.forEach((item, index) => {
+          if (item.groupIndex === newGroupIndex) {
+            indexArr.push(index);
           }
         });
       }
@@ -47,19 +59,21 @@ const moveTile = (config: Config, query?: string | string[]) => {
             config: {
               ...config,
               groupTiles: config.groupTiles.map((item) => {
-                return [item[0].position._x, item[0].position._y, item[1]];
+                return [item.tile.position.x, item.tile.position.y, item.groupIndex];
               }),
             },
+            indexArr: indexArr,
+            socketId: socket.id,
           },
         });
       }
 
       const copy = [...config.groupTiles];
-      const data = copy.reduce((acc, [tile, groupIndex]) => {
-        if (groupIndex !== undefined) {
+      const data = copy.reduce((acc, { tile, groupIndex }) => {
+        if (groupIndex !== null) {
           acc[groupIndex] ? (acc[groupIndex] = [...acc[groupIndex], tile]) : (acc[groupIndex] = [tile]);
         }
-        if (groupIndex === undefined) {
+        if (groupIndex === null) {
           acc['notGroup'] ? (acc['notGroup'] = [...acc['notGroup'], tile]) : (acc['notGroup'] = [tile]);
         }
         return acc;
@@ -75,8 +89,8 @@ const moveTile = (config: Config, query?: string | string[]) => {
 
       arr1.sort((a, b) => b.length - a.length);
 
-      arr1?.forEach((tiles) => {
-        tiles.forEach((tile: any) => {
+      arr1?.forEach((item) => {
+        item.forEach((tile: any) => {
           config.project.project.activeLayer.addChild(tile);
         });
       });
@@ -88,13 +102,14 @@ const moveTile = (config: Config, query?: string | string[]) => {
 };
 
 const fitTile = (config: Config, currentTile: any, groupIndex: index) => {
-  const index = config.groupTiles.findIndex((tile) => tile[0] === currentTile);
-  const leftTile = index % config.tilesPerRow !== 0 ? config.groupTiles[index - 1][0] : undefined;
-  const rightTile = index % config.tilesPerRow !== config.tilesPerRow - 1 ? config.groupTiles[index + 1][0] : undefined;
-  const topTile = index >= config.tilesPerColumn ? config.groupTiles[index - config.tilesPerColumn][0] : undefined;
+  const index = config.groupTiles.findIndex((item) => item.tile === currentTile);
+  const leftTile = index % config.tilesPerRow !== 0 ? config.groupTiles[index - 1].tile : undefined;
+  const rightTile =
+    index % config.tilesPerRow !== config.tilesPerRow - 1 ? config.groupTiles[index + 1].tile : undefined;
+  const topTile = index >= config.tilesPerColumn ? config.groupTiles[index - config.tilesPerColumn].tile : undefined;
   const bottomTile =
     index < config.tilesPerRow * config.tilesPerColumn - config.tilesPerRow
-      ? config.groupTiles[index + config.tilesPerRow][0]
+      ? config.groupTiles[index + config.tilesPerRow].tile
       : undefined;
 
   // 동작 설명!!
@@ -140,8 +155,8 @@ const calculatePosition = (currentTile: any, joinTile: any, tileSize: number, ty
 };
 
 const setPosition = (config: Config, currentTile: any, joinTile: any, groupIndex: index, type: string) => {
-  const index = config.groupTiles.findIndex((tile) => tile[0] === currentTile);
-  const joinIndex = config.groupTiles.findIndex((tile) => tile[0] === joinTile);
+  const index = config.groupTiles.findIndex((item) => item.tile === currentTile);
+  const joinIndex = config.groupTiles.findIndex((item) => item.tile === joinTile);
   const shape = config.shapes[index];
   const joinShape = config.shapes[joinIndex];
   const currentMargin = getMargin(shape);
@@ -159,14 +174,14 @@ const setPosition = (config: Config, currentTile: any, joinTile: any, groupIndex
   } else if (type === 'bottom') {
     margin.y -= config.tileHeight;
   }
-  if (groupIndex === undefined) {
+  if (groupIndex === null) {
     currentTile.position.x += margin.x;
     currentTile.position.y += margin.y;
   } else {
-    config.groupTiles.forEach((tiles) => {
-      if (tiles[1] === groupIndex) {
-        tiles[0].position.x += margin.x;
-        tiles[0].position.y += margin.y;
+    config.groupTiles.forEach((item) => {
+      if (item.groupIndex === groupIndex) {
+        item.tile.position.x += margin.x;
+        item.tile.position.y += margin.y;
       }
     });
   }
@@ -174,29 +189,29 @@ const setPosition = (config: Config, currentTile: any, joinTile: any, groupIndex
 };
 
 const setGroup = (config: Config, tile: any, joinTile: any) => {
-  const index = config.groupTiles.findIndex((ctile) => ctile[0] === tile);
-  const joinIndex = config.groupTiles.findIndex((tile) => tile[0] === joinTile);
-  const groupIndex = config.groupTiles[index][1];
-  const joinGroupIndex = config.groupTiles[joinIndex][1];
-  if (groupIndex === joinGroupIndex && groupIndex !== undefined) return;
-  if (config.groupTiles[joinIndex][1] === undefined) {
-    config.groupTiles[joinIndex][1] = joinIndex;
-    if (config.groupTiles[index][1] === undefined) {
-      config.groupTiles[index][1] = joinIndex;
+  const index = config.groupTiles.findIndex((item) => item.tile === tile);
+  const joinIndex = config.groupTiles.findIndex((item) => item.tile === joinTile);
+  const groupIndex = config.groupTiles[index].groupIndex;
+  const joinGroupIndex = config.groupTiles[joinIndex].groupIndex;
+  if (groupIndex === joinGroupIndex && groupIndex !== null) return;
+  if (config.groupTiles[joinIndex].groupIndex === null) {
+    config.groupTiles[joinIndex].groupIndex = joinIndex;
+    if (config.groupTiles[index].groupIndex === null) {
+      config.groupTiles[index].groupIndex = joinIndex;
     } else {
-      config.groupTiles.forEach((tiles) => {
-        if (tiles[1] === groupIndex) {
-          tiles[1] = joinIndex;
+      config.groupTiles.forEach((item) => {
+        if (item.groupIndex === groupIndex) {
+          item.groupIndex = joinIndex;
         }
       });
     }
   } else {
-    if (config.groupTiles[index][1] === undefined) {
-      config.groupTiles[index][1] = joinGroupIndex;
+    if (config.groupTiles[index].groupIndex === null) {
+      config.groupTiles[index].groupIndex = joinGroupIndex;
     } else {
-      config.groupTiles.forEach((tiles) => {
-        if (tiles[1] === groupIndex) {
-          tiles[1] = joinGroupIndex;
+      config.groupTiles.forEach((item) => {
+        if (item.groupIndex === groupIndex) {
+          item.groupIndex = joinGroupIndex;
         }
       });
     }

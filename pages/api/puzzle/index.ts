@@ -35,7 +35,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     const { id } = req.query;
     try {
       const puzzle = await Puzzle.findById(id);
-      console.log(puzzle);
       res.status(201).json({ item: puzzle, message: 'success' });
     } catch (err) {
       res.status(500).json({ error: err, message: 'failed' });
