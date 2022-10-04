@@ -30,13 +30,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
         }
       );
       const groupTiles = req.body.data.config.groupTiles;
+      const indexArr = req.body.data.indexArr;
       const socketCanvasSize = req.body.data.config.canvasSize;
+      const socketId = req.body.data.socketId;
       if (id !== undefined)
         res?.socket?.server?.io?.to(id).emit('groupTiles', {
           groupTiles: groupTiles,
-          indexArr: req.body.data.indexArr,
+          indexArr: indexArr,
           socketCanvasSize: socketCanvasSize,
-          socketId: req.body.data.socketId,
+          socketId: socketId,
         });
       res.status(201).json({ message: 'success' });
     } catch (err) {

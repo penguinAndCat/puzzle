@@ -178,7 +178,7 @@ const createTiles = () => {
       // );
       const position = popRandom(positionArr);
       tile.position = new Point(position.x + margin.x, position.y + margin.y);
-      config.groupTiles.push([tile, undefined]);
+      config.groupTiles.push({ tile: tile, groupIndex: null, movable: true });
     }
   }
   puzzle.moveTile(config);
@@ -223,12 +223,15 @@ const recreateTiles = () => {
       tile.opacity = constant.tileOpacity;
 
       tile.position = new Point(
-        (groupTiles[y * config.tilesPerRow + x][0].children[0].position._x * config.canvasSize.width) /
-          config.canvasPreSize.width,
-        (groupTiles[y * config.tilesPerRow + x][0].children[0].position._y * config.canvasSize.height) /
+        (groupTiles[y * config.tilesPerRow + x].tile.position.x * config.canvasSize.width) / config.canvasPreSize.width,
+        (groupTiles[y * config.tilesPerRow + x].tile.position.y * config.canvasSize.height) /
           config.canvasPreSize.height
       );
-      config.groupTiles.push([tile, groupTiles[y * config.tilesPerRow + x][1]]);
+      config.groupTiles.push({
+        tile: tile,
+        groupIndex: groupTiles[y * config.tilesPerRow + x].groupIndex,
+        movable: groupTiles[y * config.tilesPerRow + x].movable,
+      });
     }
   }
   puzzle.moveTile(config);
@@ -276,10 +279,11 @@ const serverCreateTiles = (query: string | string[], socket: any) => {
         (groupTiles[y * config.tilesPerRow + x][0] * config.canvasSize.width) / config.canvasPreSize.width,
         (groupTiles[y * config.tilesPerRow + x][1] * config.canvasSize.height) / config.canvasPreSize.height
       );
-      config.groupTiles.push([
-        tile,
-        groupTiles[y * config.tilesPerRow + x][2] !== null ? groupTiles[y * config.tilesPerRow + x][2] : undefined,
-      ]);
+      config.groupTiles.push({
+        tile: tile,
+        groupIndex: groupTiles[y * config.tilesPerRow + x][2],
+        movable: true,
+      });
     }
   }
   puzzle.moveTile(config, query, socket);
@@ -550,8 +554,9 @@ const getRandomPos = (tileWidth: number, canvasWidth: number, imgWidth: number) 
 };
 
 export const moveIndex = (groupTiles: any, indexArr: number[], socketCanvasSize: size) => {
+  console.log(groupTiles, indexArr);
   config.groupTiles.forEach((tiles, tilesIndex) => {
-    tiles[1] = groupTiles[tilesIndex][2] === null ? undefined : groupTiles[tilesIndex][2];
+    tiles[1] = groupTiles[tilesIndex][2];
   });
   let counter = 0;
   let movePositionX: number[] = [];
@@ -559,21 +564,21 @@ export const moveIndex = (groupTiles: any, indexArr: number[], socketCanvasSize:
   indexArr.forEach((index) => {
     movePositionX.push(
       ((groupTiles[index][0] / socketCanvasSize.width) * config.canvasSize.width -
-        config.groupTiles[index][0].position.x) /
+        config.groupTiles[index].tile.position.x) /
         31
     );
     movePositionY.push(
       ((groupTiles[index][1] / socketCanvasSize.width) * config.canvasSize.width -
-        config.groupTiles[index][0].position.y) /
+        config.groupTiles[index].tile.position.y) /
         31
     );
   });
   const moveAnimation: any = () => {
     if (counter > 30) {
       indexArr.forEach((index) => {
-        config.groupTiles[index][0].position.x =
+        config.groupTiles[index].tile.position.x =
           (groupTiles[index][0] / socketCanvasSize.width) * config.canvasSize.width;
-        config.groupTiles[index][0].position.y =
+        config.groupTiles[index].tile.position.y =
           (groupTiles[index][1] / socketCanvasSize.width) * config.canvasSize.width;
       });
       cancelAnimationFrame(moveAnimation);
@@ -581,8 +586,8 @@ export const moveIndex = (groupTiles: any, indexArr: number[], socketCanvasSize:
     }
     counter++;
     indexArr.forEach((index, i) => {
-      config.groupTiles[index][0].position.x += movePositionX[i];
-      config.groupTiles[index][0].position.y += movePositionY[i];
+      config.groupTiles[index].tile.position.x += movePositionX[i];
+      config.groupTiles[index].tile.position.y += movePositionY[i];
     });
     requestAnimationFrame(moveAnimation);
   };
