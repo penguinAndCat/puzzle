@@ -17,6 +17,17 @@ const moveTile = (config: Config, query?: string | string[], socket?: any) => {
     };
     item.tile.onMouseDrag = (event: any) => {
       const groupIndex = item.groupIndex;
+      if (
+        item.tile.position.x + event.delta.x < 0 ||
+        item.tile.position.y + event.delta.y < 0 ||
+        item.tile.position.x + event.delta.x > config.canvasSize.width ||
+        item.tile.position.y + event.delta.y > config.canvasSize.height ||
+        event.point.x < 0 ||
+        event.point.y < 0 ||
+        event.point.x > config.canvasSize.width ||
+        event.point.y > config.canvasSize.height
+      )
+        return;
       if (groupIndex === null) {
         item.tile.position.x += event.delta.x;
         item.tile.position.y += event.delta.y;

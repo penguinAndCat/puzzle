@@ -555,8 +555,8 @@ const getRandomPos = (tileWidth: number, canvasWidth: number, imgWidth: number) 
 
 export const moveIndex = (groupTiles: any, indexArr: number[], socketCanvasSize: size) => {
   console.log(groupTiles, indexArr);
-  config.groupTiles.forEach((tiles, tilesIndex) => {
-    tiles[1] = groupTiles[tilesIndex][2];
+  config.groupTiles.forEach((item, tilesIndex) => {
+    item.groupIndex = groupTiles[tilesIndex][2];
   });
   let counter = 0;
   let movePositionX: number[] = [];
