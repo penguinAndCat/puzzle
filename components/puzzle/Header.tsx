@@ -34,6 +34,20 @@ const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) =>
       const { user }: any = session;
       const puzzleData = exportConfig();
       delete puzzleData.project;
+
+      let formData = new FormData();
+      formData.append('api_key', '487728142543533');
+      formData.append('upload_preset', 'puzzle');
+      formData.append(`file`, puzzleData.puzzleImage.src);
+      const uploadRes = await axios.post(
+        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_NAME}/image/upload`,
+        formData
+      );
+      const {
+        data: { url },
+      } = uploadRes;
+      puzzleData.puzzleImage.src = url;
+
       const data = {
         config: {
           ...puzzleData,
