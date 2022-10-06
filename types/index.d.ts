@@ -38,6 +38,7 @@ type Config = {
   firstClient: boolean;
   canvasSize: size;
   canvasPreSize: size;
+  complete: boolean;
 };
 
 type ModalProps = {

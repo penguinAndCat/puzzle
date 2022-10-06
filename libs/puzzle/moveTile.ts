@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { openConfetti } from 'hooks/useConfetti';
 import { getMargin } from './createPuzzle';
 
 const moveTile = (config: Config, query?: string | string[], socket?: any) => {
@@ -77,6 +78,19 @@ const moveTile = (config: Config, query?: string | string[], socket?: any) => {
             socketId: socket.id,
           },
         });
+      }
+
+      if (newGroupIndex !== null) {
+        let fitCount = 0;
+        config.groupTiles.forEach((item) => {
+          if (item.groupIndex === newGroupIndex) {
+            fitCount++;
+          }
+        });
+        if (fitCount === config.groupTiles.length && config.complete === false) {
+          config.complete = true;
+          openConfetti();
+        }
       }
 
       const copy = [...config.groupTiles];

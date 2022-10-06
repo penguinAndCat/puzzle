@@ -22,6 +22,9 @@ const PuzzleSchema = new mongoose.Schema(
           type: Number,
         },
       },
+      complete: {
+        type: Boolean,
+      },
       firstClient: {
         type: Boolean,
       },

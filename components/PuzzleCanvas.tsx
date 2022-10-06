@@ -1,11 +1,12 @@
 import { useRef, useState, useEffect, useContext } from 'react';
 import Paper from 'paper';
 import styled from 'styled-components';
-import { exportConfig, initConfig, moveIndex, restartConfig } from '../libs/puzzle/createPuzzle';
+import { exportConfig, initConfig, restartConfig } from '../libs/puzzle/createPuzzle';
 import { useRouter } from 'next/router';
 
 import axios from 'axios';
 import { SocketContext } from 'libs/context/socket';
+import { moveIndex } from 'libs/puzzle/socketMove';
 
 interface Props {
   puzzleLv: number;

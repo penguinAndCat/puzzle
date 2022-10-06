@@ -1,6 +1,6 @@
+import { openConfetti } from 'hooks/useConfetti';
 import paper from 'paper';
 import { Group, Point } from 'paper/dist/paper-core';
-import createRandomNumber from '../createRandomNumber';
 import puzzle from './moveTile';
 
 const constant = {
@@ -23,6 +23,7 @@ let config: Config = {
   firstClient: true,
   canvasSize: { width: 0, height: 0 },
   canvasPreSize: { width: 0, height: 0 },
+  complete: false,
 };
 
 let levels: number[][] = [];
@@ -537,59 +538,4 @@ const getRandomShapes = () => {
 };
 const getRandomTabValue = () => {
   return Math.pow(-1, Math.floor(Math.random() * 2));
-};
-
-const getRandomPos = (tileWidth: number, canvasWidth: number, imgWidth: number) => {
-  const x = [
-    createRandomNumber(tileWidth, (canvasWidth - (imgWidth + 20)) / 2),
-    createRandomNumber((canvasWidth + (imgWidth + 20)) / 2, canvasWidth - tileWidth),
-  ];
-  const y = [
-    createRandomNumber(tileWidth, (canvasWidth - (imgWidth + 20)) / 2),
-    createRandomNumber((canvasWidth + (imgWidth + 20)) / 2, canvasWidth - tileWidth),
-  ];
-  const xIndex = Math.round(Math.random());
-  const yIndex = Math.round(Math.random());
-  return [x[xIndex], y[yIndex]];
-};
-
-export const moveIndex = (groupTiles: any, indexArr: number[], socketCanvasSize: size) => {
-  console.log(groupTiles, indexArr);
-  config.groupTiles.forEach((item, tilesIndex) => {
-    item.groupIndex = groupTiles[tilesIndex][2];
-  });
-  let counter = 0;
-  let movePositionX: number[] = [];
-  let movePositionY: number[] = [];
-  indexArr.forEach((index) => {
-    movePositionX.push(
-      ((groupTiles[index][0] / socketCanvasSize.width) * config.canvasSize.width -
-        config.groupTiles[index].tile.position.x) /
-        31
-    );
-    movePositionY.push(
-      ((groupTiles[index][1] / socketCanvasSize.width) * config.canvasSize.width -
-        config.groupTiles[index].tile.position.y) /
-        31
-    );
-  });
-  const moveAnimation: any = () => {
-    if (counter > 30) {
-      indexArr.forEach((index) => {
-        config.groupTiles[index].tile.position.x =
-          (groupTiles[index][0] / socketCanvasSize.width) * config.canvasSize.width;
-        config.groupTiles[index].tile.position.y =
-          (groupTiles[index][1] / socketCanvasSize.width) * config.canvasSize.width;
-      });
-      cancelAnimationFrame(moveAnimation);
-      return;
-    }
-    counter++;
-    indexArr.forEach((index, i) => {
-      config.groupTiles[index].tile.position.x += movePositionX[i];
-      config.groupTiles[index].tile.position.y += movePositionY[i];
-    });
-    requestAnimationFrame(moveAnimation);
-  };
-  moveAnimation();
 };
