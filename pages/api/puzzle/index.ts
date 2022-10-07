@@ -1,7 +1,6 @@
 import dbConnect from 'libs/db/mongoose';
 import Puzzle from 'models/Puzzle';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getToken } from 'next-auth/jwt';
 
 type Data = {
   item?: any;
@@ -10,11 +9,6 @@ type Data = {
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
-  const token = await getToken({ req });
-  if (!token) {
-    // Signed in
-    res.status(401).json({ message: 'unauthorized' });
-  }
   const { method } = req;
   await dbConnect();
   if (method === 'POST') {

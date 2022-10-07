@@ -3,7 +3,6 @@ import Palette from 'components/common/Palette';
 import { exportConfig } from 'libs/puzzle/createPuzzle';
 import { theme } from 'libs/theme/theme';
 import { useModal } from 'libs/zustand/store';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { Dispatch, MouseEvent, SetStateAction } from 'react';
 import styled from 'styled-components';
@@ -16,7 +15,6 @@ interface Props {
 }
 
 const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) => {
-  const { data: session, status } = useSession();
   const { number, title } = useModal();
   const router = useRouter();
   const onClick = (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
@@ -29,31 +27,31 @@ const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) =>
   };
 
   const handleSave = async () => {
-    try {
-      if (!session) return;
-      const { user }: any = session;
-      const puzzleData = exportConfig();
-      delete puzzleData.project;
-      const data = {
-        config: {
-          ...puzzleData,
-          groupTiles: puzzleData.groupTiles.map((item) => {
-            return [item[0].position._x, item[0].position._y, item[1]];
-          }),
-        },
-        userId: user.id,
-        level: number,
-        title: title,
-      };
-      const response = await axios.post('/api/puzzle', {
-        data: data,
-      });
-      const { item, message } = response.data;
-      router.push(`/puzzle/${item._id}`);
-    } catch (err) {
-      alert('failed');
-      console.log(err);
-    }
+    // try {
+    //   if (!session) return;
+    //   const { user }: any = session;
+    //   const puzzleData = exportConfig();
+    //   delete puzzleData.project;
+    //   const data = {
+    //     config: {
+    //       ...puzzleData,
+    //       groupTiles: puzzleData.groupTiles.map((item) => {
+    //         return [item[0].position._x, item[0].position._y, item[1]];
+    //       }),
+    //     },
+    //     userId: user.id,
+    //     level: number,
+    //     title: title,
+    //   };
+    //   const response = await axios.post('/api/puzzle', {
+    //     data: data,
+    //   });
+    //   const { item, message } = response.data;
+    //   router.push(`/puzzle/${item._id}`);
+    // } catch (err) {
+    //   alert('failed');
+    //   console.log(err);
+    // }
   };
 
   return (
@@ -69,11 +67,11 @@ const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) =>
         </Logo>
         <Right>
           <Palette />
-          {status === 'authenticated' && router.query.id === undefined ? (
+          {/* {status === 'authenticated' && router.query.id === undefined ? (
             <Button onClick={handleSave}>방 만들기</Button>
           ) : (
             <Button onClick={handleSave}>공유하기</Button>
-          )}
+          )} */}
         </Right>
       </Wrapper>
     </Container>
