@@ -68,3 +68,9 @@ type ToastProps = {
   toast: Toast;
   setToast: (value: Toast) => void;
 };
+
+type LoadingProps = {
+  loading: boolean;
+  offLoading: () => void;
+  onLoading: () => void;
+};

@@ -3,7 +3,7 @@ import Paper from 'paper';
 import { useToast } from 'hooks/useToast';
 import { exportConfig, initConfig, setPuzzleRowColumn } from 'libs/puzzle/createPuzzle';
 import { theme } from 'libs/theme/theme';
-import { useModal } from 'libs/zustand/store';
+import { useLoading, useModal } from 'libs/zustand/store';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
@@ -15,6 +15,7 @@ const Modal = () => {
   const { data: session, status } = useSession();
   const { offModal, modalImage, secretRoom, setModalImage, initialModal, setNumber, setTitle, setSecretRoom } =
     useModal();
+  const { onLoading } = useLoading();
   const { fireToast } = useToast();
   const [roomName, setRoomName] = useState('');
   const [puzzleNumber, setPuzzleNumber] = useState(0);
@@ -104,6 +105,7 @@ const Modal = () => {
     }
     offModal();
     try {
+      onLoading();
       const { user }: any = session;
 
       const canvasSize = { width: 1000, height: 1000 };

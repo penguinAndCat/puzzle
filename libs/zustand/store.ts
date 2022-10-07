@@ -34,3 +34,9 @@ export const useToastState = create<ToastProps>((set) => ({
   },
   setToast: (toast) => set({ toast: toast }),
 }));
+
+export const useLoading = create<LoadingProps>((set) => ({
+  loading: false,
+  offLoading: () => set({ loading: false }),
+  onLoading: () => set({ loading: true }),
+}));
