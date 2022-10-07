@@ -46,11 +46,13 @@ type ModalProps = {
   modalImage: img;
   number: number;
   title: string;
+  secretRoom: boolean;
   onModal: () => void;
   offModal: () => void;
   setModalImage: (value: img) => void;
-  initialModalImage: () => void;
+  initialModal: () => void;
   setNumber: (value: number) => void;
+  setSecretRoom: (value: boolean) => void;
   setTitle: (value: string) => void;
 };
 
@@ -65,4 +67,10 @@ interface Toast {
 type ToastProps = {
   toast: Toast;
   setToast: (value: Toast) => void;
+};
+
+type LoadingProps = {
+  loading: boolean;
+  offLoading: () => void;
+  onLoading: () => void;
 };

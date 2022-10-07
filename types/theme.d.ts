@@ -8,4 +8,7 @@ interface Theme {
   headerTextColor: string;
   modalColor: string;
   modalTextColor: string;
+  loadingColor1: string;
+  loadingColor2: string;
+  loadingColor3: string;
 }

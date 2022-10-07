@@ -6,9 +6,8 @@ import styled from 'styled-components';
 const images = ['/cp.png', '/cp2.png', '/cp3.png', '/cp4.png'];
 
 const Main = () => {
-  const { onModal, modalDisplay, initialModalImage } = useModal();
+  const { onModal, modalDisplay } = useModal();
   const openModal = () => {
-    initialModalImage();
     onModal();
   };
   return (

@@ -79,6 +79,12 @@ const PuzzleSchema = new mongoose.Schema(
     title: {
       type: String,
     },
+    secretRoom: {
+      type: Boolean,
+    },
+    invitedUser: {
+      type: [String],
+    },
   },
   {
     timestamps: true,

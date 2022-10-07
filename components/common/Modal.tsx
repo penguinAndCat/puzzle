@@ -1,14 +1,21 @@
+import axios from 'axios';
+import Paper from 'paper';
 import { useToast } from 'hooks/useToast';
-import { setPuzzleRowColumn } from 'libs/puzzle/createPuzzle';
+import { exportConfig, initConfig, setPuzzleRowColumn } from 'libs/puzzle/createPuzzle';
 import { theme } from 'libs/theme/theme';
-import { useModal } from 'libs/zustand/store';
+import { useLoading, useModal } from 'libs/zustand/store';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { CloseIcon } from './Icon';
+import { saveImage } from 'libs/common/saveImage';
 
 const Modal = () => {
-  const { offModal, modalImage, setModalImage, initialModalImage, setNumber, setTitle } = useModal();
+  const { data: session, status } = useSession();
+  const { offModal, modalImage, secretRoom, setModalImage, initialModal, setNumber, setTitle, setSecretRoom } =
+    useModal();
+  const { onLoading } = useLoading();
   const { fireToast } = useToast();
   const [roomName, setRoomName] = useState('');
   const [puzzleNumber, setPuzzleNumber] = useState(0);
@@ -21,10 +28,10 @@ const Modal = () => {
     e.preventDefault();
     document.body.style.overflow = 'unset';
     offModal();
-    initialModalImage();
   };
 
   useEffect(() => {
+    initialModal();
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = 'unset';
@@ -68,7 +75,7 @@ const Modal = () => {
     }
   };
 
-  const createPuzzle = () => {
+  const playAlonePuzzle = () => {
     if (modalImage.src === '') {
       fireToast({ content: '퍼즐 이미지를 등록해주세요.', top: buttonRef.current?.getBoundingClientRect().top });
       return;
@@ -81,6 +88,66 @@ const Modal = () => {
     setNumber(puzzleNumber);
     setTitle(roomName);
     router.push('/puzzle');
+  };
+
+  const createPuzzleRoom = async () => {
+    if (modalImage.src === '') {
+      fireToast({ content: '퍼즐 이미지를 등록해주세요.', top: buttonRef.current?.getBoundingClientRect().top });
+      return;
+    }
+    if (roomName === '') {
+      fireToast({ content: '방 이름을 지어 주세요.', top: buttonRef.current?.getBoundingClientRect().top });
+      return;
+    }
+    if (!session) {
+      alert('로그인 하세요');
+      return;
+    }
+    offModal();
+    try {
+      onLoading();
+      const { user }: any = session;
+
+      const canvasSize = { width: 1000, height: 1000 };
+      const canvas = document.createElement('canvas');
+      Paper.setup(canvas);
+      const config = exportConfig();
+      initConfig(Paper, modalImage, config, canvasSize, puzzleNumber);
+
+      const puzzleData = exportConfig();
+      delete puzzleData.project;
+      puzzleData.puzzleImage.src = await saveImage(puzzleData.puzzleImage.src);
+      const data = {
+        config: {
+          ...puzzleData,
+          groupTiles: puzzleData.groupTiles.map((item) => {
+            return [item.tile.position.x, item.tile.position.y, item.groupIndex];
+          }),
+        },
+        userId: user.id,
+        level: puzzleNumber,
+        title: roomName,
+        secretRoom: secretRoom,
+      };
+
+      const response = await axios.post('/api/puzzle', {
+        data: data,
+      });
+      const { item, message } = response.data;
+      console.log(item);
+      router.push(`/puzzle/${item._id}`);
+    } catch (err) {
+      alert('failed');
+      console.log(err);
+    }
+  };
+
+  const onChangeRadio = (e: { target: { value: any } }) => {
+    if (e.target.value === 0) {
+      setSecretRoom(false);
+    } else {
+      setSecretRoom(true);
+    }
   };
 
   return (
@@ -121,9 +188,24 @@ const Modal = () => {
             )}
           </Select>
         </PuzzleNumberWrapper>
+        <SecretRoomWrapper>
+          <RadioLabel>
+            <RadioInput type={'radio'} name={'secretRoom'} value={0} onChange={onChangeRadio} defaultChecked />
+            <RadioP>공개 방</RadioP>
+          </RadioLabel>
+          <RadioLabel>
+            <RadioInput type={'radio'} name={'secretRoom'} value={1} onChange={onChangeRadio} />
+            <RadioP>비밀 방</RadioP>
+          </RadioLabel>
+        </SecretRoomWrapper>
+        <PlayAloneWrapper>
+          <CreateButton ref={buttonRef} onClick={playAlonePuzzle}>
+            혼자 하기
+          </CreateButton>
+        </PlayAloneWrapper>
         <CreateWrapper>
-          <CreateButton ref={buttonRef} onClick={createPuzzle}>
-            퍼즐 만들기
+          <CreateButton ref={buttonRef} onClick={createPuzzleRoom}>
+            방 만들기
           </CreateButton>
         </CreateWrapper>
       </Container>
@@ -229,7 +311,6 @@ const Input = styled.input`
 
 const Select = styled.select`
   height: 24px;
-  margin-top: 4px;
   ${ModalTheme}
   &:focus {
     outline: none;
@@ -238,9 +319,10 @@ const Select = styled.select`
 
 const RoomNameWrapper = styled.div`
   width: 240px;
+  height: 24px;
   display: flex;
   align-items: center;
-  margin: 10px 0 0;
+  margin: 6px 0 0;
 `;
 
 const SubTitle = styled.div`
@@ -257,14 +339,63 @@ const RoomNameInput = styled.input`
 
 const PuzzleNumberWrapper = styled.div`
   width: 240px;
+  height: 24px;
   display: flex;
   align-items: center;
-  margin: 10px 0 0;
+  margin: 6px 0 0;
+  align-items: center;
+`;
+
+const SecretRoomWrapper = styled.div`
+  width: 240px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  margin: 6px 0 0;
+`;
+
+const RadioInput = styled.input`
+  appearance: none;
+  border: 1px solid ${({ theme }) => theme.modalTextColor};
+  border-radius: 2px;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+
+  &:checked {
+    border-color: transparent;
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='${({ theme }) =>
+      theme.modalColor}' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M5.707 7.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0-1.414-1.414L7 8.586 5.707 7.293z'/%3e%3c/svg%3e");
+    background-size: 100% 100%;
+    background-position: 50%;
+    background-repeat: no-repeat;
+    background-color: ${({ theme }) => theme.modalTextColor};
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+const RadioLabel = styled.label`
+  display: flex;
+  align-items: center;
+  user-select: none;
+  margin-right: 16px;
+`;
+
+const RadioP = styled.p`
+  margin-left: 4px;
+`;
+
+const PlayAloneWrapper = styled.div`
+  ${theme.common.flexCenter}
+  margin: 6px 0 0 0;
 `;
 
 const CreateWrapper = styled.div`
   ${theme.common.flexCenter}
-  margin: 10px 0;
+  margin: 6px 0;
 `;
 
 const CreateButton = styled.button`

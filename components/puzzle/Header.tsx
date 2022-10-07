@@ -1,8 +1,9 @@
 import axios from 'axios';
 import Palette from 'components/common/Palette';
+import { saveImage } from 'libs/common/saveImage';
 import { exportConfig } from 'libs/puzzle/createPuzzle';
 import { theme } from 'libs/theme/theme';
-import { useModal } from 'libs/zustand/store';
+import { useLoading, useModal } from 'libs/zustand/store';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { Dispatch, MouseEvent, SetStateAction } from 'react';
@@ -18,6 +19,7 @@ interface Props {
 const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) => {
   const { data: session, status } = useSession();
   const { number, title } = useModal();
+  const { onLoading } = useLoading();
   const router = useRouter();
   const onClick = (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
     e.stopPropagation();
@@ -31,23 +33,12 @@ const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) =>
   const handleSave = async () => {
     try {
       if (!session) return;
+      onLoading();
       const { user }: any = session;
+
       const puzzleData = exportConfig();
       delete puzzleData.project;
-
-      let formData = new FormData();
-      formData.append('api_key', '487728142543533');
-      formData.append('upload_preset', 'puzzle');
-      formData.append(`file`, puzzleData.puzzleImage.src);
-      const uploadRes = await axios.post(
-        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_NAME}/image/upload`,
-        formData
-      );
-      const {
-        data: { url },
-      } = uploadRes;
-      puzzleData.puzzleImage.src = url;
-
+      puzzleData.puzzleImage.src = await saveImage(puzzleData.puzzleImage.src);
       const data = {
         config: {
           ...puzzleData,
@@ -59,6 +50,7 @@ const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) =>
         level: number,
         title: title,
       };
+
       const response = await axios.post('/api/puzzle', {
         data: data,
       });

@@ -4,6 +4,7 @@ import { ThemeProvider } from 'libs/theme/ThemeProvider';
 import { GlobalStyle } from 'libs/theme/GlobalStyle';
 import Toast from 'components/common/Toast';
 import { SessionProvider } from 'next-auth/react';
+import Loading from 'components/common/Loading';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -12,6 +13,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <GlobalStyle />
         <Component {...pageProps} />
         <Toast />
+        <Loading />
       </ThemeProvider>
     </SessionProvider>
   );
