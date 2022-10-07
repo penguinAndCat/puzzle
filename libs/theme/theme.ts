@@ -7,12 +7,12 @@ const fontSizes = {
 };
 
 const colors = {
-  dark: '#2b2a2b',
-  mint: '#03DBA4',
-  pink: '#FFC0CB',
-  silver: '#e9e6e4',
-  white: '#FFFFFF',
-  black: '#000000',
+  dark: 'rgb(43, 42, 43)',
+  mint: 'rgb(3, 219, 164)',
+  pink: 'rgb(255, 192, 203)',
+  silver: 'rgb(233, 230, 228)',
+  white: 'rgb(255, 255, 255)',
+  black: 'rgb(0, 0, 0)',
 };
 
 const common = {
