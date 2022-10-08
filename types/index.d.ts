@@ -74,3 +74,15 @@ type LoadingProps = {
   offLoading: () => void;
   onLoading: () => void;
 };
+type userInfo = {
+  id: string;
+  name: string;
+  email: string;
+  provider: string;
+  nickname: string;
+  picture: string;
+};
+type userStoreProps = {
+  user: userInfo | null;
+  setUser: (user: userInfo | null) => void;
+};

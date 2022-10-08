@@ -40,3 +40,15 @@ export const useLoading = create<LoadingProps>((set) => ({
   offLoading: () => set({ loading: false }),
   onLoading: () => set({ loading: true }),
 }));
+
+export const userStore = create<userStoreProps>((set) => ({
+  user: {
+    id: '',
+    name: '',
+    picture: '',
+    email: '',
+    provider: '',
+    nickname: '',
+  },
+  setUser: (user: userInfo | null) => set({ user: user }),
+}));

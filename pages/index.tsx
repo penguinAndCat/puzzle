@@ -1,18 +1,19 @@
 import Header from 'components/common/Header';
 import Main from 'components/main/Main';
 import axios from 'libs/axios';
+import { userStore } from 'libs/zustand/store';
 import type { GetServerSideProps, NextPage } from 'next';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 const Home: NextPage = () => {
-  const [user, setUser] = useState(null);
+  const { user, setUser } = userStore();
   useEffect(() => {
-    const response = axios.get('/api/auth').then((res) => setUser(res.data.user));
-  }, []);
+    const response = axios.get('/api/auth').then((res) => setUser(res.data.user || null));
+  }, [setUser]);
   return (
     <Container>
-      <Header user={user} />
+      <Header />
       <Main />
     </Container>
   );

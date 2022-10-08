@@ -3,8 +3,7 @@ import Palette from 'components/common/Palette';
 import { saveImage } from 'libs/common/saveImage';
 import { exportConfig } from 'libs/puzzle/createPuzzle';
 import { theme } from 'libs/theme/theme';
-import { useLoading, useModal } from 'libs/zustand/store';
-import { useUser } from 'hooks/useUser';
+import { useLoading, useModal, userStore } from 'libs/zustand/store';
 import { useRouter } from 'next/router';
 import { Dispatch, MouseEvent, SetStateAction } from 'react';
 import styled from 'styled-components';
@@ -18,7 +17,6 @@ interface Props {
 
 const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) => {
   const { number, title } = useModal();
-  const [user, setUser] = useUser();
   const { onLoading, offLoading } = useLoading();
   const router = useRouter();
   const handleClick = (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
@@ -29,6 +27,7 @@ const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) =>
       setShowLevel(false);
     }
   };
+  const { user } = userStore();
 
   const handleSave = async () => {
     try {
@@ -44,7 +43,7 @@ const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) =>
             return [item.tile.position.x, item.tile.position.y, item.groupIndex];
           }),
         },
-        userId: user.id,
+        userId: user?.id,
         level: number,
         title: title,
       };

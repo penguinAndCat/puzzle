@@ -3,7 +3,7 @@ import Paper from 'paper';
 import { useToast } from 'hooks/useToast';
 import { exportConfig, initConfig, setPuzzleRowColumn } from 'libs/puzzle/createPuzzle';
 import { theme } from 'libs/theme/theme';
-import { useLoading, useModal } from 'libs/zustand/store';
+import { useLoading, useModal, userStore } from 'libs/zustand/store';
 import { useRouter } from 'next/router';
 import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
@@ -21,6 +21,7 @@ const Modal = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
+  const { user } = userStore();
 
   const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     e.preventDefault();
@@ -97,45 +98,45 @@ const Modal = () => {
       fireToast({ content: '방 이름을 지어 주세요.', top: buttonRef.current?.getBoundingClientRect().top });
       return;
     }
-    // if (!user?.name) {
-    //   alert('로그인 하세요');
-    //   return;
-    // }
-    // offModal();
-    // try {
-    //   onLoading();
-    //   const canvasSize = { width: 1000, height: 1000 };
-    //   const canvas = document.createElement('canvas');
-    //   Paper.setup(canvas);
-    //   const config = exportConfig();
-    //   initConfig(Paper, modalImage, config, canvasSize, puzzleNumber);
+    if (!user?.name) {
+      alert('로그인 하세요');
+      return;
+    }
+    offModal();
+    try {
+      onLoading();
+      const canvasSize = { width: 1000, height: 1000 };
+      const canvas = document.createElement('canvas');
+      Paper.setup(canvas);
+      const config = exportConfig();
+      initConfig(Paper, modalImage, config, canvasSize, puzzleNumber);
 
-    //   const puzzleData = exportConfig();
-    //   delete puzzleData.project;
-    //   puzzleData.puzzleImage.src = await saveImage(puzzleData.puzzleImage.src);
-    //   const data = {
-    //     config: {
-    //       ...puzzleData,
-    //       groupTiles: puzzleData.groupTiles.map((item) => {
-    //         return [item.tile.position.x, item.tile.position.y, item.groupIndex];
-    //       }),
-    //     },
-    //     userId: user.id,
-    //     level: puzzleNumber,
-    //     title: roomName,
-    //     secretRoom: secretRoom,
-    //   };
+      const puzzleData = exportConfig();
+      delete puzzleData.project;
+      puzzleData.puzzleImage.src = await saveImage(puzzleData.puzzleImage.src);
+      const data = {
+        config: {
+          ...puzzleData,
+          groupTiles: puzzleData.groupTiles.map((item) => {
+            return [item.tile.position.x, item.tile.position.y, item.groupIndex];
+          }),
+        },
+        userId: user.id,
+        level: puzzleNumber,
+        title: roomName,
+        secretRoom: secretRoom,
+      };
 
-    //   const response = await axios.post('/api/puzzle', {
-    //     data: data,
-    //   });
-    //   const { item, message } = response.data;
-    //   console.log(item);
-    //   router.push(`/puzzle/${item._id}`);
-    // } catch (err) {
-    //   alert('failed');
-    //   console.log(err);
-    // }
+      const response = await axios.post('/api/puzzle', {
+        data: data,
+      });
+      const { item, message } = response.data;
+      console.log(item);
+      router.push(`/puzzle/${item._id}`);
+    } catch (err) {
+      alert('failed');
+      console.log(err);
+    }
   };
 
   const onChangeRadio = (e: { target: { value: any } }) => {
