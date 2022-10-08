@@ -5,6 +5,11 @@ import axios from 'libs/axios';
 import jwtDecode from 'jwt-decode';
 import { useRouter } from 'next/router';
 
+declare global {
+  interface Window {
+    naver: any;
+  }
+}
 export default function Auth() {
   const googleRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
@@ -65,13 +70,32 @@ export default function Auth() {
     window.google?.accounts.id.renderButton(googleRef.current!, { type: 'icon', size: 'large' });
   }, []);
 
+  const initializeNaverLogin = () => {
+    const naverLogin = new window.naver.LoginWithNaverId({
+      clientId: process.env.NEXT_PUBLIC_NAVER_CLIENT_ID,
+      callbackUrl: process.env.NEXT_PUBLIC_NAVER_REDIRECT_URI,
+      // 팝업창으로 로그인을 진행할 것인지?
+      isPopup: false,
+      // 버튼 타입 ( 색상, 타입, 크기 변경 가능 )
+      loginButton: { color: 'green', type: 1, height: 40 },
+      callbackHandle: true,
+    });
+    naverLogin.init();
+  };
+
+  useEffect(() => {
+    initializeNaverLogin();
+  }, []);
+
   return (
     <>
       {showModal && <Modal onSubmit={handleSubmit}></Modal>}
       <Container>
         <GoogleAuth ref={googleRef}>구</GoogleAuth>
-        <KakaoAuth onClick={() => {}}>카</KakaoAuth>
-        <NaverAuth onClick={() => {}}>네</NaverAuth>
+        <KakaoAuth onClick={async () => {}}>카</KakaoAuth>
+        <NaverAuth id="naverIdLogin" onClick={() => {}}>
+          네
+        </NaverAuth>
       </Container>
     </>
   );

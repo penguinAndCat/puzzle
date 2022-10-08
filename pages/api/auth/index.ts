@@ -16,9 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (accessToken) {
         const user = jwtDecode<{
           nickname: string;
-          email: string;
           name: string;
-          picture: string;
           provider: string;
         }>(accessToken as string);
         const savedUser = await User.findOne({ name: user.name, provider: user.provider, nickname: user.nickname });
@@ -41,9 +39,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const accessToken = makeAccessToken({
           name: savedUser.name,
           provider: savedUser.provider,
-          email: savedUser.email,
           nickname: savedUser.nickname,
-          id: savedUser._id,
         });
         setCookie('accessToken', accessToken, {
           req,
