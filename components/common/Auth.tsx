@@ -8,6 +8,7 @@ import { useRouter } from 'next/router';
 declare global {
   interface Window {
     naver: any;
+    Kakao: any;
   }
 }
 export default function Auth() {
@@ -86,13 +87,31 @@ export default function Auth() {
   useEffect(() => {
     initializeNaverLogin();
   }, []);
+  useEffect(() => {
+    if (window.Kakao.isInitialized()) return;
+    window.Kakao.init(`${process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID}`);
+  }, []);
+  const loginWithKakao = () => {
+    window.Kakao.Auth.authorize({
+      redirectUri: `${process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI}`,
+    });
+  };
 
   return (
     <>
       {showModal && <Modal onSubmit={handleSubmit}></Modal>}
       <Container>
         <GoogleAuth ref={googleRef}>구</GoogleAuth>
-        <KakaoAuth onClick={async () => {}}>카</KakaoAuth>
+        <KakaoAuth
+          onClick={async () => {
+            // const response = await axios.get(
+            //   `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI}&response_type=code`
+            // );
+            loginWithKakao();
+          }}
+        >
+          카
+        </KakaoAuth>
         <NaverAuth id="naverIdLogin" onClick={() => {}}>
           네
         </NaverAuth>
