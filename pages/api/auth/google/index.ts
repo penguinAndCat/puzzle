@@ -26,11 +26,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (isExist) {
         const tokenUser = {
           name: isExist.name,
-          email: isExist.email,
-          picture: isExist.picture,
           provider: 'google',
           nickname: isExist.nickname,
-          id: isExist._id.toString(),
         };
         const accessToken = makeAccessToken(tokenUser);
         const refreshToken = makeRefreshToken(tokenUser);
@@ -56,6 +53,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(200).json({ message: 'success', token: accessToken });
       } else {
         if (userInfo.nickname) {
+          const isExistUser = await User.exists({ nickname: userInfo.nickname });
+          if (isExistUser) {
+            return res.status(500).json({ message: 'aleady Exist User' });
+          }
           const newUser = await User.create({
             name: userInfo.name,
             provider: 'google',
@@ -65,11 +66,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           });
           const tokenUser = {
             name: newUser.name,
-            email: newUser.email,
-            picture: newUser.picture,
             provider: 'google',
             nickname: newUser.nickname,
-            id: newUser._id.toString(),
           };
           const accessToken = makeAccessToken(tokenUser);
           const refreshToken = makeRefreshToken(tokenUser);
