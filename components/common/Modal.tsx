@@ -9,10 +9,8 @@ import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { CloseIcon } from './Icon';
 import { saveImage } from 'libs/common/saveImage';
-import { useUser } from 'hooks/useUser';
 
 const Modal = () => {
-  const [user, setUser] = useUser();
   const { offModal, modalImage, secretRoom, setModalImage, initialModal, setNumber, setTitle, setSecretRoom } =
     useModal();
   const { onLoading } = useLoading();
@@ -99,8 +97,7 @@ const Modal = () => {
       fireToast({ content: '방 이름을 지어 주세요.', top: buttonRef.current?.getBoundingClientRect().top });
       return;
     }
-    console.log(user);
-    // if (!session) {
+    // if (!user?.name) {
     //   alert('로그인 하세요');
     //   return;
     // }

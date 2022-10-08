@@ -1,16 +1,20 @@
-import axios from 'axios';
-import { useUser } from 'hooks/useUser';
 import { theme } from 'libs/theme/theme';
 import Link from 'next/link';
+import { GetServerSideProps } from 'next/types';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Auth from './Auth';
 import Palette from './Palette';
+import axios from '../../libs/axios';
+import { useRouter } from 'next/router';
 
-const Header = () => {
+const Header = ({
+  user,
+}: {
+  user: { nickname: string; picture: string; id: string; name: string; email: string } | null;
+}) => {
   const [showAuth, setShowAuth] = useState(false);
-  const [user, setUser] = useUser();
-
+  const router = useRouter();
   return (
     <Container>
       <Wrapper>
@@ -31,8 +35,8 @@ const Header = () => {
             }}
           ></Button> */}
 
-          {user.name ? (
-            <Button>{user.name}</Button>
+          {user?.name ? (
+            <Button onClick={() => axios.delete('/api/auth').then(() => router.reload())}>{user.name}</Button>
           ) : (
             <Button onClick={() => setShowAuth((prev) => !prev)}>로그인</Button>
           )}

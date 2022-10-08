@@ -1,45 +1,34 @@
 import { theme } from 'libs/theme/theme';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import Script from 'next/script';
 import axios from 'libs/axios';
 import jwtDecode from 'jwt-decode';
 import { useRouter } from 'next/router';
-import { useUser } from 'hooks/useUser';
 
 export default function Auth() {
   const googleRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
-  const [user, setUser] = useUser();
   const [userInfo, setUserInfo] = useState<any>(null);
   const [showModal, setShowModal] = useState(false);
   const onGoogleSignIn = async (user: any) => {
     const userCred = user.credential;
     const tokenParse: { name: string; email: string; picture: string; [key: string]: string } = jwtDecode(userCred);
-    setUserInfo({ name: tokenParse.name, email: tokenParse.email, provider: 'google' });
     try {
-      const response = await axios.get('/api/auth/google', {
-        params: {
+      const response = await axios.post('/api/auth/google', {
+        data: {
           name: tokenParse.name,
           email: tokenParse.email,
+          picture: tokenParse.picture,
           provider: 'google',
         },
       });
-      const user = response.data;
-      if (user) {
-        const response = await axios.post('/api/auth/google', {
-          data: { name: tokenParse.name, email: tokenParse.email, provider: 'google' },
-        });
-        const loginUser = response.data.user;
-        setUser({
-          name: loginUser.name,
-          email: loginUser.email,
-          id: loginUser._id,
-          picture: loginUser.picture,
-          nickname: loginUser.nickname,
-        });
-      } else {
+      const token = response.data.token;
+
+      if (!token) {
+        setUserInfo(tokenParse);
         setShowModal(true);
+      } else {
+        router.reload();
       }
     } catch (err) {
       console.log(err);
@@ -59,35 +48,25 @@ export default function Auth() {
     };
     try {
       const response = await axios.post('/api/auth/google', { data: userData });
-      const data = response.data.user;
-      const user = {
-        nickname: data.nickname,
-        id: data._id.toString(),
-        email: data.email,
-        name: data.name,
-      };
-      setUserInfo(user);
+      const token = response.data.token;
       setShowModal(false);
-      router.push('/');
+      router.reload();
     } catch (err) {
       console.log(err);
     }
   };
 
+  useEffect(() => {
+    window.google?.accounts.id.initialize({
+      client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+      callback: onGoogleSignIn,
+      auto_select: false,
+    });
+    window.google?.accounts.id.renderButton(googleRef.current!, { type: 'icon', size: 'large' });
+  }, []);
+
   return (
     <>
-      <Script
-        src="https://accounts.google.com/gsi/client"
-        strategy="afterInteractive"
-        onLoad={() => {
-          window.google?.accounts.id.initialize({
-            client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-            callback: onGoogleSignIn,
-            auto_select: false,
-          });
-          window.google?.accounts.id.renderButton(googleRef.current!, { type: 'icon', size: 'large' });
-        }}
-      />
       {showModal && <Modal onSubmit={handleSubmit}></Modal>}
       <Container>
         <GoogleAuth ref={googleRef}>구</GoogleAuth>
