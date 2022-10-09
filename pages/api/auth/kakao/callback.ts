@@ -27,7 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const userData = {
       name: userInfo.data.properties.nickname,
       email: userInfo.data.kakao_account.email,
-      picture: userInfo.data.properties.profile_image_url,
+      picture: userInfo.data.properties.profile_image,
     };
     const isExist = await User.findOne({ provider: 'kakao', name: userData.name, email: userData.email });
     if (isExist) {
