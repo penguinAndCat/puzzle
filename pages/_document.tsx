@@ -1,6 +1,6 @@
 import React from 'react';
 import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document';
-import { ServerStyleSheet } from 'styled-components';
+import styled, { ServerStyleSheet } from 'styled-components';
 import Script from 'next/script';
 
 export default class MyDocument extends Document {
@@ -49,6 +49,7 @@ export default class MyDocument extends Document {
             src="http://code.jquery.com/jquery-1.11.3.min.js"
             strategy="beforeInteractive"
           ></Script>
+          <div id="portal" />
         </body>
       </Html>
     );

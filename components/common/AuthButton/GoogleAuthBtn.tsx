@@ -1,11 +1,7 @@
-import jwtDecode from 'jwt-decode';
-import axios from 'libs/axios';
-import { useRouter } from 'next/router';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 export default function GoogleAuthBtn() {
-  const router = useRouter();
   const onGoogleSignIn = async () => {
     try {
       window.location.assign(
