@@ -2,41 +2,32 @@ import { setCookie } from 'cookies-next';
 import axios from 'libs/axios';
 import dbConnect from 'libs/db/mongoose';
 import { makeAccessToken, makeRefreshToken } from 'libs/jwt';
+import { login } from 'libs/login/login';
 import User from 'models/User';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<{ message: string; user?: { name: string; email: string; picture: string }; error?: any }>
+) {
   const { method, query } = req;
   await dbConnect();
   if (method === 'GET') {
-    const response = await axios.get('https://www.googleapis.com/oauth2/v1/userinfo ', {
-      headers: {
-        Authorization: `Bearer ${query.code}`,
-      },
-    });
-    const { email, name, picture } = response.data;
-
-    const isExist = await User.findOne({ provider: 'google', name: name, email: email });
-    if (isExist) {
-      const accessToken = makeAccessToken({ name: isExist.name, nickname: isExist.nickname, provider: 'google' });
-      const refreshToken = makeRefreshToken({ name: isExist.name, nickname: isExist.nickname, provider: 'google' });
-      setCookie('accessToken', accessToken, {
-        req,
-        res,
-        expires: new Date(new Date().getTime() + 1000 * 60 * 60),
-        httpOnly: true,
-        sameSite: true,
+    try {
+      const response = await axios.get('https://www.googleapis.com/oauth2/v1/userinfo ', {
+        headers: {
+          Authorization: `Bearer ${query.code}`,
+        },
       });
-      setCookie('refreshToken', refreshToken, {
-        req,
-        res,
-        expires: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 30),
-        httpOnly: true,
-        sameSite: true,
-      });
-      res.json({ message: 'success' });
-    } else {
-      res.json({ message: 'start signup', user: { email, name, picture } });
+      const { email, name, picture } = response.data;
+      const isExist = await User.findOne({ provider: 'google', name: name, email: email });
+      if (isExist) {
+        login({ name: isExist.name, nickname: isExist.nickname }, 'google', req, res);
+        return res.json({ message: 'success' });
+      }
+      return res.json({ message: 'start signup', user: { email, name, picture } });
+    } catch (err) {
+      res.status(500).json({ message: 'fail', error: err });
     }
   }
 }

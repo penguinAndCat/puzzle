@@ -22,7 +22,8 @@ const Kakao: NextPage = () => {
           } else {
             router.replace('/');
           }
-        });
+        })
+        .catch((err) => console.log(err));
     }
   }, [code, router]);
 

@@ -22,7 +22,8 @@ const Google: NextPage = () => {
           } else {
             router.replace('/');
           }
-        });
+        })
+        .catch((err) => console.log(err));
     }
   }, [router]);
 
