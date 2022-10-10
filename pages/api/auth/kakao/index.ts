@@ -1,16 +1,10 @@
 import { setCookie } from 'cookies-next';
+import axios from 'libs/axios';
 import dbConnect from 'libs/db/mongoose';
 import { makeAccessToken, makeRefreshToken } from 'libs/jwt';
 import { signup } from 'libs/login/signup';
 import User from 'models/User';
 import type { NextApiRequest, NextApiResponse } from 'next';
-
-interface UserInfo {
-  email: string;
-  name: string;
-  picture: string;
-  [key: string]: string;
-}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<{ message: string; error?: any }>) {
   const { method } = req;
@@ -24,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         return res.status(500).json({ message: 'already Exist Nick' });
       }
       const { email, name, picture } = req.body.user;
-      await signup({ name, email, picture, nickname: nick }, 'google', req, res);
+      await signup({ name, email, picture, nickname: nick }, 'kakao', req, res);
       res.json({ message: 'success' });
     } catch (err) {
       res.status(500).json({ message: 'fail', error: err });
