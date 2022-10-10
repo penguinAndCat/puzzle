@@ -14,23 +14,18 @@ export default async function handler(
   await dbConnect();
   if (method === 'GET') {
     try {
-      const response = await axios.get('https://openapi.naver.com/v1/nid/me', {
+      const response = await axios.get('https://www.googleapis.com/oauth2/v1/userinfo ', {
         headers: {
           Authorization: `Bearer ${query.code}`,
         },
       });
-      const data = response.data.response;
-      const userInfo = {
-        name: data.name,
-        email: data.email,
-        picture: data.profile_image,
-      };
-      const isExist = await User.findOne({ provider: 'naver', name: userInfo.name, email: userInfo.email });
+      const { email, name, picture } = response.data;
+      const isExist = await User.findOne({ provider: 'google', name: name, email: email });
       if (isExist) {
-        login({ name: isExist.name, nickname: isExist.nickname }, 'naver', req, res);
+        login({ name: isExist.name, nickname: isExist.nickname }, 'google', req, res);
         return res.json({ message: 'success' });
       }
-      res.json({ message: 'success', user: userInfo });
+      return res.json({ message: 'start signup', user: { email, name, picture } });
     } catch (err) {
       res.status(500).json({ message: 'fail', error: err });
     }

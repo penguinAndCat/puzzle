@@ -1,7 +1,5 @@
 import { theme } from 'libs/theme/theme';
-import Link from 'next/link';
-import { GetServerSideProps } from 'next/types';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 import Auth from './Auth';
 import Palette from './Palette';

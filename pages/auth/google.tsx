@@ -3,17 +3,17 @@ import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import React, { FormEvent, useEffect, useRef, useState } from 'react';
 
-const Kakao: NextPage = () => {
+const Google: NextPage = () => {
   const router = useRouter();
-  const { code } = router.query;
   const inputRef = useRef<HTMLInputElement>(null);
   const [userInfo, setUserInfo] = useState<any>(null);
   useEffect(() => {
-    if (code) {
+    const accessCode = window.location.hash.substring(1).split('&')[0].split('=')[1];
+    if (accessCode) {
       axios
-        .get('/api/auth/kakao/callback', {
+        .get('/api/auth/google/callback', {
           params: {
-            code: code,
+            code: accessCode,
           },
         })
         .then((res) => {
@@ -25,11 +25,11 @@ const Kakao: NextPage = () => {
         })
         .catch((err) => console.log(err));
     }
-  }, [code, router]);
+  }, [router]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const response = await axios.post('/api/auth/kakao', { nick: inputRef.current?.value, user: userInfo });
+    const response = await axios.post('/api/auth/google', { nick: inputRef.current?.value, user: userInfo });
     router.replace('/');
   };
 
@@ -44,4 +44,4 @@ const Kakao: NextPage = () => {
   return <div>loading</div>;
 };
 
-export default Kakao;
+export default Google;
