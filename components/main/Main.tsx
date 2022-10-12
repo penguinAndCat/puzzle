@@ -1,14 +1,13 @@
 import Card from 'components/common/Card';
-import Modal from 'components/common/Modal';
 import { useModal } from 'libs/zustand/store';
 import styled from 'styled-components';
 
 const images = ['/cp.png', '/cp2.png', '/cp3.png', '/cp4.png'];
 
 const Main = () => {
-  const { onModal, modalDisplay } = useModal();
+  const { addModal } = useModal();
   const openModal = () => {
-    onModal();
+    addModal('puzzle');
   };
   return (
     <Wrapper>
@@ -31,7 +30,6 @@ const Main = () => {
           })}
         </PuzzleContainer>
       </FavoriteWrapper>
-      {modalDisplay && <Modal />}
     </Wrapper>
   );
 };
