@@ -12,6 +12,7 @@ export async function signup(
   const { name, nickname, email, picture } = user;
   const accessToken = makeAccessToken({ name, nickname, provider });
   const refreshToken = makeRefreshToken({ name, nickname, provider });
+
   setCookie('accessToken', accessToken, {
     req,
     res,
@@ -30,8 +31,8 @@ export async function signup(
     name: user.name,
     email: email,
     picture: picture,
-    provider: 'google',
-    nickname: nickname,
+    nickname,
+    provider: provider,
     refreshToken: refreshToken,
   });
 }

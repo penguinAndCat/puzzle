@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { deleteCookie, getCookie, setCookie } from 'cookies-next';
 import jwtDecode from 'jwt-decode';
-import { makeAccessToken } from 'libs/jwt';
+import { decodePayload, makeAccessToken } from 'libs/jwt';
 import dbConnect from 'libs/db/mongoose';
 import User from 'models/User';
 
@@ -13,16 +13,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const accessToken = getCookie('accessToken', { req, res });
       const refreshToken = getCookie('refreshToken', { req, res });
-      if (accessToken) {
-        const user = jwtDecode<{
+
+      if (accessToken && decodePayload(accessToken as string)) {
+        const user: {
           nickname: string;
           name: string;
           provider: string;
-        }>(accessToken as string);
+        } = decodePayload(accessToken as string) as {
+          nickname: string;
+          name: string;
+          provider: string;
+        };
+
         const savedUser = await User.findOne({ name: user.name, provider: user.provider, nickname: user.nickname });
+        if (!savedUser) {
+          return res.status(500).json({ message: 'fail' });
+        }
         return res.status(200).json({
           user: {
-            id: savedUser._id,
+            id: savedUser._id.toString(),
             name: savedUser.name,
             nickname: savedUser.nickname,
             picture: savedUser.picture,
@@ -30,16 +39,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           },
           message: 'success',
         });
-      } else if (refreshToken) {
-        const savedUser = await User.findOne({ refreshToken: refreshToken });
+      } else if (refreshToken && decodePayload(refreshToken as string)) {
+        const user: {
+          nickname: string;
+          name: string;
+          provider: string;
+        } = decodePayload(refreshToken as string) as {
+          nickname: string;
+          name: string;
+          provider: string;
+        };
+        const { name, provider, nickname } = user;
+        const savedUser = await User.findOne({ name, nickname, provider });
+
         if (!savedUser) {
-          res.status(200).json({ message: 'fail' });
-          res.end();
+          return res.status(500).json({ message: 'fail' });
         }
         const accessToken = makeAccessToken({
           name: savedUser.name,
-          provider: savedUser.provider,
           nickname: savedUser.nickname,
+          provider: savedUser.provider,
         });
         setCookie('accessToken', accessToken, {
           req,
@@ -50,7 +69,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
         return res.status(200).json({
           user: {
-            id: savedUser._id,
+            id: savedUser._id.toString(),
             name: savedUser.name,
             nickname: savedUser.nickname,
             picture: savedUser.picture,
@@ -58,10 +77,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           },
           message: 'success',
         });
+      } else {
       }
       return res.json({ message: 'failed' });
     } catch (err) {
-      console.log(err);
+      return res.json({ message: 'failed' });
     }
   }
   if (method === 'DELETE') {

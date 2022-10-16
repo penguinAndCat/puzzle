@@ -9,8 +9,12 @@ import styled from 'styled-components';
 const Home: NextPage = () => {
   const { user, setUser } = userStore();
   useEffect(() => {
-    const response = axios.get('/api/auth').then((res) => setUser(res.data.user || null));
+    axios
+      .get('/api/auth')
+      .then((res) => setUser(res.data.user || null))
+      .catch((err) => console.log(err));
   }, [setUser]);
+
   return (
     <Container>
       <Header />
