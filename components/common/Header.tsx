@@ -5,17 +5,20 @@ import Auth from './Auth';
 import Palette from './Palette';
 import axios from '../../libs/axios';
 import { useRouter } from 'next/router';
-import { userStore } from 'libs/zustand/store';
+import { useModal, userStore } from 'libs/zustand/store';
 
 const Header = () => {
   const [showAuth, setShowAuth] = useState(false);
   const router = useRouter();
   const { user, setUser } = userStore();
+  const { addModal } = useModal();
   return (
     <Container>
       <Wrapper>
         <Left>
           <Button>메뉴</Button>
+          <Button onClick={() => addModal('friend')}>친구</Button>
+          <Button onClick={() => addModal('alarm')}>알람</Button>
         </Left>
         <Bar />
         <Logo>

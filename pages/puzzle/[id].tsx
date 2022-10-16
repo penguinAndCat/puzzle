@@ -7,10 +7,10 @@ import styled from 'styled-components';
 import PuzzleCanvas from '../../components/puzzle/PuzzleCanvas';
 import Header from '../../components/puzzle/Header';
 import { exportLevels } from '../../libs/puzzle/createPuzzle';
-import { useModal } from 'libs/zustand/store';
+import { usePuzzle } from 'libs/zustand/store';
 
 const Home: NextPage = () => {
-  const { modalImage, number, setNumber } = useModal();
+  const { modalImage, number, setNumber } = usePuzzle();
   const [showLevel, setShowLevel] = useState(false);
   const [display, setDisplay] = useState(false);
   const [list, setList] = useState<number[][]>([]);

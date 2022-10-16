@@ -3,7 +3,7 @@ import Palette from 'components/common/Palette';
 import { saveImage } from 'libs/common/saveImage';
 import { exportConfig } from 'libs/puzzle/createPuzzle';
 import { theme } from 'libs/theme/theme';
-import { useLoading, useModal, userStore } from 'libs/zustand/store';
+import { useLoading, usePuzzle, userStore } from 'libs/zustand/store';
 import { useRouter } from 'next/router';
 import { Dispatch, MouseEvent, SetStateAction } from 'react';
 import styled from 'styled-components';
@@ -16,7 +16,7 @@ interface Props {
 }
 
 const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) => {
-  const { number, title } = useModal();
+  const { number, title } = usePuzzle();
   const { onLoading, offLoading } = useLoading();
   const router = useRouter();
   const handleClick = (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {

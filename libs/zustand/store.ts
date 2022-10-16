@@ -1,16 +1,28 @@
 import create from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export const useModal = create<ModalProps>()(
+export const useModal = create<ModalProps>()((set) => ({
+  modalDisplay: false,
+  modal: [],
+  addModal: (value) => {
+    set((state) => ({
+      modal: [...state.modal, value],
+    }));
+  },
+  removeModal: (value) => {
+    set((state) => ({
+      modal: state.modal.filter((modal: string) => modal !== value),
+    }));
+  },
+}));
+
+export const usePuzzle = create<PuzzleProps>()(
   persist(
     (set) => ({
-      modalDisplay: false,
       modalImage: { src: '', width: 0, height: 0 },
       number: 1,
       title: '',
       secretRoom: false,
-      offModal: () => set({ modalDisplay: false }),
-      onModal: () => set({ modalDisplay: true }),
       setModalImage: (image) => set({ modalImage: image }),
       initialModal: () =>
         set({ number: 1, title: '', secretRoom: false, modalImage: { src: '', width: 0, height: 0 } }),
@@ -19,7 +31,7 @@ export const useModal = create<ModalProps>()(
       setTitle: (title) => set({ title: title }),
     }),
     {
-      name: 'modal',
+      name: 'puzzle',
     }
   )
 );
