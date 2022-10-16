@@ -43,12 +43,16 @@ type Config = {
 
 type ModalProps = {
   modalDisplay: boolean;
+  modal: string[];
+  addModal: (value: string) => void;
+  removeModal: (value: string) => void;
+};
+
+type PuzzleProps = {
   modalImage: img;
   number: number;
   title: string;
   secretRoom: boolean;
-  onModal: () => void;
-  offModal: () => void;
   setModalImage: (value: img) => void;
   initialModal: () => void;
   setNumber: (value: number) => void;

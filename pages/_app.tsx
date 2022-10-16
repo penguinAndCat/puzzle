@@ -4,6 +4,7 @@ import { ThemeProvider } from 'libs/theme/ThemeProvider';
 import { GlobalStyle } from 'libs/theme/GlobalStyle';
 import Toast from 'components/common/Toast';
 import Loading from 'components/common/Loading';
+import Modal from 'components/common/Modal';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -12,6 +13,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <Component {...pageProps} />
       <Toast />
       <Loading />
+      <Modal />
     </ThemeProvider>
   );
 }

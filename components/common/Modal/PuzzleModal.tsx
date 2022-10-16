@@ -3,16 +3,16 @@ import Paper from 'paper';
 import { useToast } from 'hooks/useToast';
 import { exportConfig, initConfig, setPuzzleRowColumn } from 'libs/puzzle/createPuzzle';
 import { theme } from 'libs/theme/theme';
-import { useLoading, useModal, userStore } from 'libs/zustand/store';
+import { useLoading, useModal, usePuzzle, userStore } from 'libs/zustand/store';
 import { useRouter } from 'next/router';
 import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
-import { CloseIcon } from './Icon';
 import { saveImage } from 'libs/common/saveImage';
+import { CloseIcon } from '../Icon';
 
-const Modal = () => {
-  const { offModal, modalImage, secretRoom, setModalImage, initialModal, setNumber, setTitle, setSecretRoom } =
-    useModal();
+const PuzzleModal = () => {
+  const { removeModal, addModal } = useModal();
+  const { modalImage, secretRoom, setModalImage, initialModal, setNumber, setTitle, setSecretRoom } = usePuzzle();
   const { onLoading } = useLoading();
   const { fireToast } = useToast();
   const [roomName, setRoomName] = useState('');
@@ -25,15 +25,12 @@ const Modal = () => {
 
   const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     e.preventDefault();
-    document.body.style.overflow = 'unset';
-    offModal();
+    removeModal('puzzle');
   };
 
   useEffect(() => {
-    initialModal();
-    document.body.style.overflow = 'hidden';
     return () => {
-      document.body.style.overflow = 'unset';
+      initialModal();
     };
   }, []);
 
@@ -75,34 +72,36 @@ const Modal = () => {
   };
 
   const playAlonePuzzle = () => {
+    if (buttonRef.current?.getBoundingClientRect().top === undefined) return;
     if (modalImage.src === '') {
-      fireToast({ content: '퍼즐 이미지를 등록해주세요.', top: buttonRef.current?.getBoundingClientRect().top });
+      fireToast({ content: '퍼즐 이미지를 등록해주세요.', top: buttonRef.current?.getBoundingClientRect().top - 100 });
       return;
     }
     if (roomName === '') {
-      fireToast({ content: '방 이름을 지어 주세요.', top: buttonRef.current?.getBoundingClientRect().top });
+      fireToast({ content: '방 이름을 지어 주세요.', top: buttonRef.current?.getBoundingClientRect().top - 100 });
       return;
     }
-    offModal();
+    removeModal('puzzle');
     setNumber(puzzleNumber);
     setTitle(roomName);
     router.push('/puzzle');
   };
 
   const createPuzzleRoom = async () => {
+    if (buttonRef.current?.getBoundingClientRect().top === undefined) return;
     if (modalImage.src === '') {
-      fireToast({ content: '퍼즐 이미지를 등록해주세요.', top: buttonRef.current?.getBoundingClientRect().top });
+      fireToast({ content: '퍼즐 이미지를 등록해주세요.', top: buttonRef.current?.getBoundingClientRect().top - 100 });
       return;
     }
     if (roomName === '') {
-      fireToast({ content: '방 이름을 지어 주세요.', top: buttonRef.current?.getBoundingClientRect().top });
+      fireToast({ content: '방 이름을 지어 주세요.', top: buttonRef.current?.getBoundingClientRect().top - 100 });
       return;
     }
     if (!user?.name) {
-      alert('로그인 하세요');
+      addModal('login');
       return;
     }
-    offModal();
+    removeModal('puzzle');
     try {
       onLoading();
       const canvasSize = { width: 1000, height: 1000 };
@@ -148,78 +147,67 @@ const Modal = () => {
   };
 
   return (
-    <OuterContainer onClick={(e) => closeModal(e)}>
-      <Container onClick={(e) => e.stopPropagation()}>
-        <TitleWrapper>
-          <Close />
-          <Title>Create</Title>
-          <Close onClick={(e) => closeModal(e)} style={{ cursor: 'pointer' }}>
-            <CloseIcon />
-          </Close>
-        </TitleWrapper>
-        <ImgWrapper>
-          {modalImage.src === '' ? (
-            <ImageButton onClick={inputImage}>퍼즐 이미지를 등록해주세요.</ImageButton>
+    <Container onClick={(e) => e.stopPropagation()}>
+      <TitleWrapper>
+        <Close />
+        <Title>Create</Title>
+        <Close onClick={(e) => closeModal(e)} style={{ cursor: 'pointer' }}>
+          <CloseIcon />
+        </Close>
+      </TitleWrapper>
+      <ImgWrapper>
+        {modalImage.src === '' ? (
+          <ImageButton onClick={inputImage}>퍼즐 이미지를 등록해주세요.</ImageButton>
+        ) : (
+          <Img onClick={inputImage} src={modalImage.src} />
+        )}
+        <Input ref={inputRef} type="file" accept="image/*" onChange={handleChangeFile} />
+      </ImgWrapper>
+      <RoomNameWrapper>
+        <SubTitle>방 이름</SubTitle>
+        <div>
+          <RoomNameInput value={roomName} onChange={(e) => onchangeRoomName(e)} />
+        </div>
+      </RoomNameWrapper>
+      <PuzzleNumberWrapper>
+        <SubTitle>퍼즐 수</SubTitle>
+        <Select onChange={(e) => setPuzzleNumber(parseInt(e.target.value))} value={puzzleNumber}>
+          {puzzleNumbers.length !== 0 ? (
+            puzzleNumbers.map((props, index) => (
+              <option key={index} value={index}>
+                {props}
+              </option>
+            ))
           ) : (
-            <Img onClick={inputImage} src={modalImage.src} />
+            <option value={0}>0</option>
           )}
-          <Input ref={inputRef} type="file" accept="image/*" onChange={handleChangeFile} />
-        </ImgWrapper>
-        <RoomNameWrapper>
-          <SubTitle>방 이름</SubTitle>
-          <div>
-            <RoomNameInput value={roomName} onChange={(e) => onchangeRoomName(e)} />
-          </div>
-        </RoomNameWrapper>
-        <PuzzleNumberWrapper>
-          <SubTitle>퍼즐 수</SubTitle>
-          <Select onChange={(e) => setPuzzleNumber(parseInt(e.target.value))} value={puzzleNumber}>
-            {puzzleNumbers.length !== 0 ? (
-              puzzleNumbers.map((props, index) => (
-                <option key={index} value={index}>
-                  {props}
-                </option>
-              ))
-            ) : (
-              <option value={0}>0</option>
-            )}
-          </Select>
-        </PuzzleNumberWrapper>
-        <SecretRoomWrapper>
-          <RadioLabel>
-            <RadioInput type={'radio'} name={'secretRoom'} value={0} onChange={onChangeRadio} defaultChecked />
-            <RadioP>공개 방</RadioP>
-          </RadioLabel>
-          <RadioLabel>
-            <RadioInput type={'radio'} name={'secretRoom'} value={1} onChange={onChangeRadio} />
-            <RadioP>비밀 방</RadioP>
-          </RadioLabel>
-        </SecretRoomWrapper>
-        <PlayAloneWrapper>
-          <CreateButton ref={buttonRef} onClick={playAlonePuzzle}>
-            혼자 하기
-          </CreateButton>
-        </PlayAloneWrapper>
-        <CreateWrapper>
-          <CreateButton ref={buttonRef} onClick={createPuzzleRoom}>
-            방 만들기
-          </CreateButton>
-        </CreateWrapper>
-      </Container>
-    </OuterContainer>
+        </Select>
+      </PuzzleNumberWrapper>
+      <SecretRoomWrapper>
+        <RadioLabel>
+          <RadioInput type={'radio'} name={'secretRoom'} value={0} onChange={onChangeRadio} defaultChecked />
+          <RadioP>공개 방</RadioP>
+        </RadioLabel>
+        <RadioLabel>
+          <RadioInput type={'radio'} name={'secretRoom'} value={1} onChange={onChangeRadio} />
+          <RadioP>비밀 방</RadioP>
+        </RadioLabel>
+      </SecretRoomWrapper>
+      <PlayAloneWrapper>
+        <CreateButton ref={buttonRef} onClick={playAlonePuzzle}>
+          혼자 하기
+        </CreateButton>
+      </PlayAloneWrapper>
+      <CreateWrapper>
+        <CreateButton ref={buttonRef} onClick={createPuzzleRoom}>
+          방 만들기
+        </CreateButton>
+      </CreateWrapper>
+    </Container>
   );
 };
 
-export default Modal;
-
-const OuterContainer = styled.div`
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.2);
-`;
+export default PuzzleModal;
 
 const Container = styled.div`
   @keyframes fadein {
