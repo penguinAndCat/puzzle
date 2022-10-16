@@ -19,6 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         { $match: { nickname: nickname } },
         { $project: { _id: 0, nickname: 1, picture: 1 } },
       ]);
+      console.log(user);
       res.status(201).json({ user: user, message: 'success' });
     } catch (err) {
       res.status(500).json({ error: err, message: 'failed' });

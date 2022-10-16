@@ -72,12 +72,13 @@ const PuzzleModal = () => {
   };
 
   const playAlonePuzzle = () => {
+    if (buttonRef.current?.getBoundingClientRect().top === undefined) return;
     if (modalImage.src === '') {
-      fireToast({ content: '퍼즐 이미지를 등록해주세요.', top: buttonRef.current?.getBoundingClientRect().top });
+      fireToast({ content: '퍼즐 이미지를 등록해주세요.', top: buttonRef.current?.getBoundingClientRect().top - 100 });
       return;
     }
     if (roomName === '') {
-      fireToast({ content: '방 이름을 지어 주세요.', top: buttonRef.current?.getBoundingClientRect().top });
+      fireToast({ content: '방 이름을 지어 주세요.', top: buttonRef.current?.getBoundingClientRect().top - 100 });
       return;
     }
     removeModal('puzzle');
@@ -87,12 +88,13 @@ const PuzzleModal = () => {
   };
 
   const createPuzzleRoom = async () => {
+    if (buttonRef.current?.getBoundingClientRect().top === undefined) return;
     if (modalImage.src === '') {
-      fireToast({ content: '퍼즐 이미지를 등록해주세요.', top: buttonRef.current?.getBoundingClientRect().top });
+      fireToast({ content: '퍼즐 이미지를 등록해주세요.', top: buttonRef.current?.getBoundingClientRect().top - 100 });
       return;
     }
     if (roomName === '') {
-      fireToast({ content: '방 이름을 지어 주세요.', top: buttonRef.current?.getBoundingClientRect().top });
+      fireToast({ content: '방 이름을 지어 주세요.', top: buttonRef.current?.getBoundingClientRect().top - 100 });
       return;
     }
     if (!user?.name) {

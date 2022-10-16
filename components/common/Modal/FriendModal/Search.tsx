@@ -1,18 +1,37 @@
 import axios from 'axios';
 import Portal from 'components/common/Portal';
-import { useEffect, useState } from 'react';
+import { useToast } from 'hooks/useToast';
+import { userStore } from 'libs/zustand/store';
+import { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 
 const SearchFriend = () => {
   const [searched, setSearched] = useState('');
   const [searchedUser, setSearchedUser] = useState<any>([]);
+  const { fireToast } = useToast();
+  const { user } = userStore();
+  const buttonRef = useRef<HTMLButtonElement>(null);
   // useEffect(() => {
   //   searchUser();
   // }, []);
   const searchUser = async () => {
     const res = await axios.get(`/api/users/${searched}`);
     // const res = await axios.get(`/api/users/펭귄`);
+    console.log(res.data.user);
     setSearchedUser(res.data.user);
+  };
+  const requestFriend = async (requestedNickname: string) => {
+    // if (!user?.id) return;
+    const res = await axios.post(`/api/users/request`, {
+      data: {
+        requester: 'sdfsdf',
+        requestedNickname: requestedNickname,
+      },
+    });
+    if (res.data.message === 'duplicated') {
+      const top = buttonRef.current?.getBoundingClientRect().top;
+      fireToast({ content: '이미 친구 요청을 보냈습니다.', top: top });
+    }
   };
   return (
     <Container>
@@ -20,14 +39,16 @@ const SearchFriend = () => {
         <div>친구 찾기</div>
         <div>
           <Input onChange={(e) => setSearched(e.target.value)} value={searched} placeholder="닉네임을 입력해주세요." />
-          <SearchButton onClick={searchUser}>찾기</SearchButton>
+          <SearchButton onClick={searchUser} ref={buttonRef}>
+            찾기
+          </SearchButton>
         </div>
       </InputWrapper>
       {searchedUser.length === 1 && (
         <SearchUserWrapper>
           <Img src={searchedUser[0].picture} />
           <Nickname>{searchedUser[0].nickname}</Nickname>
-          <RequestButton>친구 하기</RequestButton>
+          <RequestButton onClick={() => requestFriend(searchedUser[0].nickname)}>친구 하기</RequestButton>
         </SearchUserWrapper>
       )}
       <Portal selector="div">

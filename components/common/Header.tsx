@@ -18,6 +18,7 @@ const Header = () => {
         <Left>
           <Button>메뉴</Button>
           <Button onClick={() => addModal('friend')}>친구</Button>
+          <Button onClick={() => addModal('alarm')}>알람</Button>
         </Left>
         <Bar />
         <Logo>

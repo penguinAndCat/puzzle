@@ -47,7 +47,7 @@ const Content = styled.div<any>`
   animation-duration: 0.7s, 0.7s;
 
   position: fixed;
-  top: ${({ toast }) => toast.top - 100}px;
+  top: ${({ toast }) => toast.top}px;
   left: 50%;
   transform: translate(-50%, 0);
 
