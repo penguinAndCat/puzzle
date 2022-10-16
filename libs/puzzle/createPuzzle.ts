@@ -1,6 +1,6 @@
+import { openConfetti } from 'hooks/useConfetti';
 import paper from 'paper';
 import { Group, Point } from 'paper/dist/paper-core';
-import createRandomNumber from '../createRandomNumber';
 import puzzle from './moveTile';
 
 const constant = {
@@ -23,6 +23,7 @@ let config: Config = {
   firstClient: true,
   canvasSize: { width: 0, height: 0 },
   canvasPreSize: { width: 0, height: 0 },
+  complete: false,
 };
 
 let levels: number[][] = [];
@@ -42,12 +43,13 @@ export const restartConfig = (
   config2: Config,
   canvasSize: size,
   level: number,
-  query: string | string[]
+  query: string | string[],
+  socket: any
 ) => {
   config = config2;
   setPuzzleRowColumn(puzzleImage);
   setConfig(Paper, puzzleImage, canvasSize, level);
-  serverCreateTiles(query);
+  serverCreateTiles(query, socket);
 };
 
 export const exportConfig = () => config;
@@ -177,7 +179,7 @@ const createTiles = () => {
       // );
       const position = popRandom(positionArr);
       tile.position = new Point(position.x + margin.x, position.y + margin.y);
-      config.groupTiles.push([tile, undefined]);
+      config.groupTiles.push({ tile: tile, groupIndex: null, movable: true });
     }
   }
   puzzle.moveTile(config);
@@ -222,17 +224,20 @@ const recreateTiles = () => {
       tile.opacity = constant.tileOpacity;
 
       tile.position = new Point(
-        (groupTiles[y * config.tilesPerRow + x][0].children[0].position._x * config.canvasSize.width) /
-          config.canvasPreSize.width,
-        (groupTiles[y * config.tilesPerRow + x][0].children[0].position._y * config.canvasSize.height) /
+        (groupTiles[y * config.tilesPerRow + x].tile.position.x * config.canvasSize.width) / config.canvasPreSize.width,
+        (groupTiles[y * config.tilesPerRow + x].tile.position.y * config.canvasSize.height) /
           config.canvasPreSize.height
       );
-      config.groupTiles.push([tile, groupTiles[y * config.tilesPerRow + x][1]]);
+      config.groupTiles.push({
+        tile: tile,
+        groupIndex: groupTiles[y * config.tilesPerRow + x].groupIndex,
+        movable: groupTiles[y * config.tilesPerRow + x].movable,
+      });
     }
   }
   puzzle.moveTile(config);
 };
-const serverCreateTiles = (query: string | string[]) => {
+const serverCreateTiles = (query: string | string[], socket: any) => {
   const tileRatio = config.tileWidth / 100;
   const tileRatio2 = config.tileHeight / 100;
   const groupTiles = config.groupTiles;
@@ -275,13 +280,14 @@ const serverCreateTiles = (query: string | string[]) => {
         (groupTiles[y * config.tilesPerRow + x][0] * config.canvasSize.width) / config.canvasPreSize.width,
         (groupTiles[y * config.tilesPerRow + x][1] * config.canvasSize.height) / config.canvasPreSize.height
       );
-      config.groupTiles.push([
-        tile,
-        groupTiles[y * config.tilesPerRow + x][2] !== null ? groupTiles[y * config.tilesPerRow + x][2] : undefined,
-      ]);
+      config.groupTiles.push({
+        tile: tile,
+        groupIndex: groupTiles[y * config.tilesPerRow + x][2],
+        movable: true,
+      });
     }
   }
-  puzzle.moveTile(config, query);
+  puzzle.moveTile(config, query, socket);
 };
 export const getMargin = (shape: shape) => {
   const margin = { x: 0, y: 0 };
@@ -532,18 +538,4 @@ const getRandomShapes = () => {
 };
 const getRandomTabValue = () => {
   return Math.pow(-1, Math.floor(Math.random() * 2));
-};
-
-const getRandomPos = (tileWidth: number, canvasWidth: number, imgWidth: number) => {
-  const x = [
-    createRandomNumber(tileWidth, (canvasWidth - (imgWidth + 20)) / 2),
-    createRandomNumber((canvasWidth + (imgWidth + 20)) / 2, canvasWidth - tileWidth),
-  ];
-  const y = [
-    createRandomNumber(tileWidth, (canvasWidth - (imgWidth + 20)) / 2),
-    createRandomNumber((canvasWidth + (imgWidth + 20)) / 2, canvasWidth - tileWidth),
-  ];
-  const xIndex = Math.round(Math.random());
-  const yIndex = Math.round(Math.random());
-  return [x[xIndex], y[yIndex]];
 };

@@ -22,6 +22,9 @@ const PuzzleSchema = new mongoose.Schema(
           type: Number,
         },
       },
+      complete: {
+        type: Boolean,
+      },
       firstClient: {
         type: Boolean,
       },
@@ -75,6 +78,12 @@ const PuzzleSchema = new mongoose.Schema(
     },
     title: {
       type: String,
+    },
+    secretRoom: {
+      type: Boolean,
+    },
+    invitedUser: {
+      type: [String],
     },
   },
   {

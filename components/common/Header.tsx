@@ -1,15 +1,16 @@
 import { theme } from 'libs/theme/theme';
-import { signIn, signOut, useSession } from 'next-auth/react';
-import Link from 'next/link';
 import { useState } from 'react';
 import styled from 'styled-components';
 import Auth from './Auth';
 import Palette from './Palette';
+import axios from '../../libs/axios';
+import { useRouter } from 'next/router';
+import { userStore } from 'libs/zustand/store';
 
 const Header = () => {
-  const { data: session, status } = useSession();
   const [showAuth, setShowAuth] = useState(false);
-
+  const router = useRouter();
+  const { user, setUser } = userStore();
   return (
     <Container>
       <Wrapper>
@@ -23,11 +24,28 @@ const Header = () => {
         </Logo>
         <Bar />
         <Right>
-          {status === 'authenticated' ? (
-            <Button onClick={() => signOut()}>{session.user.name}</Button>
+          {/* <Button
+            onClick={() => {
+              console.log('first');
+              axios.get('/api/auth/google').then((res) => console.log(res));
+            }}
+          ></Button> */}
+
+          {user?.name ? (
+            <Button
+              onClick={() =>
+                axios.delete('/api/auth').then(() => {
+                  setUser(null);
+                  router.reload();
+                })
+              }
+            >
+              {user.name}
+            </Button>
           ) : (
             <Button onClick={() => setShowAuth((prev) => !prev)}>로그인</Button>
           )}
+
           {showAuth && (
             <AuthContainer>
               <Auth />

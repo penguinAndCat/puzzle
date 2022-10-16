@@ -38,6 +38,7 @@ type Config = {
   firstClient: boolean;
   canvasSize: size;
   canvasPreSize: size;
+  complete: boolean;
 };
 
 type ModalProps = {
@@ -45,11 +46,13 @@ type ModalProps = {
   modalImage: img;
   number: number;
   title: string;
+  secretRoom: boolean;
   onModal: () => void;
   offModal: () => void;
   setModalImage: (value: img) => void;
-  initialModalImage: () => void;
+  initialModal: () => void;
   setNumber: (value: number) => void;
+  setSecretRoom: (value: boolean) => void;
   setTitle: (value: string) => void;
 };
 
@@ -64,4 +67,22 @@ interface Toast {
 type ToastProps = {
   toast: Toast;
   setToast: (value: Toast) => void;
+};
+
+type LoadingProps = {
+  loading: boolean;
+  offLoading: () => void;
+  onLoading: () => void;
+};
+type userInfo = {
+  id: string;
+  name: string;
+  email: string;
+  provider: string;
+  nickname: string;
+  picture: string;
+};
+type userStoreProps = {
+  user: userInfo | null;
+  setUser: (user: userInfo | null) => void;
 };

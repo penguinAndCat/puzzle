@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import type { NextPage } from 'next';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import PuzzleCanvas from '../../components/PuzzleCanvas';
+import PuzzleCanvas from '../../components/puzzle/PuzzleCanvas';
 import Header from '../../components/puzzle/Header';
 import { exportLevels } from '../../libs/puzzle/createPuzzle';
 import { useModal } from 'libs/zustand/store';

@@ -1,9 +1,9 @@
 import axios from 'axios';
 import Palette from 'components/common/Palette';
+import { saveImage } from 'libs/common/saveImage';
 import { exportConfig } from 'libs/puzzle/createPuzzle';
 import { theme } from 'libs/theme/theme';
-import { useModal } from 'libs/zustand/store';
-import { useSession } from 'next-auth/react';
+import { useLoading, useModal, userStore } from 'libs/zustand/store';
 import { useRouter } from 'next/router';
 import { Dispatch, MouseEvent, SetStateAction } from 'react';
 import styled from 'styled-components';
@@ -16,10 +16,10 @@ interface Props {
 }
 
 const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) => {
-  const { data: session, status } = useSession();
   const { number, title } = useModal();
+  const { onLoading, offLoading } = useLoading();
   const router = useRouter();
-  const onClick = (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
+  const handleClick = (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
     e.stopPropagation();
     if (!showLevel) {
       setShowLvMenu(true);
@@ -27,24 +27,27 @@ const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) =>
       setShowLevel(false);
     }
   };
+  const { user } = userStore();
 
   const handleSave = async () => {
     try {
-      if (!session) return;
-      const { user }: any = session;
+      onLoading();
+
       const puzzleData = exportConfig();
       delete puzzleData.project;
+      puzzleData.puzzleImage.src = await saveImage(puzzleData.puzzleImage.src);
       const data = {
         config: {
           ...puzzleData,
           groupTiles: puzzleData.groupTiles.map((item) => {
-            return [item[0].position._x, item[0].position._y, item[1]];
+            return [item.tile.position.x, item.tile.position.y, item.groupIndex];
           }),
         },
-        userId: user.id,
+        userId: user?.id,
         level: number,
         title: title,
       };
+
       const response = await axios.post('/api/puzzle', {
         data: data,
       });
@@ -52,6 +55,7 @@ const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) =>
       router.push(`/puzzle/${item._id}`);
     } catch (err) {
       alert('failed');
+      offLoading();
       console.log(err);
     }
   };
@@ -60,7 +64,7 @@ const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) =>
     <Container>
       <Wrapper>
         <Left>
-          <Button onClick={(e) => onClick(e)}>퍼즐수</Button>
+          <Button onClick={(e) => handleClick(e)}>퍼즐수</Button>
           <Button>완성본</Button>
         </Left>
         <Logo>
@@ -69,7 +73,7 @@ const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) =>
         </Logo>
         <Right>
           <Palette />
-          {status === 'authenticated' && router.query.id === undefined ? (
+          {router.query.id === undefined ? (
             <Button onClick={handleSave}>방 만들기</Button>
           ) : (
             <Button onClick={handleSave}>공유하기</Button>

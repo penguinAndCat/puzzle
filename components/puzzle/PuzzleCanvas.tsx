@@ -1,9 +1,13 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useContext } from 'react';
 import Paper from 'paper';
 import styled from 'styled-components';
-import { exportConfig, initConfig, restartConfig } from '../libs/puzzle/createPuzzle';
+import { exportConfig, initConfig, restartConfig } from 'libs/puzzle/createPuzzle';
 import { useRouter } from 'next/router';
+
 import axios from 'axios';
+import { SocketContext } from 'libs/context/socket';
+import { moveIndex } from 'libs/puzzle/socketMove';
+import { useLoading } from 'libs/zustand/store';
 
 interface Props {
   puzzleLv: number;
@@ -11,10 +15,11 @@ interface Props {
 }
 
 const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
+  const { offLoading } = useLoading();
   const router = useRouter();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
-  const [first, setFirst] = useState(false);
+  const socket = useContext(SocketContext);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -40,8 +45,6 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
     if (canvas === null) return;
     if (canvasSize.width === 0 || canvasSize.width === 0) return;
     if (!router.isReady) return;
-    if (first) return;
-    setFirst(true);
 
     const setPuzzle = async () => {
       canvas.width = canvasSize.width;
@@ -50,16 +53,37 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
       if (router.query.id === undefined) {
         const config = exportConfig();
         initConfig(Paper, puzzleImg, config, canvasSize, puzzleLv);
+        offLoading();
       } else {
         const response = await axios.get(`/api/puzzle?id=${router.query.id}`);
         const item = response.data.item;
         const config = { ...item.config };
         const puzzleImage = { ...config.puzzleImage };
-        restartConfig(Paper, puzzleImage, config, canvasSize, item.level, router.query.id);
+        restartConfig(Paper, puzzleImage, config, canvasSize, item.level, router.query.id, socket);
+        offLoading();
       }
     };
     setPuzzle();
-  }, [puzzleLv, router.isReady, puzzleImg, canvasSize, router.query.id, first]);
+  }, [puzzleLv, router.isReady, puzzleImg, canvasSize, router.query.id, socket]);
+
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    socket.emit('join', router.query.id);
+
+    socket.on('groupTiles', (data) => {
+      if (data.socketId !== socket.id) {
+        moveIndex(data.groupTiles, data.indexArr, data.socketCanvasSize);
+      }
+    });
+
+    // socket disconnet onUnmount if exists
+    return () => {
+      if (socket) {
+        socket.disconnect();
+      }
+    };
+  }, [router.isReady, router.query.id, socket]);
 
   return (
     <Wrapper>

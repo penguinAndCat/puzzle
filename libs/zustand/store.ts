@@ -8,11 +8,14 @@ export const useModal = create<ModalProps>()(
       modalImage: { src: '', width: 0, height: 0 },
       number: 1,
       title: '',
+      secretRoom: false,
       offModal: () => set({ modalDisplay: false }),
       onModal: () => set({ modalDisplay: true }),
       setModalImage: (image) => set({ modalImage: image }),
-      initialModalImage: () => set({ modalImage: { src: '', width: 0, height: 0 } }),
+      initialModal: () =>
+        set({ number: 1, title: '', secretRoom: false, modalImage: { src: '', width: 0, height: 0 } }),
       setNumber: (number) => set({ number: number }),
+      setSecretRoom: (value) => set({ secretRoom: value }),
       setTitle: (title) => set({ title: title }),
     }),
     {
@@ -30,4 +33,22 @@ export const useToastState = create<ToastProps>((set) => ({
     bottom: 0,
   },
   setToast: (toast) => set({ toast: toast }),
+}));
+
+export const useLoading = create<LoadingProps>((set) => ({
+  loading: false,
+  offLoading: () => set({ loading: false }),
+  onLoading: () => set({ loading: true }),
+}));
+
+export const userStore = create<userStoreProps>((set) => ({
+  user: {
+    id: '',
+    name: '',
+    picture: '',
+    email: '',
+    provider: '',
+    nickname: '',
+  },
+  setUser: (user: userInfo | null) => set({ user: user }),
 }));
