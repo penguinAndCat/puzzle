@@ -1,22 +1,53 @@
+import axios from 'axios';
 import { CloseIcon } from 'components/common/Icon';
+import { useToast } from 'hooks/useToast';
 import { theme } from 'libs/theme/theme';
-import { useModal } from 'libs/zustand/store';
-import { MouseEvent } from 'react';
+import { useModal, userStore } from 'libs/zustand/store';
+import { MouseEvent, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 const alarm = [
-  { requester: '닉네임은최대열글자가', requested: '펭귄' },
-  { requester: '펭펭', requested: '펭귄' },
-  { requester: 'lovely_cat', requested: '펭귄' },
-  { requester: '몇글자까지되나궁금해', requested: '펭귄' },
+  { nickname: '닉네임은최대열글자가', requested: '펭귄' },
+  { nickname: '펭펭', requested: '펭귄' },
+  { nickname: 'lovely_cat', requested: '펭귄' },
+  { nickname: '몇글자까지되나궁금해', requested: '펭귄' },
 ];
 
 const AlarmModal = () => {
   const { removeModal } = useModal();
+  const { user } = userStore();
+  const [alarm, setAlarm] = useState([]);
+  const { fireToast } = useToast();
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     e.preventDefault();
     removeModal('friend');
   };
+
+  useEffect(() => {
+    getAlarm();
+  }, []);
+
+  const getAlarm = async () => {
+    if (!user?.id) return;
+    const res = await axios.get(`/api/users/alarms/${user.id}`);
+    setAlarm(res.data.alarm);
+  };
+
+  const acceptFriend = async (nickname: string) => {
+    if (!user?.id) return;
+    const res = await axios.post(`/api/users/friends`, {
+      data: {
+        userId: user.id,
+        friendNickname: nickname,
+      },
+    });
+    if (res.data.message === 'duplicated') {
+      const top = buttonRef.current?.getBoundingClientRect().top;
+      fireToast({ content: '이미 친구입니다.', top: top });
+    }
+  };
+
   return (
     <Container onClick={(e) => e.stopPropagation()}>
       <TitleWrapper>
@@ -27,13 +58,15 @@ const AlarmModal = () => {
         </Close>
       </TitleWrapper>
       <Ul>
-        {alarm.map((item, index) => {
+        {alarm.map((item: { nickname: string }, index) => {
           return (
             <Li key={index}>
               <AlarmMessage>
-                <Span>{item.requester}</Span>님께서 당신과 친구를 하고 싶어합니다.
+                <Span>{item.nickname}</Span>님께서 당신과 친구를 하고 싶어합니다.
               </AlarmMessage>
-              <AcceptButton>수락</AcceptButton>
+              <AcceptButton onClick={() => acceptFriend(item.nickname)} ref={buttonRef}>
+                수락
+              </AcceptButton>
             </Li>
           );
         })}

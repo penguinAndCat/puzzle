@@ -16,7 +16,6 @@ const Header = () => {
     <Container>
       <Wrapper>
         <Left>
-          <Button>메뉴</Button>
           <Button onClick={() => addModal('friend')}>친구</Button>
           <Button onClick={() => addModal('alarm')}>알람</Button>
         </Left>
@@ -86,8 +85,9 @@ const Wrapper = styled.div`
 `;
 
 const Left = styled.div`
-  min-width: 130px;
+  min-width: 180px;
   display: flex;
+  justify-content: space-between;
   margin-right: 80px;
   @media (max-width: 900px) {
     margin-right: 20px;
@@ -129,8 +129,9 @@ const Bar = styled.div`
 
 const Right = styled.div`
   position: relative;
-  min-width: 130px;
-  ${theme.common.flexCenter};
+  min-width: 180px;
+  display: flex;
+  justify-content: end;
   margin-left: 80px;
   @media (max-width: 900px) {
     margin-left: 20px;
