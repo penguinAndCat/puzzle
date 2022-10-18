@@ -1,24 +1,24 @@
-import { theme } from 'libs/theme/theme';
-import { useState } from 'react';
 import styled from 'styled-components';
-import Auth from './Auth';
 import Palette from './Palette';
 import axios from '../../libs/axios';
 import { useRouter } from 'next/router';
 import { useModal, userStore } from 'libs/zustand/store';
 
 const Header = () => {
-  const [showAuth, setShowAuth] = useState(false);
   const router = useRouter();
   const { user, setUser } = userStore();
   const { addModal } = useModal();
   return (
     <Container>
       <Wrapper>
-        <Left>
-          <Button onClick={() => addModal('friend')}>친구</Button>
-          <Button onClick={() => addModal('alarm')}>알람</Button>
-        </Left>
+        {user?.name ? (
+          <Left>
+            <Button onClick={() => addModal('friend')}>친구</Button>
+            <Button onClick={() => addModal('alarm')}>알람</Button>
+          </Left>
+        ) : (
+          <Left />
+        )}
         <Bar />
         <Logo>
           <div>PENGCAT</div>
@@ -26,13 +26,6 @@ const Header = () => {
         </Logo>
         <Bar />
         <Right>
-          {/* <Button
-            onClick={() => {
-              console.log('first');
-              axios.get('/api/auth/google').then((res) => console.log(res));
-            }}
-          ></Button> */}
-
           {user?.name ? (
             <Button
               onClick={() =>
@@ -45,13 +38,7 @@ const Header = () => {
               {user.name}
             </Button>
           ) : (
-            <Button onClick={() => setShowAuth((prev) => !prev)}>로그인</Button>
-          )}
-
-          {showAuth && (
-            <AuthContainer>
-              <Auth />
-            </AuthContainer>
+            <Button onClick={() => addModal('login')}>로그인</Button>
           )}
           <Palette />
         </Right>

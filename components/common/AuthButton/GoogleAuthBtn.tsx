@@ -31,15 +31,15 @@ const Btn = styled.button`
   cursor: pointer;
   font-size: 0;
   line-height: 0;
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
   background-position: center;
-  border: 1px solid lightgray;
+  border: 1px solid #ededed;
   &:hover {
-    border: 1px solid skyblue;
+    border: 1px solid #ededed;
   }
 `;
 
@@ -48,4 +48,5 @@ const GoogleAuth = styled(Btn)`
   align-items: center;
   justify-content: center;
   background-image: url('/btn_google.svg');
+  background-size: 80px;
 `;

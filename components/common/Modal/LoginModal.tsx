@@ -1,10 +1,32 @@
 import { theme } from 'libs/theme/theme';
+import { useModal } from 'libs/zustand/store';
+import { MouseEvent } from 'react';
 import styled from 'styled-components';
+import GoogleAuthBtn from '../AuthButton/GoogleAuthBtn';
+import KakaoAuthBtn from '../AuthButton/KakaoAuthBtn';
+import NaverAuthBtn from '../AuthButton/NaverAuthBtn';
+import { CloseIcon } from '../Icon';
 
 const LoginModal = () => {
+  const { removeModal } = useModal();
+  const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
+    e.preventDefault();
+    removeModal('login');
+  };
   return (
     <Container onClick={(e) => e.stopPropagation()}>
-      <div>로그인 모달</div>
+      <TitleWrapper>
+        <Close />
+        <Title>Login</Title>
+        <Close onClick={(e) => closeModal(e)} style={{ cursor: 'pointer' }}>
+          <CloseIcon />
+        </Close>
+      </TitleWrapper>
+      <ButtonWrapper>
+        <GoogleAuthBtn />
+        <KakaoAuthBtn />
+        <NaverAuthBtn />
+      </ButtonWrapper>
     </Container>
   );
 };
@@ -35,12 +57,36 @@ const Container = styled.div`
   top: 50%;
   left: 50%;
   transform: translate3d(-50%, -50%, 0);
-  max-width: 400px;
-  // max-height: 400px;
   min-width: 300px;
-  min-height: 300px;
-  ${theme.common.flexCenterColumn}
+  min-height: 130px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
   background-color: ${({ theme }) => theme.modalColor};
   color: ${({ theme }) => theme.modalTextColor};
+`;
+
+const TitleWrapper = styled.div`
+  width: 100%;
+  height: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: solid 2px ${({ theme }) => theme.modalTextColor};
+`;
+
+const Title = styled.div``;
+
+const Close = styled.div`
+  width: 30px;
+  height: 30px;
+  ${theme.common.flexCenter}
+`;
+
+const ButtonWrapper = styled.div`
+  width: 200px;
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
 `;

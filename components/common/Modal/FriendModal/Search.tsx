@@ -2,7 +2,7 @@ import axios from 'axios';
 import Portal from 'components/common/Portal';
 import { useToast } from 'hooks/useToast';
 import { userStore } from 'libs/zustand/store';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 
 const SearchFriend = () => {
@@ -11,9 +11,6 @@ const SearchFriend = () => {
   const { fireToast } = useToast();
   const { user } = userStore();
   const buttonRef = useRef<HTMLButtonElement>(null);
-  // useEffect(() => {
-  //   searchUser();
-  // }, []);
   const searchUser = async () => {
     const res = await axios.get(`/api/users/${searched}`);
     setSearchedUser(res.data.user);

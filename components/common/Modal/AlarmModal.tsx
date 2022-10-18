@@ -21,7 +21,7 @@ const AlarmModal = () => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     e.preventDefault();
-    removeModal('friend');
+    removeModal('alarm');
   };
 
   useEffect(() => {

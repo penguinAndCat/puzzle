@@ -16,7 +16,7 @@ export default function NaverAuthBtn() {
       // 팝업창으로 로그인을 진행할 것인지?
       isPopup: false,
       // 버튼 타입 ( 색상, 타입, 크기 변경 가능 )
-      loginButton: { color: 'green', type: 1, height: 39 },
+      loginButton: { color: 'green', type: 1, height: 59 },
       callbackHandle: true,
     });
     naverLogin.init();
@@ -36,14 +36,14 @@ const Btn = styled.button`
   cursor: pointer;
   font-size: 0;
   line-height: 0;
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
   background-position: center;
-  border: 1px solid lightgray;
+  border: none;
   &:hover {
-    border: 1px solid skyblue;
+    border: none;
   }
 `;
