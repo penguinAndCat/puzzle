@@ -8,6 +8,9 @@ const AlarmSchema = new mongoose.Schema(
     requested: {
       type: String,
     },
+    message: {
+      type: String,
+    },
   },
   {
     timestamps: true,

@@ -1,7 +1,8 @@
+import axios from 'axios';
 import { CloseIcon } from 'components/common/Icon';
 import { theme } from 'libs/theme/theme';
-import { useModal } from 'libs/zustand/store';
-import { MouseEvent } from 'react';
+import { useModal, userStore } from 'libs/zustand/store';
+import { MouseEvent, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import SearchFriend from './Search';
 
@@ -18,9 +19,21 @@ const searchedUser = [
 
 const FriendModal = () => {
   const { removeModal } = useModal();
+  const [frineds, setFriends] = useState([]);
+  const { user } = userStore();
   const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     e.preventDefault();
     removeModal('friend');
+  };
+  useEffect(() => {
+    getAlarm();
+  }, []);
+
+  const getAlarm = async () => {
+    if (!user?.id) return;
+    const res = await axios.get(`/api/users/friends/${user.id}`);
+    console.log(res.data.friends);
+    setFriends(res.data.friends);
   };
   return (
     <Container onClick={(e) => e.stopPropagation()}>
@@ -34,7 +47,7 @@ const FriendModal = () => {
       <SearchFriend />
       <div>친구 목록</div>
       <Ul>
-        {searchedUser.map((item) => {
+        {frineds.map((item: { nickname: string; picture: string }) => {
           return (
             <Li key={item.nickname}>
               <Img src={item.picture} />

@@ -13,7 +13,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   await dbConnect();
   if (method === 'GET') {
     const { nickname } = req.query;
-    console.log(nickname);
     try {
       const user = await User.aggregate([
         { $match: { nickname: nickname } },

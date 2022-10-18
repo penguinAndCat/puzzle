@@ -1,5 +1,6 @@
 import dbConnect from 'libs/db/mongoose';
 import Alarm from 'models/Alarm';
+import Friend from 'models/Friend';
 import User from 'models/User';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
@@ -13,17 +14,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   const { method } = req;
   await dbConnect();
   if (method === 'POST') {
-    const data = req.body.data;
-    const { requester, requestedNickname } = req.body.data;
+    const { userId, friendNickname } = req.body.data;
     try {
-      const user: any = await User.findOne({ nickname: requestedNickname });
-      const alarm: any = await Alarm.findOne({ requester: requester, requested: user._id });
-      if (alarm !== null) {
+      const user: any = await User.findOne({ nickname: friendNickname });
+      const friend: any = await Friend.findOne({ userId: userId, friend: user._id });
+      if (friend !== null) {
         return res.status(201).json({ message: 'duplicated' });
       }
-      await Alarm.create({
-        requester: requester,
-        requested: user._id,
+      await Friend.create({
+        userId: userId,
+        friend: user._id,
+      });
+      await Friend.create({
+        userId: user._id,
+        friend: userId,
       });
       res.status(201).json({ message: 'success' });
     } catch (err) {
