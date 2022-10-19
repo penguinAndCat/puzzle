@@ -1,12 +1,19 @@
 import Card from 'components/common/Card';
-import { useModal } from 'libs/zustand/store';
+import { useModal, usePuzzle } from 'libs/zustand/store';
 import styled from 'styled-components';
 
-const images = ['/cp.png', '/cp2.png', '/cp3.png', '/cp4.png'];
+const images = [
+  'http://res.cloudinary.com/penguinandcatpuzzle/image/upload/v1666189078/bugvpkwfmde3q21zcm4s.png',
+  'http://res.cloudinary.com/penguinandcatpuzzle/image/upload/v1666189134/ylij9nqsupthcypczcjn.png',
+  'http://res.cloudinary.com/penguinandcatpuzzle/image/upload/v1666189479/uzxtq97qotpu68qhjunh.png',
+  'http://res.cloudinary.com/penguinandcatpuzzle/image/upload/v1666189365/qtpra1i8dps1nwjhc17a.png',
+];
 
 const Main = () => {
   const { addModal } = useModal();
+  const { initialModal } = usePuzzle();
   const openModal = () => {
+    initialModal();
     addModal('puzzle');
   };
   return (

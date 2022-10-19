@@ -12,7 +12,7 @@ import { CloseIcon } from '../Icon';
 
 const PuzzleModal = () => {
   const { removeModal, addModal } = useModal();
-  const { modalImage, secretRoom, setModalImage, initialModal, setNumber, setTitle, setSecretRoom } = usePuzzle();
+  const { modalImage, secretRoom, setModalImage, setNumber, setTitle, setSecretRoom } = usePuzzle();
   const { onLoading } = useLoading();
   const { fireToast } = useToast();
   const [roomName, setRoomName] = useState('');
@@ -27,12 +27,6 @@ const PuzzleModal = () => {
     e.preventDefault();
     removeModal('puzzle');
   };
-
-  useEffect(() => {
-    return () => {
-      initialModal();
-    };
-  }, []);
 
   useEffect(() => {
     if (modalImage.src === '') return;
@@ -62,6 +56,7 @@ const PuzzleModal = () => {
         const img = new Image();
         img.src = base64.toString();
         img.onload = function () {
+          console.log({ src: base64.toString(), width: img.width, height: img.height });
           setModalImage({ src: base64.toString(), width: img.width, height: img.height }); // 파일 base64 상태 업데이트
         };
       }
