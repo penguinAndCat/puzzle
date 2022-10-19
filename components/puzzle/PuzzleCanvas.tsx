@@ -52,6 +52,7 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
       Paper.setup(canvas);
       if (router.query.id === undefined) {
         const config = exportConfig();
+        console.log(Paper, puzzleImg, config, canvasSize, puzzleLv);
         initConfig(Paper, puzzleImg, config, canvasSize, puzzleLv);
         offLoading();
       } else {
