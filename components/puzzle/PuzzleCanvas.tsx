@@ -7,7 +7,9 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import { SocketContext } from 'libs/context/socket';
 import { moveIndex } from 'libs/puzzle/socketMove';
-import { useLoading } from 'libs/zustand/store';
+import { useLoading, userStore } from 'libs/zustand/store';
+import Pusher from 'pusher-js';
+import { NEXT_SERVER } from 'config';
 
 interface Props {
   puzzleLv: number;
@@ -15,11 +17,16 @@ interface Props {
 }
 
 const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
+  const { user } = userStore();
   const { offLoading } = useLoading();
   const router = useRouter();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const socket = useContext(SocketContext);
+  let userNickname: string;
+  if (user?.nickname) {
+    userNickname = user.nickname;
+  }
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -52,39 +59,67 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
       Paper.setup(canvas);
       if (router.query.id === undefined) {
         const config = exportConfig();
-        console.log(Paper, puzzleImg, config, canvasSize, puzzleLv);
         initConfig(Paper, puzzleImg, config, canvasSize, puzzleLv);
         offLoading();
       } else {
+        if (userNickname === undefined) return;
         const response = await axios.get(`/api/puzzle?id=${router.query.id}`);
         const item = response.data.item;
         const config = { ...item.config };
         const puzzleImage = { ...config.puzzleImage };
-        restartConfig(Paper, puzzleImage, config, canvasSize, item.level, router.query.id, socket);
+        restartConfig(Paper, puzzleImage, config, canvasSize, item.level, router.query.id, socket, userNickname);
         offLoading();
       }
     };
     setPuzzle();
-  }, [puzzleLv, router.isReady, puzzleImg, canvasSize, router.query.id, socket]);
+  }, [puzzleLv, router.isReady, puzzleImg, canvasSize, router.query.id, socket, user]);
 
   useEffect(() => {
-    if (!router.isReady) return;
-
-    socket.emit('join', router.query.id);
-
-    socket.on('groupTiles', (data) => {
-      if (data.socketId !== socket.id) {
-        moveIndex(data.groupTiles, data.indexArr, data.socketCanvasSize);
-      }
+    console.log(NEXT_SERVER);
+    let subscribe = true;
+    const pusher = new Pusher(process.env.NEXT_PUBLIC_KEY ? process.env.NEXT_PUBLIC_KEY : '', {
+      cluster: 'ap3',
+      authEndpoint: `${NEXT_SERVER}/api/pusher/auth`,
+      auth: {
+        params: {
+          username: 'hi',
+        },
+      },
     });
+    if (subscribe) {
+      // subscribe to the channel.
+      const channel: any = pusher.subscribe('presence-channel');
+      // Now we can handle all event related to that channel. ==> using bind()
+      // Ex. like when a user subscribes to the channel.
+      channel.bind('pusher:subscription_succeeded', (members: Members) => {
+        // console.log('count', members);
+        // setOnlineUsersCount(members.count);
+      });
 
-    // socket disconnet onUnmount if exists
+      // when a new user join the channel.
+      channel.bind('pusher:member_added', (member: Member) => {
+        // console.log('channel', channel.members, member);
+        // setOnlineUsersCount(channel.members.count);
+        // setOnlineUsers((prev) => [...prev, { username: member.info.username }]);
+      });
+
+      // when someone send a message.
+      channel.bind('movePuzzle', (data: any) => {
+        const { groupTiles, indexArr, socketCanvasSize } = data;
+        moveIndex(groupTiles, indexArr, socketCanvasSize);
+        // if (data.userNickname !== userNickname) {
+        //   moveIndex(groupTiles, indexArr, socketCanvasSize);
+        // }
+        // setChats((prev) => [...prev, { username, message }]);
+      });
+    }
+
     return () => {
-      if (socket) {
-        socket.disconnect();
-      }
+      // last unsubscribe the user from the channel.
+      pusher.unsubscribe('presence-channel');
+      subscribe = false;
     };
-  }, [router.isReady, router.query.id, socket]);
+  }, []);
 
   return (
     <Wrapper>

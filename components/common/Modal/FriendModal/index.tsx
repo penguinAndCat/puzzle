@@ -32,7 +32,6 @@ const FriendModal = () => {
   const getAlarm = async () => {
     if (!user?.id) return;
     const res = await axios.get(`/api/users/friends/${user.id}`);
-    console.log(res.data.friends);
     setFriends(res.data.friends);
   };
   return (

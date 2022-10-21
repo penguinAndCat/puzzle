@@ -2,7 +2,7 @@ import axios from 'axios';
 import { openConfetti } from 'hooks/useConfetti';
 import { getMargin } from './createPuzzle';
 
-const moveTile = (config: Config, query?: string | string[], socket?: any) => {
+const moveTile = (config: Config, query?: string | string[], socket?: any, userNickName?: string) => {
   config.groupTiles.forEach((item, index) => {
     item.tile.onMouseDown = (event: any) => {
       const gIndex = item.groupIndex;
@@ -76,6 +76,7 @@ const moveTile = (config: Config, query?: string | string[], socket?: any) => {
             },
             indexArr: indexArr,
             socketId: socket.id,
+            userNickName: userNickName,
           },
         });
       }

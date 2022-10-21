@@ -56,7 +56,6 @@ const PuzzleModal = () => {
         const img = new Image();
         img.src = base64.toString();
         img.onload = function () {
-          console.log({ src: base64.toString(), width: img.width, height: img.height });
           setModalImage({ src: base64.toString(), width: img.width, height: img.height }); // 파일 base64 상태 업데이트
         };
       }
@@ -125,7 +124,6 @@ const PuzzleModal = () => {
         data: data,
       });
       const { item, message } = response.data;
-      console.log(item);
       router.push(`/puzzle/${item._id}`);
     } catch (err) {
       alert('failed');

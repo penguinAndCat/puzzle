@@ -1,4 +1,5 @@
 import dbConnect from 'libs/db/mongoose';
+import { pusher } from 'libs/pusher';
 import Puzzle from 'models/Puzzle';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { NextApiResponseServerIO } from 'types/next';
@@ -26,14 +27,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
       const groupTiles = req.body.data.config.groupTiles;
       const indexArr = req.body.data.indexArr;
       const socketCanvasSize = req.body.data.config.canvasSize;
-      const socketId = req.body.data.socketId;
-      if (id !== undefined)
-        res?.socket?.server?.io?.to(id).emit('groupTiles', {
+      const userNickName = req.body.data.userNickName;
+      // if (id !== undefined)
+      //   res?.socket?.server?.io?.to(id).emit('groupTiles', {
+      //     groupTiles: groupTiles,
+      //     indexArr: indexArr,
+      //     socketCanvasSize: socketCanvasSize,
+      //     socketId: socketId,
+      //   });
+      if (id !== undefined) {
+        await pusher.trigger('presence-channel', 'movePuzzle', {
           groupTiles: groupTiles,
           indexArr: indexArr,
           socketCanvasSize: socketCanvasSize,
-          socketId: socketId,
+          userNickName: userNickName,
         });
+      }
       res.status(201).json({ message: 'success' });
     } catch (err) {
       res.status(500).json({ message: 'failed', error: err });
