@@ -7,7 +7,7 @@ const nextConfig = {
   },
   env: {
     LOCAL_SERVER: 'http://localhost:3000',
-    PROD_SERVER: 'https://insta-frontend.vercel.app',
+    PROD_SERVER: 'https://pengcatpuzzle.vercel.app',
   },
 };
 
