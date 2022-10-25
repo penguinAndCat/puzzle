@@ -3,6 +3,7 @@ import { openConfetti } from 'hooks/useConfetti';
 import { getMargin } from './createPuzzle';
 
 const moveTile = (config: Config, query?: string | string[], socket?: any, userNickName?: string) => {
+  console.log('move', config);
   config.groupTiles.forEach((item, index) => {
     item.tile.onMouseDown = (event: any) => {
       const gIndex = item.groupIndex;
@@ -66,18 +67,20 @@ const moveTile = (config: Config, query?: string | string[], socket?: any, userN
       }
 
       if (query !== undefined) {
-        axios.put(`/api/puzzle/${query}`, {
-          data: {
-            config: {
-              ...config,
-              groupTiles: config.groupTiles.map((item) => {
-                return [item.tile.position.x, item.tile.position.y, item.groupIndex];
-              }),
-            },
-            indexArr: indexArr,
-            socketId: socket.id,
-            userNickName: userNickName,
+        const data = {
+          config: {
+            ...config,
+            groupTiles: config.groupTiles.map((item) => {
+              return [item.tile.position.x, item.tile.position.y, item.groupIndex];
+            }),
           },
+          indexArr: indexArr,
+          socketId: socket,
+          userNickName: userNickName,
+        }
+        console.log(data, query);
+        axios.put(`/api/puzzle/${query}`, {
+          data
         });
       }
 
@@ -132,7 +135,7 @@ const fitTile = (config: Config, currentTile: any, groupIndex: index) => {
   const leftTile = index % config.tilesPerRow !== 0 ? config.groupTiles[index - 1].tile : undefined;
   const rightTile =
     index % config.tilesPerRow !== config.tilesPerRow - 1 ? config.groupTiles[index + 1].tile : undefined;
-  const topTile = index >= config.tilesPerColumn ? config.groupTiles[index - config.tilesPerColumn].tile : undefined;
+  const topTile = index >= config.tilesPerRow ? config.groupTiles[index - config.tilesPerRow].tile : undefined;
   const bottomTile =
     index < config.tilesPerRow * config.tilesPerColumn - config.tilesPerRow
       ? config.groupTiles[index + config.tilesPerRow].tile
