@@ -18,7 +18,7 @@
     "jwt-decode": "^3.1.2",
     "mongodb": "^4.9.1",
     "mongoose": "^6.6.1",
-    "next": "12.2.3",
+    "next": "^13.0.3-canary.0",
     "next-cookies": "^2.0.3",
     "paper": "^0.12.15",
     "pusher": "^5.1.1-beta",

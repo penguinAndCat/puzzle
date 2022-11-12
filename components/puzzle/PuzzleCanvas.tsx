@@ -5,9 +5,8 @@ import { exportConfig, initConfig, restartConfig } from 'libs/puzzle/createPuzzl
 import { useRouter } from 'next/router';
 
 import axios from 'axios';
-import { SocketContext } from 'libs/context/socket';
 import { moveIndex } from 'libs/puzzle/socketMove';
-import { useLoading, userStore } from 'libs/zustand/store';
+import { useLoading, userStore, useSocket } from 'libs/zustand/store';
 import Pusher from 'pusher-js';
 import { NEXT_SERVER } from 'config';
 
@@ -19,10 +18,11 @@ interface Props {
 const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
   const { user } = userStore();
   const { offLoading } = useLoading();
+  const { setParticipant } = useSocket();
   const router = useRouter();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
-  const socket = useContext(SocketContext);
+  const [socket, setSocket] = useState();
   let userNickname: string;
   if (user?.nickname) {
     userNickname = user.nickname;
@@ -63,6 +63,7 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
         offLoading();
       } else {
         if (userNickname === undefined) return;
+        if (socket === undefined) return;
         const response = await axios.get(`/api/puzzle?id=${router.query.id}`);
         const item = response.data.item;
         const config = { ...item.config };
@@ -75,51 +76,53 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
   }, [puzzleLv, router.isReady, puzzleImg, canvasSize, router.query.id, socket, user]);
 
   useEffect(() => {
-    console.log(NEXT_SERVER);
+    if (!router.isReady) return;
+    if (userNickname === undefined) return;
+    if(router.query.id === undefined) return;
     let subscribe = true;
     const pusher = new Pusher(process.env.NEXT_PUBLIC_KEY ? process.env.NEXT_PUBLIC_KEY : '', {
       cluster: 'ap3',
       authEndpoint: `${NEXT_SERVER}/api/pusher/auth`,
       auth: {
         params: {
-          username: 'hi',
+          username: userNickname,
         },
       },
     });
     if (subscribe) {
       // subscribe to the channel.
-      const channel: any = pusher.subscribe('presence-channel');
-      // Now we can handle all event related to that channel. ==> using bind()
-      // Ex. like when a user subscribes to the channel.
+      const channel: any = pusher.subscribe(`presence-${router.query.id}`);
+      let socketId: string;
       channel.bind('pusher:subscription_succeeded', (members: Members) => {
-        // console.log('count', members);
-        // setOnlineUsersCount(members.count);
+        setSocket(members.myID);
+        socketId = members.myID;
+        setParticipant(Object.values(members.members).map((item: any) => item.username));
       });
 
       // when a new user join the channel.
-      channel.bind('pusher:member_added', (member: Member) => {
-        // console.log('channel', channel.members, member);
-        // setOnlineUsersCount(channel.members.count);
-        // setOnlineUsers((prev) => [...prev, { username: member.info.username }]);
+      channel.bind('pusher:member_added', () => {
+        setParticipant(Object.values(channel.members.members).map((item: any) => item.username));
+      });
+
+      channel.bind('pusher:member_removed', () => {
+        setParticipant(Object.values(channel.members.members).map((item: any) => item.username));
       });
 
       // when someone send a message.
       channel.bind('movePuzzle', (data: any) => {
-        const { groupTiles, indexArr, socketCanvasSize } = data;
-        moveIndex(groupTiles, indexArr, socketCanvasSize);
-        // if (data.userNickname !== userNickname) {
-        //   moveIndex(groupTiles, indexArr, socketCanvasSize);
-        // }
-        // setChats((prev) => [...prev, { username, message }]);
+        const { groupTiles, indexArr, socketCanvasSize} = data;
+        if (data.socketId !== socketId) {
+          moveIndex(groupTiles, indexArr, socketCanvasSize);
+        }
       });
     }
 
     return () => {
       // last unsubscribe the user from the channel.
-      pusher.unsubscribe('presence-channel');
+      pusher.unsubscribe(`presence-${router.query.id}`);
       subscribe = false;
     };
-  }, []);
+  }, [router.isReady, user?.nickname]);
 
   return (
     <Wrapper>

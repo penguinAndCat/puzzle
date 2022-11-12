@@ -3,7 +3,7 @@ import Palette from 'components/common/Palette';
 import { saveImage } from 'libs/common/saveImage';
 import { exportConfig } from 'libs/puzzle/createPuzzle';
 import { theme } from 'libs/theme/theme';
-import { useLoading, usePuzzle, userStore } from 'libs/zustand/store';
+import { useLoading, usePuzzle, userStore, useSocket } from 'libs/zustand/store';
 import { useRouter } from 'next/router';
 import { Dispatch, MouseEvent, SetStateAction } from 'react';
 import styled from 'styled-components';
@@ -18,6 +18,7 @@ interface Props {
 const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) => {
   const { number, title } = usePuzzle();
   const { onLoading, offLoading } = useLoading();
+  const { participants, addParticipant } = useSocket();
   const router = useRouter();
   const handleClick = (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
     e.stopPropagation();
@@ -65,7 +66,7 @@ const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) =>
       <Wrapper>
         <Left>
           <Button onClick={(e) => handleClick(e)}>퍼즐수</Button>
-          <Button>완성본</Button>
+          <Button>{participants}</Button>
         </Left>
         <Logo>
           <div>PENGCAT</div>

@@ -64,3 +64,22 @@ export const userStore = create<userStoreProps>((set) => ({
   },
   setUser: (user: userInfo | null) => set({ user: user }),
 }));
+
+export const useSocket = create<SocketProps>((set) => ({
+  participants: [],
+  setParticipant: (value) => {
+    set(() => ({
+      participants: value,
+    }));
+  },
+  addParticipant: (value) => {
+    set((state) => ({
+      participants: [...state.participants, value],
+    }));
+  },
+  removeParticipant: (value) => {
+    set((state) => ({
+      participants: state.participants.filter((participants: string) => participants !== value),
+    }));
+  },
+}));

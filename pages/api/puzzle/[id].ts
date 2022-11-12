@@ -28,6 +28,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
       const indexArr = req.body.data.indexArr;
       const socketCanvasSize = req.body.data.config.canvasSize;
       const userNickName = req.body.data.userNickName;
+      const socketId = req.body.data.socketId;
       // if (id !== undefined)
       //   res?.socket?.server?.io?.to(id).emit('groupTiles', {
       //     groupTiles: groupTiles,
@@ -35,12 +36,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
       //     socketCanvasSize: socketCanvasSize,
       //     socketId: socketId,
       //   });
+      console.log('hi')
       if (id !== undefined) {
-        await pusher.trigger('presence-channel', 'movePuzzle', {
+        await pusher.trigger(`presence-${id}`, 'movePuzzle', {
           groupTiles: groupTiles,
           indexArr: indexArr,
           socketCanvasSize: socketCanvasSize,
           userNickName: userNickName,
+          socketId: socketId,
         });
       }
       res.status(201).json({ message: 'success' });
