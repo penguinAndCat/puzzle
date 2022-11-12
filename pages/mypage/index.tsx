@@ -113,7 +113,7 @@ export default function MyPage() {
       </Head>
       <Header />
       <Wrapper>
-        <ul>
+        <TabBox>
           <li
             onClick={() => {
               myRef.current!.style.display = 'block';
@@ -134,7 +134,7 @@ export default function MyPage() {
           >
             초대된 방
           </li>
-        </ul>
+        </TabBox>
         <PuzzleContainer>
           <PuzzleHead>{tab === 'my' ? '나의 방' : '초대된 방'}</PuzzleHead>
           <div>
@@ -158,6 +158,23 @@ export default function MyPage() {
   );
 }
 
+const TabBox = styled.ul`
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 0 10px;
+  width: 100%;
+  & > li {
+    padding: 10px;
+    background-color: white;
+    color: black;
+    cursor: pointer;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+  }
+  border-bottom: 1px solid black;
+`;
+
 const PuzzleWrapper = styled.ul`
   padding: 10px;
   display: grid;
@@ -172,6 +189,7 @@ const PuzzleCard = styled.li`
   border-radius: 4px;
   background-color: white;
   color: black;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   p {
     word-break: break-all;
     white-space: normal;
@@ -179,7 +197,7 @@ const PuzzleCard = styled.li`
 `;
 
 const Wrapper = styled.div`
-  padding-block: 10px;
+  padding: 10px;
 `;
 
 const ImgWrapper = styled.div`
@@ -191,6 +209,7 @@ const ImgWrapper = styled.div`
     width: 100%;
     height: 100%;
     border-radius: 5px;
+    object-fit: contain;
   }
 `;
 
@@ -200,11 +219,11 @@ const PuzzleHead = styled.h2`
   text-align: center;
   display: inline-block;
   width: 100%;
-  font-size: 4rem;
+  font-size: 3rem;
   font-weight: bold;
   line-height: 1.25;
 `;
 
 const PuzzleTitle = styled.p`
-  text-align: center;
+  padding: 5px;
 `;
