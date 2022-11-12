@@ -1,6 +1,4 @@
-
-import type { NextPage } from 'next';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { exportLevels } from '../../libs/puzzle/createPuzzle';
 import { usePuzzle } from 'libs/zustand/store';
@@ -14,9 +12,9 @@ const Levels = ({ showLevel, setShowLevel }: Props) => {
   const { number, setNumber } = usePuzzle();
   const [list, setList] = useState<number[][]>([]);
   const [display, setDisplay] = useState(false); // fadeout animaition 기다림
+  const el = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    console.log(showLevel);
     if(showLevel){
       const levels = exportLevels();
       setList(levels);
@@ -28,10 +26,22 @@ const Levels = ({ showLevel, setShowLevel }: Props) => {
     }
   }, [showLevel]);
 
+  useEffect(() => {
+    const handleCloseLevels = (e: CustomEvent<MouseEvent>) => {
+      if (!el.current || !el.current.contains(e.target as Element)) {
+        setShowLevel(false);
+      }
+    };
+    window.addEventListener('mousedown', handleCloseLevels as EventListener);
+    return () => {
+      window.removeEventListener('mousedown', handleCloseLevels as EventListener);
+    };
+  }, []);
+
   return (
     <>
       {display && (
-        <Container show={showLevel}>
+        <Container show={showLevel} ref={el}>
           <Title>레벨 목록</Title>
           <OverflowBox>
             <List>

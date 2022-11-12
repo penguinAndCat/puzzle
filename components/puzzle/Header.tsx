@@ -3,28 +3,19 @@ import Palette from 'components/common/Palette';
 import { saveImage } from 'libs/common/saveImage';
 import { exportConfig } from 'libs/puzzle/createPuzzle';
 import { theme } from 'libs/theme/theme';
-import { useLoading, usePuzzle, userStore, useSocket } from 'libs/zustand/store';
+import { useLoading, usePuzzle, userStore } from 'libs/zustand/store';
 import { useRouter } from 'next/router';
-import { Dispatch, MouseEvent, SetStateAction } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import styled from 'styled-components';
 
 interface Props {
-  showLevel: boolean;
   setShowLevel: Dispatch<SetStateAction<boolean>>;
 }
 
-const Header = ({ showLevel, setShowLevel }: Props) => {
+const Header = ({ setShowLevel }: Props) => {
   const { number, title } = usePuzzle();
   const { onLoading, offLoading } = useLoading();
   const router = useRouter();
-  const handleClick = (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
-    e.stopPropagation();
-    if (!showLevel) {
-      setShowLevel(true);
-    } else {
-      setShowLevel(false);
-    }
-  };
   const { user } = userStore();
 
   const createPuzzleRoom = async () => {
@@ -62,8 +53,11 @@ const Header = ({ showLevel, setShowLevel }: Props) => {
     <Container>
       <Wrapper>
         <Left>
-          <Button onClick={(e) => handleClick(e)}>퍼즐수</Button>
-          <Button>방 정보</Button>
+          {router.query.id === undefined ? (
+              <Button onClick={() => setShowLevel(true)}>퍼즐수</Button>
+            ) : (
+              <Button>방 정보</Button>
+          )}
         </Left>
         <Logo>
           <div>PENGCAT</div>
