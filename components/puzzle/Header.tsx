@@ -9,28 +9,25 @@ import { Dispatch, MouseEvent, SetStateAction } from 'react';
 import styled from 'styled-components';
 
 interface Props {
-  puzzleImg: img;
   showLevel: boolean;
   setShowLevel: Dispatch<SetStateAction<boolean>>;
-  setShowLvMenu: Dispatch<SetStateAction<boolean>>;
 }
 
-const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) => {
+const Header = ({ showLevel, setShowLevel }: Props) => {
   const { number, title } = usePuzzle();
   const { onLoading, offLoading } = useLoading();
-  const { participants, addParticipant } = useSocket();
   const router = useRouter();
   const handleClick = (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
     e.stopPropagation();
     if (!showLevel) {
-      setShowLvMenu(true);
+      setShowLevel(true);
     } else {
       setShowLevel(false);
     }
   };
   const { user } = userStore();
 
-  const handleSave = async () => {
+  const createPuzzleRoom = async () => {
     try {
       onLoading();
 
@@ -66,7 +63,7 @@ const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) =>
       <Wrapper>
         <Left>
           <Button onClick={(e) => handleClick(e)}>퍼즐수</Button>
-          <Button>{participants}</Button>
+          <Button>방 정보</Button>
         </Left>
         <Logo>
           <div>PENGCAT</div>
@@ -75,9 +72,9 @@ const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) =>
         <Right>
           <Palette />
           {router.query.id === undefined ? (
-            <Button onClick={handleSave}>방 만들기</Button>
+            <Button onClick={createPuzzleRoom}>방 만들기</Button>
           ) : (
-            <Button onClick={handleSave}>공유하기</Button>
+            <Button>공유하기</Button>
           )}
         </Right>
       </Wrapper>

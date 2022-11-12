@@ -33,10 +33,10 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
     if (canvas === null) return;
 
     const imgResize = () => {
-      if (window.innerWidth < window.innerHeight - 60) {
+      if (window.innerWidth < window.innerHeight - 61) {
         setCanvasSize({ width: window.innerWidth, height: window.innerWidth });
       } else {
-        setCanvasSize({ width: window.innerHeight - 60, height: window.innerHeight - 60 });
+        setCanvasSize({ width: window.innerHeight - 61, height: window.innerHeight - 61 });
       }
     };
 
@@ -143,7 +143,7 @@ const Canvas = styled.canvas`
 
 const Wrapper = styled.div`
   width: 100%;
-  height: calc(100% - 60px);
+  height: calc(100% - 61px);
   display: flex;
   justify-content: center;
 `;
