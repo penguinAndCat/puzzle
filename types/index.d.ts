@@ -90,3 +90,10 @@ type userStoreProps = {
   user: userInfo | null;
   setUser: (user: userInfo | null) => void;
 };
+
+type SocketProps = {
+  participants: string[];
+  setParticipant: (value: string[]) => void;
+  addParticipant: (value: string) => void;
+  removeParticipant: (value: string) => void;
+};

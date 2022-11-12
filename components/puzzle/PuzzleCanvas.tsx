@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 
 import axios from 'axios';
 import { moveIndex } from 'libs/puzzle/socketMove';
-import { useLoading, userStore } from 'libs/zustand/store';
+import { useLoading, userStore, useSocket } from 'libs/zustand/store';
 import Pusher from 'pusher-js';
 import { NEXT_SERVER } from 'config';
 
@@ -18,6 +18,7 @@ interface Props {
 const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
   const { user } = userStore();
   const { offLoading } = useLoading();
+  const { setParticipant } = useSocket();
   const router = useRouter();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
@@ -67,7 +68,6 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
         const item = response.data.item;
         const config = { ...item.config };
         const puzzleImage = { ...config.puzzleImage };
-        console.log(Paper, puzzleImage, config, canvasSize, item.level, router.query.id, socket, userNickname)
         restartConfig(Paper, puzzleImage, config, canvasSize, item.level, router.query.id, socket, userNickname);
         offLoading();
       }
@@ -79,7 +79,6 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
     if (!router.isReady) return;
     if (userNickname === undefined) return;
     if(router.query.id === undefined) return;
-    console.log(NEXT_SERVER);
     let subscribe = true;
     const pusher = new Pusher(process.env.NEXT_PUBLIC_KEY ? process.env.NEXT_PUBLIC_KEY : '', {
       cluster: 'ap3',
@@ -97,11 +96,16 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
       channel.bind('pusher:subscription_succeeded', (members: Members) => {
         setSocket(members.myID);
         socketId = members.myID;
+        setParticipant(Object.values(members.members).map((item: any) => item.username));
       });
 
       // when a new user join the channel.
-      channel.bind('pusher:member_added', (member: Member) => {
-        // console.log('channel', channel.members, member);
+      channel.bind('pusher:member_added', () => {
+        setParticipant(Object.values(channel.members.members).map((item: any) => item.username));
+      });
+
+      channel.bind('pusher:member_removed', () => {
+        setParticipant(Object.values(channel.members.members).map((item: any) => item.username));
       });
 
       // when someone send a message.
