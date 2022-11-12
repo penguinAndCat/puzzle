@@ -8,30 +8,31 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 export default function MyPage() {
+  const [tab, setTab] = useState<'my' | 'invited'>('my');
   const { user, setUser } = userStore();
   const router = useRouter();
-  const [myPuzzles, setMyPuzzles] = useState<any[]>([]);
+  const [data, setData] = useState<any[]>([]);
   const myRef = useRef<HTMLDivElement>(null);
   const myPageRef = useRef(1);
   const [myLoading, setMyLoading] = useState(false);
 
-  useEffect(() => {
-    if (user?.name) return;
-    axios
-      .get('/api/auth')
-      .then((res) => {
-        const loginUser = res.data.user;
-        if (loginUser) {
-          setUser({ ...loginUser });
-          return;
-        }
-        router.replace('/');
-      })
-      .catch((err) => {
-        console.log(err);
-        router.replace('/');
-      });
-  }, [router, setUser, user?.name]);
+  // useEffect(() => {
+  //   if (user?.name) return;
+  //   axios
+  //     .get('/api/auth')
+  //     .then((res) => {
+  //       const loginUser = res.data.user;
+  //       if (loginUser) {
+  //         setUser({ ...loginUser });
+  //         return;
+  //       }
+  //       router.replace('/');
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //       router.replace('/');
+  //     });
+  // }, [router, setUser, user?.name]);
 
   const getMoreMyPuzzle = useCallback(async () => {
     try {
@@ -50,8 +51,32 @@ export default function MyPage() {
         myRef.current!.style.display = 'none';
       }
       myPageRef.current += 1;
-      console.log(item);
-      setMyPuzzles((prev) => [...prev, ...item]);
+      setData((prev) => [...prev, ...item]);
+    } catch (err) {
+      console.log(err);
+    }
+
+    setMyLoading(false);
+  }, [user?.id]);
+
+  const getMoreInvited = useCallback(async () => {
+    try {
+      if (!user?.id) {
+        return;
+      }
+      setMyLoading(true);
+      const response = await axios.get('/api/puzzle/invited', {
+        params: {
+          id: user?.id,
+          page: myPageRef.current,
+        },
+      });
+      const { item } = response.data;
+      if (!item || item.length < 10) {
+        myRef.current!.style.display = 'none';
+      }
+      myPageRef.current += 1;
+      setData((prev) => [...prev, ...item]);
     } catch (err) {
       console.log(err);
     }
@@ -61,12 +86,13 @@ export default function MyPage() {
 
   const isIntersect: IntersectionObserverCallback = useCallback(
     async (entries, observer) => {
-      if (entries[0].isIntersecting && !myLoading) {
+      if (entries[0].isIntersecting) {
         observer.unobserve(entries[0].target);
-        await getMoreMyPuzzle();
+        tab === 'my' ? await getMoreMyPuzzle() : await getMoreInvited();
+        observer.observe(entries[0].target);
       }
     },
-    [getMoreMyPuzzle, myLoading]
+    [getMoreInvited, getMoreMyPuzzle, tab]
   );
 
   useEffect(() => {
@@ -80,10 +106,6 @@ export default function MyPage() {
     return () => observer && observer.disconnect();
   }, [isIntersect, myRef]);
 
-  useEffect(() => {
-    console.log(myPuzzles);
-  }, [myPuzzles]);
-
   return (
     <div>
       <Head>
@@ -91,11 +113,33 @@ export default function MyPage() {
       </Head>
       <Header />
       <Wrapper>
+        <ul>
+          <li
+            onClick={() => {
+              myRef.current!.style.display = 'block';
+              myPageRef.current = 1;
+              setData([]);
+              setTab('my');
+            }}
+          >
+            나의 방
+          </li>
+          <li
+            onClick={() => {
+              myRef.current!.style.display = 'block';
+              setData([]);
+              myPageRef.current = 1;
+              setTab('invited');
+            }}
+          >
+            초대된 방
+          </li>
+        </ul>
         <PuzzleContainer>
-          <PuzzleHead>my room</PuzzleHead>
+          <PuzzleHead>{tab === 'my' ? '나의 방' : '초대된 방'}</PuzzleHead>
           <div>
             <PuzzleWrapper>
-              {myPuzzles?.map((item: any, index) => (
+              {data?.map((item: any, index) => (
                 <PuzzleCard key={index}>
                   <ImgWrapper>
                     <img src={item.config.puzzleImage.src} alt={'puzzleimg'} />
@@ -109,22 +153,12 @@ export default function MyPage() {
             <div ref={myRef} />
           </div>
         </PuzzleContainer>
-        <PuzzleContainer>
-          <PuzzleHead>invited room</PuzzleHead>
-          <div>
-            <PuzzleWrapper></PuzzleWrapper>
-          </div>
-        </PuzzleContainer>
       </Wrapper>
     </div>
   );
 }
 
 const PuzzleWrapper = styled.ul`
-  overflow-x: hidden;
-  overflow-y: auto;
-  height: 320px;
-  background-color: white;
   padding: 10px;
   display: grid;
   grid-template-columns: repeat(auto-fill, 250px);
@@ -134,11 +168,10 @@ const PuzzleWrapper = styled.ul`
 
 const PuzzleCard = styled.li`
   width: 250px;
-  height: 300px;
-  border-radius: 5px;
-  background-color: ${({ theme }) => theme.bgColor};
-  color: ${({ theme }) => theme.textColor};
-
+  height: 312px;
+  border-radius: 4px;
+  background-color: white;
+  color: black;
   p {
     word-break: break-all;
     white-space: normal;
@@ -150,15 +183,14 @@ const Wrapper = styled.div`
 `;
 
 const ImgWrapper = styled.div`
-  width: 100%;
-  height: 200px;
+  width: 250px;
+  height: 250px;
   border-radius: 5px;
 
   img {
     width: 100%;
     height: 100%;
     border-radius: 5px;
-    object-fit: contain;
   }
 `;
 
