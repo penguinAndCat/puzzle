@@ -8,6 +8,16 @@ import Modal from 'components/common/Modal';
 import axios from 'axios';
 import { userStore } from 'libs/zustand/store';
 import { useEffect } from 'react';
+import { QueryClient, QueryClientProvider } from 'react-query';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 0,
+    },
+  },
+});
 
 function MyApp({ Component, pageProps }: AppProps) {
   const { setUser } = userStore();
@@ -19,13 +29,15 @@ function MyApp({ Component, pageProps }: AppProps) {
   }, [setUser]);
 
   return (
-    <ThemeProvider>
-      <GlobalStyle />
-      <Component {...pageProps} />
-      <Toast />
-      <Loading />
-      <Modal />
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <GlobalStyle />
+        <Component {...pageProps} />
+        <Toast />
+        <Loading />
+        <Modal />
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }
 
