@@ -4,6 +4,8 @@ import { exportLevels } from '../../libs/puzzle/createPuzzle';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { useInvitedUser } from 'hooks/useInvitedUser';
+import { userStore } from 'libs/zustand/store';
+import { useToast } from 'hooks/useToast';
 
 interface Props {
   showRoomInfo: boolean;
@@ -16,6 +18,8 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo }: Props) => {
   const [list, setList] = useState<number[][]>([]);
   const [display, setDisplay] = useState(false); // fadeout animaition 기다림
   const el = useRef<HTMLDivElement>(null);
+  const { user } = userStore();
+  const { fireToast } = useToast();
   const { data, refetch } = useInvitedUser(router.query.id);
 
   useEffect(() => {
@@ -58,6 +62,19 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo }: Props) => {
     };
   }, []);
 
+  const requestFriend = async (requestedNickname: string) => {
+    if (!user?.id) return;
+    const res = await axios.post(`/api/users/request`, {
+      data: {
+        requester: user.id,
+        requestedNickname: requestedNickname,
+      },
+    });
+    if (res.data.message === 'duplicated') {
+      fireToast({ content: '이미 친구 요청을 보냈습니다.', top: 100 });
+    }
+  };
+
   return (
     <>
       {data && display && (
@@ -83,7 +100,7 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo }: Props) => {
                       {
                         user.isFriend > 0 ? 
                         <FriendButton>친구</FriendButton> :
-                        <FriendRequireButton>친구하기</FriendRequireButton>
+                        <FriendRequireButton onClick={() => requestFriend(user.nickname)}>친구하기</FriendRequireButton>
                       }
                     </UserWrapper>
                   )
