@@ -10,10 +10,11 @@ import styled from 'styled-components';
 
 interface Props {
   setShowLevel: Dispatch<SetStateAction<boolean>>;
+  setShowRoomInfo: Dispatch<SetStateAction<boolean>>;
 }
 
-const Header = ({ setShowLevel }: Props) => {
-  const { number, title } = usePuzzle();
+const Header = ({ setShowLevel, setShowRoomInfo }: Props) => {
+  const { number, title, secretRoom } = usePuzzle();
   const { onLoading, offLoading } = useLoading();
   const router = useRouter();
   const { user } = userStore();
@@ -35,6 +36,7 @@ const Header = ({ setShowLevel }: Props) => {
         userId: user?.id,
         level: number,
         title: title,
+        secretRoom: secretRoom,
       };
 
       const response = await axios.post('/api/puzzle', {
@@ -56,7 +58,7 @@ const Header = ({ setShowLevel }: Props) => {
           {router.query.id === undefined ? (
               <Button onClick={() => setShowLevel(true)}>퍼즐수</Button>
             ) : (
-              <Button>방 정보</Button>
+              <Button onClick={() => setShowRoomInfo(true)}>방 정보</Button>
           )}
         </Left>
         <Logo>

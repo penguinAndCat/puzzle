@@ -8,7 +8,7 @@ interface Props {
 
 const Card = ({ image }: Props) => {
   const { addModal } = useModal();
-  const { initialModal } = usePuzzle();
+  const { initialModal } = usePuzzle(); 
   const { setModalImage } = usePuzzle();
   const [thumbImage, setThumbImage] = useState('');
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -25,7 +25,7 @@ const Card = ({ image }: Props) => {
   };
   const onMouseLeave = () => {
     setThumbImage('');
-  };
+  };    
   const onClick = () => {
     initialModal();
     addModal('puzzle');
