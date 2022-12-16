@@ -12,10 +12,10 @@ type Data = {
 
 export default async function handler(req: NextApiRequest, res: NextApiResponseServerIO) {
   const { method } = req;
+  const { id } = req.query;
   await dbConnect();
   if (method === 'PUT') {
     try {
-      const { id } = req.query;
       await Puzzle.updateOne(
         { _id: id },
         {
