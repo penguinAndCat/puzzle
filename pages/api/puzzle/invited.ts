@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   if (method === 'GET') {
     const { id, page } = req.query;
     try {
-      const puzzle = await Puzzle.find({ userId: id })
+      const puzzle = await Puzzle.find({ invitedUser: id })
         .sort({
           createdAt: -1,
         })

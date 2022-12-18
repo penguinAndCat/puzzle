@@ -17,14 +17,14 @@ export async function signup(
     req,
     res,
     expires: new Date(new Date().getTime() + 1000 * 60 * 60),
-    httpOnly: true,
+    httpOnly: false,
     sameSite: true,
   });
   setCookie('refreshToken', refreshToken, {
     req,
     res,
     expires: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 30),
-    httpOnly: true,
+    httpOnly: false,
     sameSite: true,
   });
   const newUser = await User.create({

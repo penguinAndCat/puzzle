@@ -53,16 +53,9 @@ export const useLoading = create<LoadingProps>((set) => ({
   onLoading: () => set({ loading: true }),
 }));
 
-export const userStore = create<userStoreProps>((set) => ({
-  user: {
-    id: '',
-    name: '',
-    picture: '',
-    email: '',
-    provider: '',
-    nickname: '',
-  },
-  setUser: (user: userInfo | null) => set({ user: user }),
+export const userStore = create<UserStoreProps>((set) => ({
+  user: null,
+  setUser: (user: UserInfo | null) => set({ user: user }),
 }));
 
 export const useSocket = create<SocketProps>((set) => ({
