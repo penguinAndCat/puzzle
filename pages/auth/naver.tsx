@@ -20,17 +20,17 @@ const Naver: NextPage = () => {
           if (res.data.user) {
             setUserInfo(res.data.user);
           } else {
-            router.replace('/');
+            window.location.replace('/');
           }
         })
         .catch((err) => console.log(err));
     }
   }, [router]);
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    const response = await axios.post('/api/auth/naver', { nick: inputRef.current?.value, user: userInfo });
-    router.replace('/');
+    axios.post('/api/auth/naver', { nick: inputRef.current?.value, user: userInfo });
+    window.location.replace('/');
   };
 
   if (userInfo && userInfo.email) {

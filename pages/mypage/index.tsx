@@ -1,38 +1,18 @@
 import Header from 'components/common/Header';
 import axios from 'libs/axios';
-import { userStore } from 'libs/zustand/store';
 import Head from 'next/head';
-import Image from 'next/image';
 import { useRouter } from 'next/router';
+import { GetServerSideProps } from 'next/types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-export default function MyPage() {
+export default function MyPage({ user }: { user: UserInfo | null }) {
   const [tab, setTab] = useState<'my' | 'invited'>('my');
-  const { user, setUser } = userStore();
   const router = useRouter();
   const [data, setData] = useState<any[]>([]);
   const myRef = useRef<HTMLDivElement>(null);
   const myPageRef = useRef(1);
   const [myLoading, setMyLoading] = useState(false);
-
-  // useEffect(() => {
-  //   if (user?.name) return;
-  //   axios
-  //     .get('/api/auth')
-  //     .then((res) => {
-  //       const loginUser = res.data.user;
-  //       if (loginUser) {
-  //         setUser({ ...loginUser });
-  //         return;
-  //       }
-  //       router.replace('/');
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //       router.replace('/');
-  //     });
-  // }, [router, setUser, user?.name]);
 
   const getMoreMyPuzzle = useCallback(async () => {
     try {
@@ -111,7 +91,7 @@ export default function MyPage() {
       <Head>
         <title>마이페이지</title>
       </Head>
-      <Header />
+      <Header user={user} />
       <Wrapper>
         <TabBox>
           <li
@@ -157,6 +137,29 @@ export default function MyPage() {
     </div>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { req, res } = ctx;
+  const { data } = await axios.get('http://localhost:3000/api/auth', {
+    headers: {
+      Cookie: req.headers.cookie || '',
+    },
+  });
+  if (!data.user) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/',
+      },
+      props: {},
+    };
+  }
+  return {
+    props: {
+      user: data.user,
+    },
+  };
+};
 
 const TabBox = styled.ul`
   display: flex;

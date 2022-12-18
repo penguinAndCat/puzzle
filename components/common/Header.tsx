@@ -2,12 +2,13 @@ import styled from 'styled-components';
 import Palette from './Palette';
 import axios from '../../libs/axios';
 import { useRouter } from 'next/router';
-import { useModal, userStore } from 'libs/zustand/store';
+import { useModal } from 'libs/zustand/store';
+import { useEffect } from 'react';
 
-const Header = () => {
+const Header = ({ user }: { user: UserInfo | null }) => {
   const router = useRouter();
-  const { user, setUser } = userStore();
   const { addModal } = useModal();
+
   return (
     <Container>
       <Wrapper>
@@ -30,7 +31,6 @@ const Header = () => {
             <Button
               onClick={() =>
                 axios.delete('/api/auth').then(() => {
-                  setUser(null);
                   router.reload();
                 })
               }
