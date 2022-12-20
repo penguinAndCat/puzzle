@@ -36,7 +36,7 @@ const NoticeModal = () => {
 
   const acceptFriend = async (nickname: string) => {
     if (!user?.id) return;
-    const res = await axios.post(`/api/users/friends`, {
+    const res = await axios.put(`/api/users/friends`, {
       data: {
         userId: user.id,
         friendNickname: nickname,
@@ -58,11 +58,23 @@ const NoticeModal = () => {
         </Close>
       </TitleWrapper>
       <Ul>
-        {notice.map((item: { nickname: string }, index) => {
+        {notice.map((item: { nickname: string; type: 'friend' | 'puzzle' }, index) => {
+          if(item.type === 'friend')
           return (
             <Li key={index}>
               <NoticeMessage>
                 <Span>{item.nickname}</Span>님께서 당신과 친구를 하고 싶어합니다.
+              </NoticeMessage>
+              <AcceptButton onClick={() => acceptFriend(item.nickname)} ref={buttonRef}>
+                수락
+              </AcceptButton>
+            </Li>
+          );
+          if(item.type === 'puzzle')
+          return (
+            <Li key={index}>
+              <NoticeMessage>
+                <Span>{item.nickname}</Span>님께서 당신을 퍼즐 방에 초대합니다.
               </NoticeMessage>
               <AcceptButton onClick={() => acceptFriend(item.nickname)} ref={buttonRef}>
                 수락

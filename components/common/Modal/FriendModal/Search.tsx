@@ -17,7 +17,7 @@ const SearchFriend = () => {
   };
   const requestFriend = async (requestedNickname: string) => {
     if (!user?.id) return;
-    const res = await axios.post(`/api/users/request`, {
+    const res = await axios.post(`/api/users/friends`, {
       data: {
         requester: user.id,
         requestedNickname: requestedNickname,
