@@ -13,7 +13,6 @@ type Data = {
 export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
   const { method } = req;
   await dbConnect();
-
   if (method === 'PUT') {
     const { userId, friendNickname } = req.body.data;
     try {
@@ -29,6 +28,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       await Friend.create({
         userId: user._id,
         friend: userId,
+      });
+      await Notice.deleteOne({
+        requester: user._id,
+        requested: userId,
       });
       res.status(201).json({ message: 'success' });
     } catch (err) {
