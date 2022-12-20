@@ -14,7 +14,7 @@ const Header = () => {
         {user?.name ? (
           <Left>
             <Button onClick={() => addModal('friend')}>친구</Button>
-            <Button onClick={() => addModal('alarm')}>알람</Button>
+            <Button onClick={() => addModal('notice')}>알람</Button>
           </Left>
         ) : (
           <Left />

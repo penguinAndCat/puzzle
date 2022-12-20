@@ -16,10 +16,10 @@ const PuzzleFriendModal = () => {
     removeModal('puzzleFriend');
   };
   useEffect(() => {
-    getAlarm();
+    getNotice();
   }, []);
 
-  const getAlarm = async () => {
+  const getNotice = async () => {
     if (!user?.id) return;
     const res = await axios.get(`/api/users/friends/${user.id}?puzzleId=${router.query.id}`);
     setFriends(res.data.friends);

@@ -6,32 +6,32 @@ import { useModal, userStore } from 'libs/zustand/store';
 import { MouseEvent, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-const alarm = [
+const notice = [
   { nickname: '닉네임은최대열글자가', requested: '펭귄' },
   { nickname: '펭펭', requested: '펭귄' },
   { nickname: 'lovely_cat', requested: '펭귄' },
   { nickname: '몇글자까지되나궁금해', requested: '펭귄' },
 ];
 
-const AlarmModal = () => {
+const NoticeModal = () => {
   const { removeModal } = useModal();
   const { user } = userStore();
-  const [alarm, setAlarm] = useState([]);
+  const [notice, setNotice] = useState([]);
   const { fireToast } = useToast();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     e.preventDefault();
-    removeModal('alarm');
+    removeModal('notice');
   };
 
   useEffect(() => {
-    getAlarm();
+    getNotice();
   }, []);
 
-  const getAlarm = async () => {
+  const getNotice = async () => {
     if (!user?.id) return;
-    const res = await axios.get(`/api/users/alarms/${user.id}`);
-    setAlarm(res.data.alarm);
+    const res = await axios.get(`/api/users/notices/${user.id}`);
+    setNotice(res.data.notice);
   };
 
   const acceptFriend = async (nickname: string) => {
@@ -52,18 +52,18 @@ const AlarmModal = () => {
     <Container onClick={(e) => e.stopPropagation()}>
       <TitleWrapper>
         <Close />
-        <Title>Alarm</Title>
+        <Title>Notice</Title>
         <Close onClick={(e) => closeModal(e)} style={{ cursor: 'pointer' }}>
           <CloseIcon />
         </Close>
       </TitleWrapper>
       <Ul>
-        {alarm.map((item: { nickname: string }, index) => {
+        {notice.map((item: { nickname: string }, index) => {
           return (
             <Li key={index}>
-              <AlarmMessage>
+              <NoticeMessage>
                 <Span>{item.nickname}</Span>님께서 당신과 친구를 하고 싶어합니다.
-              </AlarmMessage>
+              </NoticeMessage>
               <AcceptButton onClick={() => acceptFriend(item.nickname)} ref={buttonRef}>
                 수락
               </AcceptButton>
@@ -75,7 +75,7 @@ const AlarmModal = () => {
   );
 };
 
-export default AlarmModal;
+export default NoticeModal;
 
 const Container = styled.div`
   @keyframes fadein {
@@ -154,7 +154,7 @@ const Li = styled.li`
   font-size: 12px;
 `;
 
-const AlarmMessage = styled.div`
+const NoticeMessage = styled.div`
   width: 220px;
 `;
 

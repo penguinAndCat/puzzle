@@ -26,10 +26,10 @@ const FriendModal = () => {
     removeModal('friend');
   };
   useEffect(() => {
-    getAlarm();
+    getNotice();
   }, []);
 
-  const getAlarm = async () => {
+  const getNotice = async () => {
     if (!user?.id) return;
     const res = await axios.get(`/api/users/friends/${user.id}`);
     setFriends(res.data.friends);

@@ -1,5 +1,5 @@
 import dbConnect from 'libs/db/mongoose';
-import Alarm from 'models/Alarm';
+import Notice from 'models/Notice';
 import Friend from 'models/Friend';
 import User from 'models/User';
 import type { NextApiRequest, NextApiResponse } from 'next';

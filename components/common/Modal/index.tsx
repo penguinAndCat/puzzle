@@ -1,5 +1,5 @@
 import { useModal } from 'libs/zustand/store';
-import AlarmModal from './AlarmModal';
+import NoticeModal from './NoticeModal';
 import FriendModal from './FriendModal';
 import LoginModal from './LoginModal';
 import ModalLayout from './ModalLayout';
@@ -25,9 +25,9 @@ const Modal = () => {
           <FriendModal />
         </ModalLayout>
       )}
-      {modal.includes('alarm') && (
-        <ModalLayout content={'alarm'}>
-          <AlarmModal />
+      {modal.includes('notice') && (
+        <ModalLayout content={'notice'}>
+          <NoticeModal />
         </ModalLayout>
       )}
       {modal.includes('puzzleFriend') && (

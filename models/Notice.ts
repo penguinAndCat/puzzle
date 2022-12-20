@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const AlarmSchema = new mongoose.Schema(
+const NoticeSchema = new mongoose.Schema(
   {
     requester: {
       type: String,
@@ -17,4 +17,4 @@ const AlarmSchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.models.Alarm || mongoose.model('Alarm', AlarmSchema, 'alarms');
+export default mongoose.models.Notice || mongoose.model('Notice', NoticeSchema, 'notices');

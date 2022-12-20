@@ -1,5 +1,5 @@
 import dbConnect from 'libs/db/mongoose';
-import Alarm from 'models/Alarm';
+import Notice from 'models/Notice';
 import User from 'models/User';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
@@ -17,11 +17,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     const { requester, requestedNickname } = req.body.data;
     try {
       const user: any = await User.findOne({ nickname: requestedNickname });
-      const alarm: any = await Alarm.findOne({ requester: requester, requested: user._id });
-      if (alarm !== null) {
+      const notice: any = await Notice.findOne({ requester: requester, requested: user._id });
+      if (notice !== null) {
         return res.status(201).json({ message: 'duplicated' });
       }
-      await Alarm.create({
+      await Notice.create({
         requester: requester,
         requested: user._id,
       });
