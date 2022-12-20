@@ -1,9 +1,11 @@
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import { Dispatch, Key, SetStateAction, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { exportLevels } from '../../libs/puzzle/createPuzzle';
-import { usePuzzle } from 'libs/zustand/store';
 import { useRouter } from 'next/router';
 import axios from 'axios';
+import { useInvitedUser } from 'hooks/useInvitedUser';
+import { userStore } from 'libs/zustand/store';
+import { useToast } from 'hooks/useToast';
 
 interface Props {
   showRoomInfo: boolean;
@@ -12,10 +14,13 @@ interface Props {
 
 const RoomInfo = ({ showRoomInfo, setShowRoomInfo }: Props) => {
   const router = useRouter();
-  const [data, setData] = useState({title: '', secretRoom: false, level: 1});
+  const [roomInfo, setRoomInfo] = useState({title: '', secretRoom: false, level: 1});
   const [list, setList] = useState<number[][]>([]);
   const [display, setDisplay] = useState(false); // fadeout animaition 기다림
   const el = useRef<HTMLDivElement>(null);
+  const { user } = userStore();
+  const { fireToast } = useToast();
+  const { data, refetch } = useInvitedUser(router.query.id);
 
   useEffect(() => {
     if(showRoomInfo){
@@ -33,14 +38,15 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo }: Props) => {
     if (!router.isReady) return;
     const getData = async () => {
       const res = await axios.get(`/api/puzzle/info/${router.query.id}`);
-      setData(res.data.item);
+      setRoomInfo(res.data.item);
     }
     getData();
-  }, [router.query.id]);
+    refetch();
+  }, [router.isReady, router.query.id]);
 
   useEffect(() => {
     if(list.length > 0){
-      setData({...data, level: list[data.level][0] * list[data.level][1]});
+      setRoomInfo({...roomInfo, level: list[roomInfo.level][0] * list[roomInfo.level][1]});
     }
   }, [list]);
 
@@ -56,26 +62,51 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo }: Props) => {
     };
   }, []);
 
+  const requestFriend = async (requestedNickname: string) => {
+    if (!user?.id) return;
+    const res = await axios.post(`/api/users/freinds`, {
+      data: {
+        requester: user.id,
+        requestedNickname: requestedNickname,
+      },
+    });
+    if (res.data.message === 'duplicated') {
+      fireToast({ content: '이미 친구 요청을 보냈습니다.', top: 100 });
+    }
+  };
+
   return (
     <>
-      {display && (
+      {data && display && (
         <Container show={showRoomInfo} ref={el}>
-          <Title>{data.title} 방 정보</Title>
+          <Title>{roomInfo.title}</Title>
           <Content>
             <SecretRoomWrapper>
-              <SecretRoom>{data.secretRoom ? '비밀 방입니다.' : '공개 방입니다.'}</SecretRoom>
+              <SecretRoom>{roomInfo.secretRoom ? '비밀 방입니다.' : '공개 방입니다.'}</SecretRoom>
             </SecretRoomWrapper>
             <PuzzleNumberWrapper>
               <div>퍼즐 수</div>
               <div>:</div>
-              <div>{data.level}개</div>
+              <div>{roomInfo.level}개</div>
             </PuzzleNumberWrapper>
-            <div>
-              <div>참가자</div>
+            <InvitedUserWrapper>
+              <MiniTitle>참가자</MiniTitle>
               <div>
-                {/* <div>{data}</div> */}
+                {data.map((user: any, index: Key | null | undefined) => {
+                  return (
+                    <UserWrapper key={index}>
+                      <Img src={user.picture} />
+                      <Nickname>{user.nickname}</Nickname>
+                      {
+                        user.isFriend > 0 ? 
+                        <FriendButton>친구</FriendButton> :
+                        <FriendRequireButton onClick={() => requestFriend(user.nickname)}>친구하기</FriendRequireButton>
+                      }
+                    </UserWrapper>
+                  )
+                })}
               </div>
-            </div>
+            </InvitedUserWrapper>
           </Content>
         </Container>
       )}
@@ -111,7 +142,7 @@ const Container = styled.div<{show: boolean}>`
   animation: ${({ show }) => show ? `fadein` : `fadeout` } 0.5s;
 
   position: absolute;
-  width: 240px;
+  width: 260px;
   height: 100%;
   top: 0;
   left: 0;
@@ -128,13 +159,15 @@ const Title = styled.h1`
   font-size: 18px;
   font-weight: 600;
   line-height: 40px;
+  border-bottom: 2px ${({ theme }) => theme.borderColor};
 `;
 
 
 const Content = styled.div`
   margin-top: 24px;
-  padding: 0 24px;
+  padding: 0 18px;
   color: ${({ theme }) => theme.headerTextColor};
+  font-weight: 500;
   & > div {
     margin-bottom: 6px;
   }
@@ -153,4 +186,55 @@ const PuzzleNumberWrapper = styled.div`
   & > div {
     margin: 0 6px 0 0;
   }
+`;
+
+const MiniTitle = styled.div`
+  margin-bottom: 6px;
+`;
+
+const InvitedUserWrapper = styled.div`
+
+`;
+
+const UserWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+`;
+
+const Img = styled.img`
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-right: 8px;
+`;
+
+const Nickname = styled.div`
+  width: 100px;
+  margin-right: 8px;
+  font-size: 12px;
+`;
+
+const FriendButton = styled.div`
+  width: 80px;
+  height: 20px;
+  font-size: 12px;
+  border: 1px ${({ theme }) => theme.borderColor};
+  text-align: center;
+  line-height: 20px;
+  border-radius: 2px;
+`;
+
+const FriendRequireButton = styled.div`
+  width: 80px;
+  height: 20px;
+  font-size: 12px;
+  border: 1px ${({ theme }) => theme.borderColor};
+  text-align: center;
+  line-height: 20px;
+  border-radius: 2px;
+  cursor: pointer;
+  background-color: ${({ theme }) => theme.headerTextColor};
+  color: ${({ theme }) => theme.headerColor};
 `;

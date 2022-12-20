@@ -1,8 +1,9 @@
 import dbConnect from 'libs/db/mongoose';
+import mongoose from 'mongoose';
 import Notice from 'models/Notice';
-import Friend from 'models/Friend';
 import User from 'models/User';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import Puzzle from 'models/Puzzle';
 
 type Data = {
   user?: any;
@@ -14,24 +15,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   const { method } = req;
   await dbConnect();
   if (method === 'PUT') {
-    const { userId, friendNickname } = req.body.data;
+    const { userId, puzzleId } = req.body.data;
     try {
-      const user: any = await User.findOne({ nickname: friendNickname });
-      const friend: any = await Friend.findOne({ userId: userId, friend: user._id });
-      if (friend !== null) {
-        return res.status(201).json({ message: 'duplicated' });
+      const puzzle = await Puzzle.find(
+        { _id: puzzleId, invitedUser: userId }
+      );
+      if(puzzle.length > 0) {
+        return res.status(400).json({ message: 'failed' });
       }
-      await Friend.create({
-        userId: userId,
-        friend: user._id,
-      });
-      await Friend.create({
-        userId: user._id,
-        friend: userId,
+      await Puzzle.updateOne(
+        { _id: puzzleId },
+        { $push: { invitedUser: userId } 
       });
       await Notice.deleteOne({
-        requester: user._id,
         requested: userId,
+        puzzleId: puzzleId,
       });
       res.status(201).json({ message: 'success' });
     } catch (err) {
@@ -39,17 +37,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
   }
   if (method === 'POST') {
-    const { requester, requestedNickname } = req.body.data;
+    const { requester, requestedNickname, puzzleId } = req.body.data;
     try {
-      const user: any = await User.findOne({ nickname: requestedNickname });
-      const notice: any = await Notice.findOne({ requester: requester, requested: user._id });
+      const user = await User.findOne({ nickname: requestedNickname });
+      const notice = await Notice.findOne({ requester: requester, requested: user._id });
       if (notice !== null) {
         return res.status(201).json({ message: 'duplicated' });
       }
       await Notice.create({
         requester: requester,
         requested: user._id,
-        type: 'friend'
+        puzzleId: puzzleId,
+        type: 'puzzle',
       });
       res.status(201).json({ message: 'success' });
     } catch (err) {

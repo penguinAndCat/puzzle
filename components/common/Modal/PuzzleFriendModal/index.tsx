@@ -1,18 +1,21 @@
 import axios from 'axios';
 import { CloseIcon } from 'components/common/Icon';
+import { useToast } from 'hooks/useToast';
 import { theme } from 'libs/theme/theme';
 import { useModal, userStore } from 'libs/zustand/store';
+import { useRouter } from 'next/router';
 import { MouseEvent, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import SearchFriend from './Search';
 
-const FriendModal = () => {
+const PuzzleFriendModal = () => {
+  const router = useRouter();
+  const { fireToast } = useToast();
   const { removeModal } = useModal();
   const [frineds, setFriends] = useState([]);
   const { user } = userStore();
   const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     e.preventDefault();
-    removeModal('friend');
+    removeModal('puzzleFriend');
   };
   useEffect(() => {
     getNotice();
@@ -20,27 +23,48 @@ const FriendModal = () => {
 
   const getNotice = async () => {
     if (!user?.id) return;
-    const res = await axios.get(`/api/users/friends/${user.id}`);
+    const res = await axios.get(`/api/users/friends/${user.id}?puzzleId=${router.query.id}`);
     setFriends(res.data.friends);
+  };
+  
+  const inviteFriend = async (requestedNickname: string) => {
+    if (!user?.id) return;
+    const res = await axios.post(`/api/users/puzzle`, {
+      data: {
+        requester: user.id,
+        requestedNickname: requestedNickname,
+        puzzleId: router.query.id,
+      },
+    });
+    if (res.data.message === 'duplicated') {
+      fireToast({ content: '이미 친구 요청을 보냈습니다.', top: 200 });
+    }
   };
   return (
     <Container onClick={(e) => e.stopPropagation()}>
       <TitleWrapper>
         <Close />
-        <Title>Friend</Title>
+        <Title>Invite</Title>
         <Close onClick={(e) => closeModal(e)} style={{ cursor: 'pointer' }}>
           <CloseIcon />
         </Close>
       </TitleWrapper>
-      <SearchFriend />
       <div>친구 목록</div>
       <Ul>
-        {frineds.map((item: { nickname: string; picture: string }) => {
+        {frineds.map((item: { nickname: string; picture: string; isInvited: boolean; }) => {
+          if(item.isInvited) 
+            return (
+              <Li key={item.nickname}>
+              <Img src={item.picture} />
+              <Nickname>{item.nickname}</Nickname>
+              <InviteDiv>초대됨</InviteDiv>
+            </Li>
+          )
           return (
             <Li key={item.nickname}>
               <Img src={item.picture} />
               <Nickname>{item.nickname}</Nickname>
-              <DeleteButton>삭제</DeleteButton>
+              <InviteButton onClick={() => inviteFriend(item.nickname)}>초대</InviteButton>
             </Li>
           );
         })}
@@ -49,7 +73,7 @@ const FriendModal = () => {
   );
 };
 
-export default FriendModal;
+export default PuzzleFriendModal;
 
 const Container = styled.div`
   @keyframes fadein {
@@ -92,6 +116,7 @@ const TitleWrapper = styled.div`
   justify-content: space-between;
   align-items: center;
   border-bottom: solid 2px ${({ theme }) => theme.modalTextColor};
+  margin-bottom: 12px;
 `;
 
 const Title = styled.div``;
@@ -103,8 +128,8 @@ const Close = styled.div`
 `;
 
 const Img = styled.img`
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   object-fit: cover;
   border-radius: 50%;
 `;
@@ -139,8 +164,18 @@ const Nickname = styled.div`
   font-size: 12px;
 `;
 
-const DeleteButton = styled.button`
-  width: 40px;
+const InviteDiv = styled.button`
+  width: 60px;
+  height: 20px;
+  font-size: 12px;
+  line-height: 50%;
+  background-color: ${({ theme }) => theme.modalColor};
+  color: ${({ theme }) => theme.modalTextColor};
+  border: solid 1px ${({ theme }) => theme.modalTextColor};
+`;
+
+const InviteButton = styled.button`
+  width: 60px;
   height: 20px;
   font-size: 12px;
   line-height: 50%;

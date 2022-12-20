@@ -1,9 +1,9 @@
 import { useModal } from 'libs/zustand/store';
-import styled from 'styled-components';
-import AlarmModal from './AlarmModal';
+import NoticeModal from './NoticeModal';
 import FriendModal from './FriendModal';
 import LoginModal from './LoginModal';
 import ModalLayout from './ModalLayout';
+import PuzzleFriendModal from './PuzzleFriendModal';
 import PuzzleModal from './PuzzleModal';
 
 const Modal = () => {
@@ -25,9 +25,14 @@ const Modal = () => {
           <FriendModal />
         </ModalLayout>
       )}
-      {modal.includes('alarm') && (
-        <ModalLayout content={'alarm'}>
-          <AlarmModal />
+      {modal.includes('notice') && (
+        <ModalLayout content={'notice'}>
+          <NoticeModal />
+        </ModalLayout>
+      )}
+      {modal.includes('puzzleFriend') && (
+        <ModalLayout content={'puzzleFriend'}>
+          <PuzzleFriendModal />
         </ModalLayout>
       )}
     </>

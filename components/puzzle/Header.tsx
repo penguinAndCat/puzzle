@@ -3,7 +3,7 @@ import Palette from 'components/common/Palette';
 import { saveImage } from 'libs/common/saveImage';
 import { exportConfig } from 'libs/puzzle/createPuzzle';
 import { theme } from 'libs/theme/theme';
-import { useLoading, usePuzzle, userStore } from 'libs/zustand/store';
+import { useLoading, useModal, usePuzzle, userStore } from 'libs/zustand/store';
 import { useRouter } from 'next/router';
 import { Dispatch, SetStateAction } from 'react';
 import styled from 'styled-components';
@@ -14,6 +14,7 @@ interface Props {
 }
 
 const Header = ({ setShowLevel, setShowRoomInfo }: Props) => {
+  const { addModal } = useModal();
   const { number, title, secretRoom } = usePuzzle();
   const { onLoading, offLoading } = useLoading();
   const router = useRouter();
@@ -51,6 +52,10 @@ const Header = ({ setShowLevel, setShowRoomInfo }: Props) => {
     }
   };
 
+  const openModal = () => {
+    addModal('puzzleFriend');
+  };
+
   return (
     <Container>
       <Wrapper>
@@ -70,7 +75,7 @@ const Header = ({ setShowLevel, setShowRoomInfo }: Props) => {
           {router.query.id === undefined ? (
             <Button onClick={createPuzzleRoom}>방 만들기</Button>
           ) : (
-            <Button>공유하기</Button>
+            <Button onClick={openModal}>초대하기</Button>
           )}
         </Right>
       </Wrapper>
@@ -98,9 +103,7 @@ const Wrapper = styled.div`
 `;
 
 const Left = styled.div`
-  min-width: 170px;
-  display: flex;
-  justify-content: space-between;
+  min-width: 150px;
   margin-right: 80px;
   @media (max-width: 900px) {
     margin-right: 20px;
@@ -111,8 +114,9 @@ const Left = styled.div`
 `;
 
 const Right = styled.div`
-  min-width: 130px;
-  ${theme.common.flexCenter};
+  min-width: 150px;
+  display: flex;
+  justify-content: space-between;
   margin-left: 80px;
   @media (max-width: 900px) {
     margin-left: 20px;

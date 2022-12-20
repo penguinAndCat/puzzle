@@ -1,42 +1,26 @@
 import axios from 'axios';
 import { CloseIcon } from 'components/common/Icon';
+import { useNotice } from 'hooks/useNotice';
 import { useToast } from 'hooks/useToast';
 import { theme } from 'libs/theme/theme';
 import { useModal, userStore } from 'libs/zustand/store';
-import { MouseEvent, useEffect, useRef, useState } from 'react';
+import { Key, MouseEvent, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-const alarm = [
-  { nickname: '닉네임은최대열글자가', requested: '펭귄' },
-  { nickname: '펭펭', requested: '펭귄' },
-  { nickname: 'lovely_cat', requested: '펭귄' },
-  { nickname: '몇글자까지되나궁금해', requested: '펭귄' },
-];
-
-const AlarmModal = () => {
+const NoticeModal = () => {
   const { removeModal } = useModal();
   const { user } = userStore();
-  const [alarm, setAlarm] = useState([]);
   const { fireToast } = useToast();
+  const { data, refetch } = useNotice(user);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     e.preventDefault();
-    removeModal('alarm');
-  };
-
-  useEffect(() => {
-    getAlarm();
-  }, []);
-
-  const getAlarm = async () => {
-    if (!user?.id) return;
-    const res = await axios.get(`/api/users/alarms/${user.id}`);
-    setAlarm(res.data.alarm);
+    removeModal('notice');
   };
 
   const acceptFriend = async (nickname: string) => {
     if (!user?.id) return;
-    const res = await axios.post(`/api/users/friends`, {
+    const res = await axios.put(`/api/users/friends`, {
       data: {
         userId: user.id,
         friendNickname: nickname,
@@ -45,37 +29,70 @@ const AlarmModal = () => {
     if (res.data.message === 'duplicated') {
       const top = buttonRef.current?.getBoundingClientRect().top;
       fireToast({ content: '이미 친구입니다.', top: top });
+      return;
     }
+    refetch();
+  };
+
+  const acceptInvite = async (puzzleId: string) => {
+    if (!user?.id) return;
+    const res = await axios.put(`/api/users/puzzle`, {
+      data: {
+        userId: user.id,
+        puzzleId: puzzleId,
+      },
+    });
+    if (res.data.message === 'failed') {
+      const top = buttonRef.current?.getBoundingClientRect().top;
+      fireToast({ content: '초대 수락이 실패하였습니다.', top: top });
+      return;
+    }
+    refetch();
   };
 
   return (
     <Container onClick={(e) => e.stopPropagation()}>
       <TitleWrapper>
         <Close />
-        <Title>Alarm</Title>
+        <Title>Notice</Title>
         <Close onClick={(e) => closeModal(e)} style={{ cursor: 'pointer' }}>
           <CloseIcon />
         </Close>
       </TitleWrapper>
       <Ul>
-        {alarm.map((item: { nickname: string }, index) => {
+        {data && data.length > 0 ? data.map((item: { nickname: string; type: 'friend' | 'puzzle'; puzzleId: string; }, index: Key | null | undefined) => {
+          if(item.type === 'friend')
           return (
             <Li key={index}>
-              <AlarmMessage>
+              <NoticeMessage>
                 <Span>{item.nickname}</Span>님께서 당신과 친구를 하고 싶어합니다.
-              </AlarmMessage>
+              </NoticeMessage>
               <AcceptButton onClick={() => acceptFriend(item.nickname)} ref={buttonRef}>
                 수락
               </AcceptButton>
             </Li>
           );
-        })}
+          if(item.type === 'puzzle')
+          return (
+            <Li key={index}>
+              <NoticeMessage>
+                <Span>{item.nickname}</Span>님께서 당신을 퍼즐 방에 초대합니다.
+              </NoticeMessage>
+              <AcceptButton onClick={() => acceptInvite(item.puzzleId)} ref={buttonRef}>
+                수락
+              </AcceptButton>
+            </Li>
+          );
+        })
+        :
+        <NoneNotice>알림이 없습니다.</NoneNotice>
+        }
       </Ul>
     </Container>
   );
 };
 
-export default AlarmModal;
+export default NoticeModal;
 
 const Container = styled.div`
   @keyframes fadein {
@@ -154,7 +171,7 @@ const Li = styled.li`
   font-size: 12px;
 `;
 
-const AlarmMessage = styled.div`
+const NoticeMessage = styled.div`
   width: 220px;
 `;
 
@@ -172,3 +189,8 @@ const AcceptButton = styled.button`
   border: solid 1px ${({ theme }) => theme.modalTextColor};
   cursor: pointer;
 `;
+
+const NoneNotice = styled.div`
+  margin-top: 12px;
+  font-size: 12px;
+`

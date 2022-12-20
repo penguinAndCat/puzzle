@@ -36,7 +36,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
       //     socketCanvasSize: socketCanvasSize,
       //     socketId: socketId,
       //   });
-      console.log('hi')
       if (id !== undefined) {
         await pusher.trigger(`presence-${id}`, 'movePuzzle', {
           groupTiles: groupTiles,

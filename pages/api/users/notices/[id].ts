@@ -1,10 +1,9 @@
 import dbConnect from 'libs/db/mongoose';
-import Alarm from 'models/Alarm';
-import User from 'models/User';
+import Notice from 'models/Notice';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 type Data = {
-  alarm?: any;
+  notice?: any;
   message: string;
   error?: any;
 };
@@ -15,11 +14,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   if (method === 'GET') {
     const { id } = req.query;
     try {
-      // let alarm = await Alarm.find({ requested: id }, { _id: 0, requester: 1 });
-      // const array = alarm.map((item) => item.requester);
-      // alarm = await User.find({ _id: { $in: array } }, { _id: 0, nickname: 1 });
-      const alarm = await Alarm.aggregate([
-        { $match: { requested: id } }, // alarms Collection에서 userId: id 일치하는 정보 조회
+      // let notice = await Notice.find({ requested: id }, { _id: 0, requester: 1 });
+      // const array = notice.map((item) => item.requester);
+      // notice = await User.find({ _id: { $in: array } }, { _id: 0, nickname: 1 });
+      const notice = await Notice.aggregate([
+        { $match: { requested: id } }, // notices Collection에서 userId: id 일치하는 정보 조회
         {
           $lookup: {
             // 다른 Collection에서 찾기
@@ -30,10 +29,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           },
         },
         { $unwind: '$user' }, // 찾은 정보가 배열로 저장되어 있는데 배열에서 꺼내기
-        { $project: { _id: 0, nickname: '$user.nickname', message: 1 } }, // 조회한 정보 내보내는 object
+        { $project: { _id: 0, nickname: '$user.nickname', type: 1, puzzleId: 1 } }, // 조회한 정보 내보내는 object
       ]);
-      console.log(alarm);
-      res.status(201).json({ alarm: alarm, message: 'success' });
+      res.status(201).json({ notice: notice, message: 'success' });
     } catch (err) {
       res.status(500).json({ error: err, message: 'failed' });
     }

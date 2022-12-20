@@ -17,7 +17,7 @@ const SearchFriend = () => {
   };
   const requestFriend = async (requestedNickname: string) => {
     if (!user?.id) return;
-    const res = await axios.post(`/api/users/request`, {
+    const res = await axios.post(`/api/users/friends`, {
       data: {
         requester: user.id,
         requestedNickname: requestedNickname,
@@ -31,7 +31,7 @@ const SearchFriend = () => {
   return (
     <Container>
       <InputWrapper>
-        <div>친구 찾기</div>
+        <div>새로운 친구 찾기</div>
         <div>
           <Input onChange={(e) => setSearched(e.target.value)} value={searched} placeholder="닉네임을 입력해주세요." />
           <SearchButton onClick={searchUser}>찾기</SearchButton>

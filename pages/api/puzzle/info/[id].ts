@@ -16,7 +16,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     const { id } = req.query;
     try {
       const userId = new mongoose.Types.ObjectId(String(id));
-      console.log(userId);
       const info = await Puzzle.aggregate([
         { $match: { _id: userId } },
         { $project: { _id: 0, title: 1, secretRoom: 1, level: 1 } },
