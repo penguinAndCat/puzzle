@@ -15,8 +15,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   if (method === 'GET') {
     const { id } = req.query;
     const { puzzleId } = req.query;
-    console.log(puzzleId);
     try {
+      if(puzzleId === undefined) {
+        const friends = await Friend.aggregate([
+          { $match: { userId: id } },
+          {
+            $lookup: {
+              from: 'users',
+              let: { userObjId: { $toObjectId: '$friend' } },
+              pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$userObjId'] } } }],
+              as: 'user',
+            },
+          },
+          { $unwind: '$user' },
+          { 
+            $project: { 
+              _id: 0, 
+              nickname: '$user.nickname', 
+              picture: '$user.picture', 
+            },
+          },
+        ]);
+        return res.status(201).json({ friends: friends, message: 'success' });
+      }
       const friends = await Friend.aggregate([
         { $match: { userId: id } },
         {
@@ -37,10 +58,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           },
         },
         { $unwind: '$puzzle' },
-        { '$addFields': {
+        { 
+          $addFields: {
             'userId': { $toString: '$user._id' }
         }},
-        { '$addFields': {
+        { 
+          $addFields: {
             'isInvited': {
               '$cond': [ { '$in': [ '$userId', '$puzzle.invitedUser' ] }, true, false ]
           }}
