@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { CloseIcon } from 'components/common/Icon';
+import { useToast } from 'hooks/useToast';
 import { theme } from 'libs/theme/theme';
 import { useModal, userStore } from 'libs/zustand/store';
 import { useRouter } from 'next/router';
@@ -8,6 +9,7 @@ import styled from 'styled-components';
 
 const PuzzleFriendModal = () => {
   const router = useRouter();
+  const { fireToast } = useToast();
   const { removeModal } = useModal();
   const [frineds, setFriends] = useState([]);
   const { user } = userStore();
@@ -23,6 +25,18 @@ const PuzzleFriendModal = () => {
     if (!user?.id) return;
     const res = await axios.get(`/api/users/friends/${user.id}?puzzleId=${router.query.id}`);
     setFriends(res.data.friends);
+  };
+  const inviteFriend = async (requestedNickname: string) => {
+    if (!user?.id) return;
+    const res = await axios.post(`/api/users/puzzle`, {
+      data: {
+        requester: user.id,
+        requestedNickname: requestedNickname,
+      },
+    });
+    if (res.data.message === 'duplicated') {
+      fireToast({ content: '이미 친구 요청을 보냈습니다.', top: 200 });
+    }
   };
   return (
     <Container onClick={(e) => e.stopPropagation()}>
@@ -48,7 +62,7 @@ const PuzzleFriendModal = () => {
             <Li key={item.nickname}>
               <Img src={item.picture} />
               <Nickname>{item.nickname}</Nickname>
-              <InviteButton>초대</InviteButton>
+              <InviteButton onClick={() => inviteFriend(item.nickname)}>초대</InviteButton>
             </Li>
           );
         })}
