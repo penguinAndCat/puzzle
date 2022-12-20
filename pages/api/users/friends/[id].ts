@@ -1,6 +1,6 @@
 import dbConnect from 'libs/db/mongoose';
+import mongoose from 'mongoose';
 import Friend from 'models/Friend';
-import User from 'models/User';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 type Data = {
@@ -14,6 +14,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   await dbConnect();
   if (method === 'GET') {
     const { id } = req.query;
+    const { puzzleId } = req.query;
+    console.log(puzzleId);
     try {
       const friends = await Friend.aggregate([
         { $match: { userId: id } },
@@ -26,9 +28,32 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           },
         },
         { $unwind: '$user' },
-        { $project: { _id: 0, nickname: '$user.nickname', picture: '$user.picture' } },
+        {
+          $lookup: {
+            from: 'puzzles',
+            let: { puzzleObjId: { $toObjectId: puzzleId } },
+            pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$puzzleObjId'] } } }],
+            as: 'puzzle',
+          },
+        },
+        { $unwind: '$puzzle' },
+        { '$addFields': {
+            'userId': { $toString: '$user._id' }
+        }},
+        { '$addFields': {
+            'isInvited': {
+              '$cond': [ { '$in': [ '$userId', '$puzzle.invitedUser' ] }, true, false ]
+          }}
+        },
+        { 
+          $project: { 
+            _id: 0, 
+            nickname: '$user.nickname', 
+            picture: '$user.picture', 
+            isInvited: '$isInvited',
+          },
+        },
       ]);
-      console.log(friends);
       res.status(201).json({ friends: friends, message: 'success' });
     } catch (err) {
       res.status(500).json({ error: err, message: 'failed' });

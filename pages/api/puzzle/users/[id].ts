@@ -11,11 +11,11 @@ type Data = {
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
   const { method } = req;
+  const { id } = req.query;
+  const userId = new mongoose.Types.ObjectId(String(id));
   await dbConnect();
   if (method === 'GET') {
-    const { id } = req.query;
     try {
-      const userId = new mongoose.Types.ObjectId(String(id));
       const users = await Puzzle.aggregate([
         { $match: { _id: userId } },
         { $unwind: '$invitedUser' },
@@ -47,6 +47,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         },
       ]);
       res.status(201).json({ item: users, message: 'success' });
+    } catch (err) {
+      res.status(500).json({ error: err, message: 'failed' });
+    }
+  }
+  if (method === 'PUT') {
+    try {
+      return;
+      res.status(201).json({ item: 'users', message: 'success' });
     } catch (err) {
       res.status(500).json({ error: err, message: 'failed' });
     }
