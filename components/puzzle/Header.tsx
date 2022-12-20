@@ -61,9 +61,9 @@ const Header = ({ setShowLevel, setShowRoomInfo }: Props) => {
       <Wrapper>
         <Left>
           {router.query.id === undefined ? (
-              <Button onClick={() => setShowLevel(true)}>퍼즐수</Button>
-            ) : (
-              <Button onClick={() => setShowRoomInfo(true)}>방 정보</Button>
+            <Button onClick={() => setShowLevel(true)}>퍼즐수</Button>
+          ) : (
+            <Button onClick={() => setShowRoomInfo(true)}>방 정보</Button>
           )}
         </Left>
         <Logo>

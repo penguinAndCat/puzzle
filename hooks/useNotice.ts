@@ -2,7 +2,7 @@
 import axios from "libs/axios";
 import { useQuery } from "react-query";
 
-export const useNotice = (user : userInfo | null) => {
+export const useNotice = (user : UserInfo | null) => {
   const { data, refetch } = useQuery(
     ['notice'],
     () => getNotice(),
