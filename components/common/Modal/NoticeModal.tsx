@@ -1,37 +1,21 @@
 import axios from 'axios';
 import { CloseIcon } from 'components/common/Icon';
+import { useNotice } from 'hooks/useNotice';
 import { useToast } from 'hooks/useToast';
 import { theme } from 'libs/theme/theme';
 import { useModal, userStore } from 'libs/zustand/store';
-import { MouseEvent, useEffect, useRef, useState } from 'react';
+import { Key, MouseEvent, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-
-const notice = [
-  { nickname: '닉네임은최대열글자가', requested: '펭귄' },
-  { nickname: '펭펭', requested: '펭귄' },
-  { nickname: 'lovely_cat', requested: '펭귄' },
-  { nickname: '몇글자까지되나궁금해', requested: '펭귄' },
-];
 
 const NoticeModal = () => {
   const { removeModal } = useModal();
   const { user } = userStore();
-  const [notice, setNotice] = useState([]);
   const { fireToast } = useToast();
+  const { data, refetch } = useNotice(user);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     e.preventDefault();
     removeModal('notice');
-  };
-
-  useEffect(() => {
-    getNotice();
-  }, []);
-
-  const getNotice = async () => {
-    if (!user?.id) return;
-    const res = await axios.get(`/api/users/notices/${user.id}`);
-    setNotice(res.data.notice);
   };
 
   const acceptFriend = async (nickname: string) => {
@@ -45,7 +29,25 @@ const NoticeModal = () => {
     if (res.data.message === 'duplicated') {
       const top = buttonRef.current?.getBoundingClientRect().top;
       fireToast({ content: '이미 친구입니다.', top: top });
+      return;
     }
+    refetch();
+  };
+
+  const acceptInvite = async (puzzleId: string) => {
+    if (!user?.id) return;
+    const res = await axios.put(`/api/users/puzzle`, {
+      data: {
+        userId: user.id,
+        puzzleId: puzzleId,
+      },
+    });
+    if (res.data.message === 'failed') {
+      const top = buttonRef.current?.getBoundingClientRect().top;
+      fireToast({ content: '초대 수락이 실패하였습니다.', top: top });
+      return;
+    }
+    refetch();
   };
 
   return (
@@ -58,7 +60,7 @@ const NoticeModal = () => {
         </Close>
       </TitleWrapper>
       <Ul>
-        {notice.map((item: { nickname: string; type: 'friend' | 'puzzle' }, index) => {
+        {data && data.length > 0 ? data.map((item: { nickname: string; type: 'friend' | 'puzzle'; puzzleId: string; }, index: Key | null | undefined) => {
           if(item.type === 'friend')
           return (
             <Li key={index}>
@@ -76,12 +78,15 @@ const NoticeModal = () => {
               <NoticeMessage>
                 <Span>{item.nickname}</Span>님께서 당신을 퍼즐 방에 초대합니다.
               </NoticeMessage>
-              <AcceptButton onClick={() => acceptFriend(item.nickname)} ref={buttonRef}>
+              <AcceptButton onClick={() => acceptInvite(item.puzzleId)} ref={buttonRef}>
                 수락
               </AcceptButton>
             </Li>
           );
-        })}
+        })
+        :
+        <NoneNotice>알림이 없습니다.</NoneNotice>
+        }
       </Ul>
     </Container>
   );
@@ -184,3 +189,8 @@ const AcceptButton = styled.button`
   border: solid 1px ${({ theme }) => theme.modalTextColor};
   cursor: pointer;
 `;
+
+const NoneNotice = styled.div`
+  margin-top: 12px;
+  font-size: 12px;
+`

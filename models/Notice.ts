@@ -8,6 +8,9 @@ const NoticeSchema = new mongoose.Schema(
     requested: {
       type: String,
     },
+    puzzleId: {
+      type: String,
+    },
     type: {
       type: String,
     },

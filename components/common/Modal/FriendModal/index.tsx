@@ -6,17 +6,6 @@ import { MouseEvent, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import SearchFriend from './Search';
 
-const searchedUser = [
-  { nickname: '닉네임은최대열글자가', picture: '/cp.png' },
-  { nickname: '고양이', picture: '/cp2.png' },
-  { nickname: '펭귄2', picture: '/cp3.png' },
-  { nickname: '고양이2', picture: '/cp4.png' },
-  // { nickname: '펭귄', picture: '/cp.png' },
-  // { nickname: '고양이', picture: '/cp2.png' },
-  // { nickname: '펭귄2', picture: '/cp3.png' },
-  // { nickname: '고양이2', picture: '/cp4.png' },
-];
-
 const FriendModal = () => {
   const { removeModal } = useModal();
   const [frineds, setFriends] = useState([]);

@@ -17,7 +17,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       // let notice = await Notice.find({ requested: id }, { _id: 0, requester: 1 });
       // const array = notice.map((item) => item.requester);
       // notice = await User.find({ _id: { $in: array } }, { _id: 0, nickname: 1 });
-      console.log(id);
       const notice = await Notice.aggregate([
         { $match: { requested: id } }, // notices Collection에서 userId: id 일치하는 정보 조회
         {
@@ -30,7 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           },
         },
         { $unwind: '$user' }, // 찾은 정보가 배열로 저장되어 있는데 배열에서 꺼내기
-        { $project: { _id: 0, nickname: '$user.nickname', type: 1 } }, // 조회한 정보 내보내는 object
+        { $project: { _id: 0, nickname: '$user.nickname', type: 1, puzzleId: 1 } }, // 조회한 정보 내보내는 object
       ]);
       res.status(201).json({ notice: notice, message: 'success' });
     } catch (err) {

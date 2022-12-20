@@ -26,12 +26,14 @@ const PuzzleFriendModal = () => {
     const res = await axios.get(`/api/users/friends/${user.id}?puzzleId=${router.query.id}`);
     setFriends(res.data.friends);
   };
+  
   const inviteFriend = async (requestedNickname: string) => {
     if (!user?.id) return;
     const res = await axios.post(`/api/users/puzzle`, {
       data: {
         requester: user.id,
         requestedNickname: requestedNickname,
+        puzzleId: router.query.id,
       },
     });
     if (res.data.message === 'duplicated') {
