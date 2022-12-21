@@ -78,7 +78,7 @@ const PuzzleModal = () => {
     removeModal('puzzle');
     setNumber(puzzleNumber);
     setTitle(roomName);
-    router.push('/puzzle');
+    window.location.replace('/puzzle');
   };
 
   const createPuzzleRoom = async () => {
@@ -124,7 +124,7 @@ const PuzzleModal = () => {
         data: data,
       });
       const { item, message } = response.data;
-      router.push(`/puzzle/${item._id}`);
+      window.location.replace(`/puzzle/${item._id}`);
     } catch (err) {
       alert('failed');
       console.log(err);
