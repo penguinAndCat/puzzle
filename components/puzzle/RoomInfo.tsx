@@ -118,7 +118,7 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo, user }: Props) => {
 export default RoomInfo;
 
 const Container = styled.div<{show: boolean}>`
-  @keyframes fadein {
+  @keyframes fadeinRight {
     0% {
       transform: translateX(-100%);
     }
@@ -129,7 +129,7 @@ const Container = styled.div<{show: boolean}>`
       transform: translateX(0%);
     }
   }
-  @keyframes fadeout {
+  @keyframes fadeoutLeft {
     0% {
       transform: translateX(0%);
     }
@@ -140,7 +140,7 @@ const Container = styled.div<{show: boolean}>`
       transform: translateX(-100%);
     }
   }
-  animation: ${({ show }) => show ? `fadein` : `fadeout` } 0.5s;
+  animation: ${({ show }) => show ? `fadeinRight` : `fadeoutLeft` } 0.5s;
 
   position: absolute;
   width: 260px;
