@@ -4,6 +4,7 @@ import { ThemeContext, ThemeProvider as StyledProvider } from 'styled-components
 
 interface Props {
   children: React.ReactNode;
+  pageTheme: "pink" | "dark" | "silver" | "mint";
 }
 
 const THEME: {
@@ -15,8 +16,8 @@ const THEME: {
   mint: mintTheme,
 };
 
-const ThemeProvider = ({ children }: Props) => {
-  const [themeMode, setThemeMode] = useState<ThemeKey>('pink');
+const ThemeProvider = ({ children, pageTheme }: Props) => {
+  const [themeMode, setThemeMode] = useState<ThemeKey>(pageTheme);
   const themeObject = useMemo(() => {
     return THEME[themeMode];
   }, [themeMode]);

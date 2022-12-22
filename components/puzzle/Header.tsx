@@ -11,14 +11,14 @@ import styled from 'styled-components';
 interface Props {
   setShowLevel: Dispatch<SetStateAction<boolean>>;
   setShowRoomInfo: Dispatch<SetStateAction<boolean>>;
+  user: UserInfo | null;
 }
 
-const Header = ({ setShowLevel, setShowRoomInfo }: Props) => {
+const Header = ({ setShowLevel, setShowRoomInfo, user }: Props) => {
   const { addModal } = useModal();
   const { number, title, secretRoom } = usePuzzle();
   const { onLoading, offLoading } = useLoading();
   const router = useRouter();
-  const { user } = userStore();
 
   const createPuzzleRoom = async () => {
     try {
@@ -44,7 +44,7 @@ const Header = ({ setShowLevel, setShowRoomInfo }: Props) => {
         data: data,
       });
       const { item, message } = response.data;
-      router.push(`/puzzle/${item._id}`);
+      window.location.replace(`/puzzle/${item._id}`);
     } catch (err) {
       alert('failed');
       offLoading();

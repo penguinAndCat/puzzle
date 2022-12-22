@@ -13,20 +13,16 @@ import { NEXT_SERVER } from 'config';
 interface Props {
   puzzleLv: number;
   puzzleImg: img;
+  user: UserInfo | null;
 }
 
-const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
-  const { user } = userStore();
+const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
   const { offLoading } = useLoading();
   const { setParticipant } = useSocket();
   const router = useRouter();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const [socket, setSocket] = useState();
-  let userNickname: string;
-  if (user?.nickname) {
-    userNickname = user.nickname;
-  }
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -62,22 +58,22 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
         initConfig(Paper, puzzleImg, config, canvasSize, puzzleLv);
         offLoading();
       } else {
-        if (userNickname === undefined) return;
+        if (user === null) return;
         if (socket === undefined) return;
         const response = await axios.get(`/api/puzzle?id=${router.query.id}`);
         const item = response.data.item;
         const config = { ...item.config };
         const puzzleImage = { ...config.puzzleImage };
-        restartConfig(Paper, puzzleImage, config, canvasSize, item.level, router.query.id, socket, userNickname);
+        restartConfig(Paper, puzzleImage, config, canvasSize, item.level, router.query.id, socket, user.nickname);
         offLoading();
       }
     };
     setPuzzle();
-  }, [puzzleLv, router.isReady, puzzleImg, canvasSize, router.query.id, socket, user]);
+  }, [puzzleLv, router.isReady, puzzleImg, canvasSize, router.query.id, socket, user, offLoading]);
 
   useEffect(() => {
     if (!router.isReady) return;
-    if (userNickname === undefined) return;
+    if (user === null) return;
     if(router.query.id === undefined) return;
     let subscribe = true;
     const pusher = new Pusher(process.env.NEXT_PUBLIC_KEY ? process.env.NEXT_PUBLIC_KEY : '', {
@@ -85,7 +81,7 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
       authEndpoint: `${NEXT_SERVER}/api/pusher/auth`,
       auth: {
         params: {
-          username: userNickname,
+          username: user.nickname,
         },
       },
     });
@@ -122,7 +118,7 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
       pusher.unsubscribe(`presence-${router.query.id}`);
       subscribe = false;
     };
-  }, [router.isReady, user?.nickname]);
+  }, [router.isReady, router.query.id, setParticipant, user]);
 
   return (
     <Wrapper>

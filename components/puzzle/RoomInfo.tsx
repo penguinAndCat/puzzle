@@ -10,15 +10,15 @@ import { useToast } from 'hooks/useToast';
 interface Props {
   showRoomInfo: boolean;
   setShowRoomInfo: Dispatch<SetStateAction<boolean>>;
+  user: UserInfo | null;
 }
 
-const RoomInfo = ({ showRoomInfo, setShowRoomInfo }: Props) => {
+const RoomInfo = ({ showRoomInfo, setShowRoomInfo, user }: Props) => {
   const router = useRouter();
   const [roomInfo, setRoomInfo] = useState({title: '', secretRoom: false, level: 1});
   const [list, setList] = useState<number[][]>([]);
   const [display, setDisplay] = useState(false); // fadeout animaition 기다림
   const el = useRef<HTMLDivElement>(null);
-  const { user } = userStore();
   const { fireToast } = useToast();
   const { data, refetch } = useInvitedUser(router.query.id);
 
@@ -36,6 +36,7 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo }: Props) => {
 
   useEffect(() => {
     if (!router.isReady) return;
+    if (router.query.id === undefined) return;
     const getData = async () => {
       const res = await axios.get(`/api/puzzle/info/${router.query.id}`);
       setRoomInfo(res.data.item);
@@ -63,7 +64,7 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo }: Props) => {
   }, []);
 
   const requestFriend = async (requestedNickname: string) => {
-    if (!user?.id) return;
+    if (user === null) return;
     const res = await axios.post(`/api/users/freinds`, {
       data: {
         requester: user.id,
@@ -117,7 +118,7 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo }: Props) => {
 export default RoomInfo;
 
 const Container = styled.div<{show: boolean}>`
-  @keyframes fadein {
+  @keyframes fadeinRight {
     0% {
       transform: translateX(-100%);
     }
@@ -128,7 +129,7 @@ const Container = styled.div<{show: boolean}>`
       transform: translateX(0%);
     }
   }
-  @keyframes fadeout {
+  @keyframes fadeoutLeft {
     0% {
       transform: translateX(0%);
     }
@@ -139,7 +140,7 @@ const Container = styled.div<{show: boolean}>`
       transform: translateX(-100%);
     }
   }
-  animation: ${({ show }) => show ? `fadein` : `fadeout` } 0.5s;
+  animation: ${({ show }) => show ? `fadeinRight` : `fadeoutLeft` } 0.5s;
 
   position: absolute;
   width: 260px;
