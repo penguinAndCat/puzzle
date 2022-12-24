@@ -1,12 +1,9 @@
 import styled from 'styled-components';
 import Palette from './Palette';
-import axios from '../../libs/axios';
-import { useRouter } from 'next/router';
 import { useModal } from 'libs/zustand/store';
-import { useEffect } from 'react';
+import UserButton from './Header/UserButton';
 
 const Header = ({ user }: { user: UserInfo | null }) => {
-  const router = useRouter();
   const { addModal } = useModal();
 
   return (
@@ -27,19 +24,7 @@ const Header = ({ user }: { user: UserInfo | null }) => {
         </Logo>
         <Bar />
         <Right>
-          {user?.name ? (
-            <Button
-              onClick={() =>
-                axios.delete('/api/auth').then(() => {
-                  router.reload();
-                })
-              }
-            >
-              {user.name}
-            </Button>
-          ) : (
-            <Button onClick={() => addModal('login')}>로그인</Button>
-          )}
+          <UserButton user={user}/>
           <Palette />
         </Right>
       </Wrapper>
@@ -139,10 +124,4 @@ const Button = styled.button`
   text-align: center;
   cursor: pointer;
   padding: 0;
-`;
-
-const AuthContainer = styled.div`
-  position: absolute;
-  top: 40px;
-  right: 10%;
 `;
