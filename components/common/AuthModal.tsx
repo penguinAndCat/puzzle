@@ -37,6 +37,7 @@ const Wrapper = styled.div`
   width: 500px;
   height: 500px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 `;

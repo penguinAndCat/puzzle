@@ -20,32 +20,35 @@ export default function KakaoAuthBtn() {
     window.Kakao.init(`${process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID}`);
   }, []);
 
-  return <KakaoAuth onClick={loginWithKakao}>카</KakaoAuth>;
+  return (
+  <BtnWrapper onClick={loginWithKakao}>
+    <Img src='icon-login-kakaotalk-btn.svg' alt='kakaotalk_icon'/>
+    <Span>카카오로 시작</Span>
+  </BtnWrapper>
+  )
 }
 
-const Btn = styled.button`
-  z-index: 1;
-  background-color: white;
-  border: none;
-  cursor: pointer;
-  font-size: 0;
-  line-height: 0;
-  width: 60px;
-  height: 60px;
+const BtnWrapper = styled.button`
+  width: 185px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-position: center;
+  color: #000;
+  background-color: #fee500;
   border: none;
-  &:hover {
-    border: none;
-  }
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0;
+  margin-bottom: 8px;
 `;
 
-const KakaoAuth = styled(Btn)`
-  background-image: url('/btn_kakao.svg');
-  background-color: yellow;
-  background-size: 70%;
-  background-repeat: no-repeat;
-  background-position: center 58%;
+const Img = styled.img`
+  width: 20px;
+  height: 20px;
+`;
+
+const Span = styled.span`
+  margin-left: 8px;
 `;

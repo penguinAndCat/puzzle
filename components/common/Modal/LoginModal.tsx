@@ -57,8 +57,8 @@ const Container = styled.div`
   top: 50%;
   left: 50%;
   transform: translate3d(-50%, -50%, 0);
-  min-width: 300px;
-  min-height: 130px;
+  min-width: 240px;
+  min-height: 210px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -85,8 +85,9 @@ const Close = styled.div`
 `;
 
 const ButtonWrapper = styled.div`
-  width: 200px;
+  width: 185px;
   margin-top: 20px;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  justify-content: center;
 `;

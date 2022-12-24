@@ -66,7 +66,7 @@ const Header = ({ setShowLevel, setShowRoomInfo, user }: Props) => {
             <Button onClick={() => setShowRoomInfo(true)}>방 정보</Button>
           )}
         </Left>
-        <Logo>
+        <Logo onClick={() => window.location.replace('/')}>
           <div>PENGCAT</div>
           <div>PUZZLE</div>
         </Logo>
