@@ -21,26 +21,40 @@ export default function GoogleAuthBtn() {
     }
   };
 
-  return <GoogleAuth onClick={onGoogleSignIn}>구</GoogleAuth>;
+  return <BtnWrapper onClick={onGoogleSignIn}>
+  <AuthWrapper>
+    <GoogleAuth />
+  </AuthWrapper>
+  <div>구글로 시작</div>
+</BtnWrapper>;
 }
 
-const Btn = styled.button`
-  z-index: 1;
-  background-color: white;
-  border: none;
-  cursor: pointer;
-  font-size: 0;
-  line-height: 0;
-  width: 60px;
-  height: 60px;
+const BtnWrapper = styled.div`
+  width: 185px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #FFF;
+  background-color: #4285F4;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  margin-bottom: 8px;
+`;
+
+const AuthWrapper = styled.div`
+  padding: 1px 6px;
+`;
+
+const Btn = styled.button`
+  z-index: 1;
+  background-color: #FFF;
+  border: none;
+  width: 32px;
+  height: 32px;
   background-position: center;
-  border: 1px solid #ededed;
-  &:hover {
-    border: 1px solid #ededed;
-  }
+  color: #000;
 `;
 
 const GoogleAuth = styled(Btn)`
@@ -48,5 +62,6 @@ const GoogleAuth = styled(Btn)`
   align-items: center;
   justify-content: center;
   background-image: url('/btn_google.svg');
-  background-size: 80px;
+  background-size: 50px;
+  border-radius: 50%;
 `;
