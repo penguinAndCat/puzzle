@@ -1,5 +1,7 @@
 import Card from 'components/common/Card';
+import axios from 'libs/axios';
 import { useModal, usePuzzle } from 'libs/zustand/store';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 const images = [
@@ -16,6 +18,44 @@ const Main = () => {
     initialModal();
     addModal('puzzle');
   };
+  const publicRef = useRef<HTMLDivElement>(null);
+  const [puzzleData, setPuzzleData] = useState<any[]>([]);
+  const [page, setPage] = useState(1);
+  const getPublic = useCallback(async () => {
+    const { data: publicPuzzle } = await axios.get('http://localhost:3000/api/puzzle/public', {
+      params: {
+        page: page,
+      },
+    });
+    setPuzzleData((prev) => [...prev, ...publicPuzzle.item]);
+    if (!publicPuzzle.item || publicPuzzle.item.length < 10) {
+      publicRef.current!.style.display = 'none';
+    }
+    setPage((prev) => (prev += 1));
+  }, [page]);
+
+  const isIntersect: IntersectionObserverCallback = useCallback(
+    async (entries, observer) => {
+      if (entries[0].isIntersecting) {
+        observer.unobserve(entries[0].target);
+        await getPublic();
+        observer.observe(entries[0].target);
+      }
+    },
+    [getPublic]
+  );
+
+  useEffect(() => {
+    let observer: IntersectionObserver;
+    if (publicRef.current) {
+      observer = new IntersectionObserver(isIntersect, {
+        rootMargin: '-10px',
+      });
+      observer.observe(publicRef.current);
+    }
+    return () => observer && observer.disconnect();
+  }, [isIntersect, publicRef]);
+
   return (
     <Wrapper>
       <CreateWrapper>
@@ -35,6 +75,15 @@ const Main = () => {
           {images.map((img, index) => {
             return <Card key={index} image={img} />;
           })}
+        </PuzzleContainer>
+      </FavoriteWrapper>
+      <FavoriteWrapper>
+        <Title>공개방</Title>
+        <PuzzleContainer>
+          {puzzleData.map((data, index) => {
+            return <Card key={index} image={data.config.puzzleImage.src} />;
+          })}
+          <div ref={publicRef} />
         </PuzzleContainer>
       </FavoriteWrapper>
     </Wrapper>
