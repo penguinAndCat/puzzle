@@ -7,6 +7,7 @@ import PuzzleCanvas from '../../components/puzzle/PuzzleCanvas';
 
 import { usePuzzle } from 'libs/zustand/store';
 import RoomInfo from 'components/puzzle/RoomInfo';
+import { NEXT_SERVER } from 'config';
 import axios from 'libs/axios';
 
 const Home: NextPage<{ user: UserInfo | null }> = ({ user = null }) => {
@@ -26,7 +27,7 @@ const Home: NextPage<{ user: UserInfo | null }> = ({ user = null }) => {
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { req, res } = ctx;
-  const { data } = await axios.get('http://localhost:3000/api/auth', {
+  const { data } = await axios.get(`${NEXT_SERVER}/api/auth`, {
     headers: {
       Cookie: req.headers.cookie || '',
     },
