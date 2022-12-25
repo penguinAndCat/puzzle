@@ -1,5 +1,6 @@
 import Header from 'components/common/Header';
 import Main from 'components/main/Main';
+import { NEXT_SERVER } from 'config';
 import axios from 'libs/axios';
 import type { GetServerSideProps, NextPage } from 'next';
 import styled from 'styled-components';
@@ -14,7 +15,7 @@ const Home: NextPage<{ user: UserInfo | null }> = ({ user = null }) => {
 };
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { req, res } = ctx;
-  const { data } = await axios.get('http://localhost:3000/api/auth', {
+  const { data } = await axios.get(`${NEXT_SERVER}/api/auth`, {
     headers: {
       Cookie: req.headers.cookie || '',
     },
