@@ -22,7 +22,7 @@ const Main = () => {
   const [puzzleData, setPuzzleData] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const getPublic = useCallback(async () => {
-    const { data: publicPuzzle } = await axios.get('http://localhost:3000/api/puzzle/public', {
+    const { data: publicPuzzle } = await axios.get('/api/puzzle/public', {
       params: {
         page: page,
       },
@@ -81,9 +81,17 @@ const Main = () => {
         <Title>공개방</Title>
         <PuzzleContainer>
           {puzzleData.map((data, index) => {
-            return <Card key={index} image={data.config.puzzleImage.src} />;
+            return (
+              <img
+                key={index}
+                src={data.config.puzzleImage.src}
+                width={'100%'}
+                height={'100%'}
+                style={{ display: 'flex', alignItems: 'center', objectFit: 'contain' }}
+              />
+            );
           })}
-          <div ref={publicRef} />
+          <div ref={publicRef} style={{ height: '10px' }} />
         </PuzzleContainer>
       </FavoriteWrapper>
     </Wrapper>
@@ -140,7 +148,7 @@ const PuzzleContainer = styled.div`
   width: 80%;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  column-gap: 16px;
+  gap: 0.5rem;
   @media (max-width: 720px) {
     grid-template-columns: 1fr 1fr;
   }
