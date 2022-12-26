@@ -1,3 +1,4 @@
+import useImaegHover from 'hooks/useImageHover';
 import { useModal, usePuzzle } from 'libs/zustand/store';
 import { MouseEvent, useState } from 'react';
 import styled from 'styled-components';
@@ -10,22 +11,7 @@ const Card = ({ image }: Props) => {
   const { addModal } = useModal();
   const { initialModal } = usePuzzle();
   const { setModalImage } = usePuzzle();
-  const [thumbImage, setThumbImage] = useState('');
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [width, setWidth] = useState(0);
-  const onMouseOver = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
-    setThumbImage(image);
-    setMousePosition({ x: e.clientX, y: e.clientY });
-    setWidth(window.innerWidth / 8);
-  };
-  const onMouseMove = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
-    setThumbImage(image);
-    setMousePosition({ x: e.clientX, y: e.clientY });
-    setWidth(window.innerWidth / 8);
-  };
-  const onMouseLeave = () => {
-    setThumbImage('');
-  };
+  const { onMouseLeave, onMouseMove, onMouseOver, width, thumbImage, mousePosition } = useImaegHover(image);
   const onClick = () => {
     initialModal();
     addModal('puzzle');
