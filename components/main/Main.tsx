@@ -22,7 +22,7 @@ const Main = () => {
   const [puzzleData, setPuzzleData] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const getPublic = useCallback(async () => {
-    const { data: publicPuzzle } = await axios.get('/api/puzzle/public', {
+    const { data: publicPuzzle } = await axios.get('/api/puzzle', {
       params: {
         page: page,
       },
