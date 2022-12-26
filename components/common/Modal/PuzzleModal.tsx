@@ -118,6 +118,8 @@ const PuzzleModal = () => {
         level: puzzleNumber,
         title: roomName,
         secretRoom: secretRoom,
+        maximumPlayer: 4,
+        perfection: 0,
       };
 
       const response = await axios.post('/api/puzzle', {

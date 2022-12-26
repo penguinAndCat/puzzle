@@ -2,8 +2,7 @@ import axios from 'axios';
 import Palette from 'components/common/Palette';
 import { saveImage } from 'libs/common/saveImage';
 import { exportConfig } from 'libs/puzzle/createPuzzle';
-import { theme } from 'libs/theme/theme';
-import { useLoading, useModal, usePuzzle, userStore } from 'libs/zustand/store';
+import { useLoading, useModal, usePuzzle } from 'libs/zustand/store';
 import { useRouter } from 'next/router';
 import { Dispatch, SetStateAction } from 'react';
 import styled from 'styled-components';
@@ -38,6 +37,8 @@ const Header = ({ setShowLevel, setShowRoomInfo, user }: Props) => {
         level: number,
         title: title,
         secretRoom: secretRoom,
+        maximumPlayer: 4,
+        perfection: 0,
       };
 
       const response = await axios.post('/api/puzzle', {

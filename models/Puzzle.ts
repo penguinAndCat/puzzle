@@ -82,7 +82,14 @@ const PuzzleSchema = new mongoose.Schema(
     secretRoom: {
       type: Boolean,
     },
+    perfection: {
+      type: Number,
+    },
+    maximumPlayer: {
+      type: Number,
+    },
     invitedUser: [{ type: mongoose.Schema.Types.ObjectId, ref: 'users' }],
+    player: [{ type: mongoose.Schema.Types.ObjectId, ref: 'users' }],
   },
   {
     timestamps: true,

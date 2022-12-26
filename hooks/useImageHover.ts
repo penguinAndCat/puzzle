@@ -1,5 +1,4 @@
-import { useState, MouseEvent, useMemo } from 'react';
-import styled from 'styled-components';
+import { useState, MouseEvent } from 'react';
 
 const useImaegHover = (src: string) => {
   const [thumbImage, setThumbImage] = useState('');

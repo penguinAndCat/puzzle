@@ -65,6 +65,19 @@ const moveTile = (config: Config, query?: string | string[], socket?: any, userN
         });
       }
 
+      let groupTiles = [ ...config.groupTiles ];
+      let matchedTiles = 0;
+      const totalTiles = groupTiles.length;
+      groupTiles = groupTiles.filter((item) => item.groupIndex !== null);
+      const result = groupTiles.reduce((accu, curr) => { 
+        accu[curr.groupIndex] = (accu[curr.groupIndex] || 0) + 1; 
+        return accu;
+      }, {});
+      for(const num in result){
+        matchedTiles = matchedTiles + (result[num]) - 1
+      }
+      const perfection = matchedTiles / (totalTiles - 1);
+
       if (query !== undefined) {
         const data = {
           config: {
@@ -76,6 +89,7 @@ const moveTile = (config: Config, query?: string | string[], socket?: any, userN
           indexArr: indexArr,
           socketId: socket,
           userNickName: userNickName,
+          perfection: perfection,
         }
         axios.put(`/api/puzzle/${query}`, {
           data
