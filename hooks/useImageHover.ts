@@ -1,22 +1,24 @@
-import { useState, MouseEvent } from 'react';
+import { useState, MouseEvent, useMemo } from 'react';
+import styled from 'styled-components';
 
-const useImaegHover = (image: string) => {
+const useImaegHover = (src: string) => {
   const [thumbImage, setThumbImage] = useState('');
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [width, setWidth] = useState(0);
   const onMouseOver = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
-    setThumbImage(image);
+    setThumbImage(src);
     setMousePosition({ x: e.clientX, y: e.clientY });
     setWidth(window.innerWidth / 8);
   };
   const onMouseMove = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
-    setThumbImage(image);
+    setThumbImage(src);
     setMousePosition({ x: e.clientX, y: e.clientY });
     setWidth(window.innerWidth / 8);
   };
   const onMouseLeave = () => {
     setThumbImage('');
   };
+
   return { thumbImage, mousePosition, width, onMouseLeave, onMouseMove, onMouseOver };
 };
 

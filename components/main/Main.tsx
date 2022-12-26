@@ -1,4 +1,5 @@
 import Card from 'components/common/Card';
+import HoverImage from 'components/common/HoverImage';
 import axios from 'libs/axios';
 import { useModal, usePuzzle } from 'libs/zustand/store';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -82,7 +83,7 @@ const Main = () => {
         <PuzzleContainer>
           {puzzleData.map((data, index) => {
             return (
-              <img
+              <HoverImage
                 key={index}
                 src={data.config.puzzleImage.src}
                 width={'100%'}
