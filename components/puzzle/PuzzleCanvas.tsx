@@ -60,7 +60,7 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
       } else {
         if (user === null) return;
         if (socket === undefined) return;
-        const response = await axios.get(`/api/puzzle?id=${router.query.id}`);
+        const response = await axios.get(`/api/puzzle/${router.query.id}`);
         const item = response.data.item;
         const config = { ...item.config };
         const puzzleImage = { ...config.puzzleImage };

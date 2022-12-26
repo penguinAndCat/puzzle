@@ -24,6 +24,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
           },
         }
       );
+      await Puzzle.updateOne(
+        { _id: id },
+        {
+          $set: {
+            perfection: req.body.data.perfection,
+          },
+        }
+      );
       const groupTiles = req.body.data.config.groupTiles;
       const indexArr = req.body.data.indexArr;
       const socketCanvasSize = req.body.data.config.canvasSize;
