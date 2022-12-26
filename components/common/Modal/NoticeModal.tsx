@@ -4,7 +4,7 @@ import { useNotice } from 'hooks/useNotice';
 import { useToast } from 'hooks/useToast';
 import { theme } from 'libs/theme/theme';
 import { useModal, userStore } from 'libs/zustand/store';
-import { Key, MouseEvent, useEffect, useRef, useState } from 'react';
+import { Key, MouseEvent, useRef } from 'react';
 import styled from 'styled-components';
 
 const NoticeModal = () => {

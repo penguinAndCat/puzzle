@@ -4,7 +4,6 @@ import { exportLevels } from '../../libs/puzzle/createPuzzle';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { useInvitedUser } from 'hooks/useInvitedUser';
-import { userStore } from 'libs/zustand/store';
 import { useToast } from 'hooks/useToast';
 
 interface Props {

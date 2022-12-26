@@ -1,6 +1,5 @@
 import useImaegHover from 'hooks/useImageHover';
 import { useModal, usePuzzle } from 'libs/zustand/store';
-import { MouseEvent, useState } from 'react';
 import styled from 'styled-components';
 
 interface Props {
