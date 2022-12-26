@@ -38,6 +38,7 @@ const Header = ({ setShowLevel, setShowRoomInfo, user }: Props) => {
         level: number,
         title: title,
         secretRoom: secretRoom,
+        maximumPlayer: 4,
       };
 
       const response = await axios.post('/api/puzzle', {
