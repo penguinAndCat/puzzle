@@ -2,7 +2,7 @@
 import axios from 'libs/axios';
 import { useQuery } from 'react-query';
 
-export const useInvitedUser = (id: string | undefined | string[]) => {
+export const useInvitedUser = (puzzleId: string | undefined | string[], user: UserInfo | null) => {
   const { data, refetch } = useQuery(['roomInfo-invitedUser'], () => getInvitedUser(), {
     onError: (error: Error) => {
       alert(error.message);
@@ -11,8 +11,9 @@ export const useInvitedUser = (id: string | undefined | string[]) => {
 
   const getInvitedUser = async () => {
     try {
-      if (id === undefined) return {};
-      const res = await axios.get(`/api/puzzle/users/${id}`);
+      if (puzzleId === undefined) return {};
+      if (user === null) return {};
+      const res = await axios.get(`/api/puzzle/users/${puzzleId}?userId=${user.id}`);
       console.log(res.data.data);
       return res.data.data;
     } catch (error) {

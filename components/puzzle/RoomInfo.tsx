@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import { useInvitedUser } from 'hooks/useInvitedUser';
 import { useToast } from 'hooks/useToast';
+import { useSocket } from 'libs/zustand/store';
 
 interface Props {
   showRoomInfo: boolean;
@@ -14,12 +15,13 @@ interface Props {
 
 const RoomInfo = ({ showRoomInfo, setShowRoomInfo, user }: Props) => {
   const router = useRouter();
+  const { participants } = useSocket();
   const [roomInfo, setRoomInfo] = useState({title: '', secretRoom: false, level: 1});
   const [list, setList] = useState<number[][]>([]);
   const [display, setDisplay] = useState(false); // fadeout animaition 기다림
   const el = useRef<HTMLDivElement>(null);
   const { fireToast } = useToast();
-  const { data, refetch } = useInvitedUser(router.query.id);
+  const { data, refetch } = useInvitedUser(router.query.id, user);
 
   useEffect(() => {
     if(showRoomInfo){
@@ -93,19 +95,28 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo, user }: Props) => {
               <MiniTitle>참가자</MiniTitle>
               <div>
                 <UserWrapper>
-                  <Img src={data.host.picture} />
+                  <Img src={data.host.picture} alt={data.host.nickname} />
                   <Nickname>{data.host.nickname}</Nickname>
+                    {participants.includes(data.host.nickname) ? 
+                      <OnParticipant>on</OnParticipant> : 
+                      <OffParticipant>off</OffParticipant>
+                    }
                   <FriendButton>방장</FriendButton>
                 </UserWrapper>
-                {data.users.map((user: any, index: Key | null | undefined) => {
+                {data.users.map((participant: any, index: Key | null | undefined) => {
                   return (
                     <UserWrapper key={index}>
-                      <Img src={user.picture} />
-                      <Nickname>{user.nickname}</Nickname>
+                      <Img src={participant.picture} alt={participant.nickname} />
+                      <Nickname>{participant.nickname}</Nickname>
+                      {participants.includes(participant.nickname) ? 
+                        <OnParticipant>on</OnParticipant> : 
+                        <OffParticipant>off</OffParticipant>
+                      }
                       {
-                        user.isFriend > 0 ? 
+                        user?.nickname === participant.nickname ? <FriendButton>나</FriendButton> :
+                        participant.isFriend > 0 ? 
                         <FriendButton>친구</FriendButton> :
-                        <FriendRequireButton onClick={() => requestFriend(user.nickname)}>친구하기</FriendRequireButton>
+                        <FriendRequireButton onClick={() => requestFriend(participant.nickname)}>친구하기</FriendRequireButton>
                       }
                     </UserWrapper>
                   )
@@ -199,6 +210,14 @@ const MiniTitle = styled.div`
 
 const InvitedUserWrapper = styled.div`
 
+`;
+
+const OnParticipant = styled.div`
+  color: #4AA02C;
+`;
+
+const OffParticipant = styled.div`
+  color: #E41B17;
 `;
 
 const UserWrapper = styled.div`
