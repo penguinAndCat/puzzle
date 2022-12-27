@@ -4,7 +4,7 @@ import Puzzle from 'models/Puzzle';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 type Data = {
-  item?: any;
+  data?: any;
   message: string;
   error?: any;
 };
@@ -42,19 +42,35 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             nickname: '$user.nickname', 
             id: '$user._id', 
             picture: '$user.picture', 
-            isFriend: { $size : '$friend' } 
+            isFriend: { $size : '$friend' },
           } 
         },
       ]);
-      res.status(201).json({ item: users, message: 'success' });
-    } catch (err) {
-      res.status(500).json({ error: err, message: 'failed' });
-    }
-  }
-  if (method === 'PUT') {
-    try {
-      return;
-      res.status(201).json({ item: 'users', message: 'success' });
+      const host = await Puzzle.aggregate([
+        { $match: { _id: userId } },
+        {
+          $lookup: {
+            from: 'users',
+            let: { userObjId: { $toObjectId: '$userId' } },
+            pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$userObjId'] } } }],
+            as: 'user',
+          },
+        },
+        { $unwind: '$user' },
+        { 
+          $project: {
+            _id: 0, 
+            nickname: '$user.nickname', 
+            id: '$user._id', 
+            picture: '$user.picture', 
+          } 
+        },
+      ]);
+      const data = {
+        host: host[0],
+        users: users,
+      }
+      res.status(201).json({ data: data, message: 'success' });
     } catch (err) {
       res.status(500).json({ error: err, message: 'failed' });
     }

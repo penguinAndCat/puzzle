@@ -92,7 +92,12 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo, user }: Props) => {
             <InvitedUserWrapper>
               <MiniTitle>참가자</MiniTitle>
               <div>
-                {data.map((user: any, index: Key | null | undefined) => {
+                <UserWrapper>
+                  <Img src={data.host.picture} />
+                  <Nickname>{data.host.nickname}</Nickname>
+                  <FriendButton>방장</FriendButton>
+                </UserWrapper>
+                {data.users.map((user: any, index: Key | null | undefined) => {
                   return (
                     <UserWrapper key={index}>
                       <Img src={user.picture} />

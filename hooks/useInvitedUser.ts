@@ -13,7 +13,8 @@ export const useInvitedUser = (id: string | undefined | string[]) => {
     try {
       if (id === undefined) return {};
       const res = await axios.get(`/api/puzzle/users/${id}`);
-      return res.data.item;
+      console.log(res.data.data);
+      return res.data.data;
     } catch (error) {
       throw new Error('error');
     }
