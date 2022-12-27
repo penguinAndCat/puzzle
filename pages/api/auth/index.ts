@@ -74,6 +74,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             picture: savedUser.picture,
             email: savedUser.email,
           },
+          accessToken: accessToken,
           message: 'success',
         });
       }

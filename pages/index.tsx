@@ -1,6 +1,7 @@
 import Header from 'components/common/Header';
 import Main from 'components/main/Main';
 import { NEXT_SERVER } from 'config';
+import { setCookie } from 'cookies-next';
 import axios from 'libs/axios';
 import type { GetServerSideProps, NextPage } from 'next';
 import styled from 'styled-components';
@@ -20,6 +21,9 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       Cookie: req.headers.cookie || '',
     },
   });
+  if (data.accessToken) {
+    setCookie('accessToken', data.accessToken, { req, res });
+  }
   if (req?.url?.startsWith('/_next')) {
     return {
       props: {

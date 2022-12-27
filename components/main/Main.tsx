@@ -50,7 +50,7 @@ const Main = () => {
     let observer: IntersectionObserver;
     if (publicRef.current) {
       observer = new IntersectionObserver(isIntersect, {
-        rootMargin: '-10px',
+        rootMargin: '10px',
       });
       observer.observe(publicRef.current);
     }
@@ -86,9 +86,8 @@ const Main = () => {
               <HoverImage
                 key={index}
                 src={data.config.puzzleImage.src}
-                width={'100%'}
-                height={'100%'}
-                style={{ display: 'flex', alignItems: 'center', objectFit: 'contain' }}
+                width={`100%`}
+                style={{ objectFit: 'cover', aspectRatio: 1 }}
               />
             );
           })}
@@ -103,7 +102,6 @@ export default Main;
 
 const Wrapper = styled.div`
   width: 100%;
-  heigth: 100%;
 `;
 
 const CreateWrapper = styled.div`
@@ -122,7 +120,7 @@ const CreateWrapper = styled.div`
 
 const BasicWrapper = styled.div`
   width: 100%;
-  heigth: 100%;
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -131,7 +129,7 @@ const BasicWrapper = styled.div`
 
 const FavoriteWrapper = styled.div`
   width: 100%;
-  heigth: 100%;
+
   display: flex;
   flex-direction: column;
   align-items: center;
