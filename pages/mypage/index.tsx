@@ -1,15 +1,11 @@
 import Header from 'components/common/Header';
-import { NEXT_SERVER } from 'config';
 import axios from 'libs/axios';
 import Head from 'next/head';
-import { useRouter } from 'next/router';
-import { GetServerSideProps } from 'next/types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 export default function MyPage({ user }: { user: UserInfo | null }) {
   const [tab, setTab] = useState<'my' | 'invited'>('my');
-  const router = useRouter();
   const [data, setData] = useState<any[]>([]);
   const myRef = useRef<HTMLDivElement>(null);
   const myPageRef = useRef(1);
@@ -138,29 +134,6 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
     </div>
   );
 }
-
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { req, res } = ctx;
-  const { data } = await axios.get(`${NEXT_SERVER}/api/auth`, {
-    headers: {
-      Cookie: req.headers.cookie || '',
-    },
-  });
-  if (!data.user) {
-    return {
-      redirect: {
-        permanent: false,
-        destination: '/',
-      },
-      props: {},
-    };
-  }
-  return {
-    props: {
-      user: data.user,
-    },
-  };
-};
 
 const TabBox = styled.ul`
   display: flex;

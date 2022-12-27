@@ -6,7 +6,9 @@ import Toast from 'components/common/Toast';
 import Loading from 'components/common/Loading';
 import Modal from 'components/common/Modal';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { getCookie } from 'cookies-next';
+import { getCookie, setCookie } from 'cookies-next';
+import axios from 'libs/axios';
+import { NEXT_SERVER } from 'config';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,7 +33,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
-MyApp.getInitialProps = async ({ ctx, Component }: {ctx: any; Component: any;}) => {
+MyApp.getInitialProps = async ({ ctx, Component }: { ctx: any; Component: any }) => {
   const themeKeys: ThemeKey[] = ['pink', 'silver', 'mint', 'dark'];
   let pageProps: any = {};
   if (Component.getInitialProps) {
@@ -50,6 +52,20 @@ MyApp.getInitialProps = async ({ ctx, Component }: {ctx: any; Component: any;}) 
         theme: 'pink',
       });
     }
+  }
+  const { req, res } = ctx;
+  const { data } = await axios.get(`${NEXT_SERVER}/api/auth`, {
+    headers: {
+      Cookie: req.headers.cookie || '',
+    },
+  });
+  if (data.accessToken) {
+    setCookie('accessToken', data.accessToken, { req, res });
+  }
+  if (data.user) {
+    Object.assign(pageProps, {
+      user: data.user,
+    });
   }
 
   return { pageProps };
