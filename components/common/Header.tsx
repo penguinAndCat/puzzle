@@ -2,9 +2,11 @@ import styled from 'styled-components';
 import Palette from './Palette';
 import { useModal } from 'libs/zustand/store';
 import UserButton from './Header/UserButton';
+import { useNotice } from 'hooks/useNotice';
 
 const Header = ({ user }: { user: UserInfo | null }) => {
   const { addModal } = useModal();
+  const { data, refetch } = useNotice(user);
 
   return (
     <Container>
@@ -12,7 +14,10 @@ const Header = ({ user }: { user: UserInfo | null }) => {
         {user?.name ? (
           <Left>
             <Button onClick={() => addModal('friend')}>친구</Button>
-            <Button onClick={() => addModal('notice')}>알림</Button>
+            <Button onClick={() => addModal('notice')}>
+              알림
+              {data && data.length > 0 && <Notice />}
+            </Button>
           </Left>
         ) : (
           <Left />
@@ -114,6 +119,7 @@ const Right = styled.div`
 `;
 
 const Button = styled.button`
+  position: relative;
   width: 80px;
   height: 30px;
   border-radius: 4px;
@@ -124,4 +130,14 @@ const Button = styled.button`
   text-align: center;
   cursor: pointer;
   padding: 0;
+`;
+
+const Notice = styled.div`
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  top: 20px;
+  left: 69px;
+  background-color: #C24641;
+  border-radius: 50%;
 `;
