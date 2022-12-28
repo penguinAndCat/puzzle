@@ -90,7 +90,7 @@ const UserListModal = ({ data, handleClose, title }: { data: any[]; handleClose:
 const ModalWindow = styled.div`
   width: 100%;
   height: 100vh;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   display: flex;
