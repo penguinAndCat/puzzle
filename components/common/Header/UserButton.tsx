@@ -43,7 +43,7 @@ const UserButton = ({ user }: { user: UserInfo | null }) => {
       )}
       {dropDown && (
         <DropDownWrapper>
-          <DropDownButton onClick={() => window.location.replace('/mypage')}>프로필</DropDownButton>
+          <DropDownButton onClick={() => window.location.href = '/mypage'}>프로필</DropDownButton>
           <DropDownButton onClick={() =>
             axios.delete('/api/auth').then(() => {
               router.reload();

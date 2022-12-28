@@ -45,7 +45,7 @@ const Header = ({ setShowLevel, setShowRoomInfo, user }: Props) => {
         data: data,
       });
       const { item, message } = response.data;
-      window.location.replace(`/puzzle/${item._id}`);
+      window.location.href = `/puzzle/${item._id}`;
     } catch (err) {
       alert('failed');
       offLoading();

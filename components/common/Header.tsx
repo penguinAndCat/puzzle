@@ -18,7 +18,7 @@ const Header = ({ user }: { user: UserInfo | null }) => {
           <Left />
         )}
         <Bar />
-        <Logo onClick={() => window.location.replace('/')}>
+        <Logo onClick={() => window.location.href = '/'}>
           <div>PENGCAT</div>
           <div>PUZZLE</div>
         </Logo>
