@@ -98,8 +98,8 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo, user }: Props) => {
                   <Img src={data.host.picture} alt={data.host.nickname} />
                   <Nickname>{data.host.nickname}</Nickname>
                     {participants.includes(data.host.nickname) ? 
-                      <OnParticipant>on</OnParticipant> : 
-                      <OffParticipant>off</OffParticipant>
+                      <OnParticipant /> : 
+                      <OffParticipant />
                     }
                   <FriendButton>방장</FriendButton>
                 </UserWrapper>
@@ -109,8 +109,8 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo, user }: Props) => {
                       <Img src={participant.picture} alt={participant.nickname} />
                       <Nickname>{participant.nickname}</Nickname>
                       {participants.includes(participant.nickname) ? 
-                        <OnParticipant>on</OnParticipant> : 
-                        <OffParticipant>off</OffParticipant>
+                        <OnParticipant /> : 
+                        <OffParticipant />
                       }
                       {
                         user?.nickname === participant.nickname ? <FriendButton>나</FriendButton> :
@@ -213,14 +213,29 @@ const InvitedUserWrapper = styled.div`
 `;
 
 const OnParticipant = styled.div`
-  color: #4AA02C;
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  top: 19px;
+  left: 19px;
+  background-color: #4AA02C;
+  border: 2px solid #3A3B3C;
+  border-radius: 50%;
 `;
 
 const OffParticipant = styled.div`
-  color: #E41B17;
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  top: 19px;
+  left: 19px;
+  background-color: #797979;
+  border: 2px solid #3A3B3C;
+  border-radius: 50%;
 `;
 
 const UserWrapper = styled.div`
+  position: relative;
   display: flex;
   align-items: center;
   margin-bottom: 4px;
