@@ -4,7 +4,7 @@ import { saveImage } from 'libs/common/saveImage';
 import { exportConfig } from 'libs/puzzle/createPuzzle';
 import { useLoading, useModal, usePuzzle } from 'libs/zustand/store';
 import { useRouter } from 'next/router';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 interface Props {
@@ -17,7 +17,18 @@ const Header = ({ setShowLevel, setShowRoomInfo, user }: Props) => {
   const { addModal } = useModal();
   const { number, title, secretRoom } = usePuzzle();
   const { onLoading, offLoading } = useLoading();
+  const [roomInfo, setRoomInfo] = useState({title: '', secretRoom: false, level: 1});
   const router = useRouter();
+
+  useEffect(() => {
+    if (!router.isReady) return;
+    if (router.query.id === undefined) return;
+    const getData = async () => {
+      const res = await axios.get(`/api/puzzle/info/${router.query.id}`);
+      setRoomInfo(res.data.item);
+    }
+    getData();
+  }, [router.isReady, router.query.id]);
 
   const createPuzzleRoom = async () => {
     try {
@@ -72,12 +83,12 @@ const Header = ({ setShowLevel, setShowRoomInfo, user }: Props) => {
           <div>PUZZLE</div>
         </Logo>
         <Right>
-          <Palette />
           {router.query.id === undefined ? (
             <Button onClick={createPuzzleRoom}>방 만들기</Button>
           ) : (
-            <Button onClick={openModal}>초대하기</Button>
+            roomInfo && roomInfo.secretRoom && <Button onClick={openModal}>초대하기</Button>
           )}
+          <Palette />
         </Right>
       </Wrapper>
     </Container>
@@ -117,7 +128,7 @@ const Left = styled.div`
 const Right = styled.div`
   min-width: 150px;
   display: flex;
-  justify-content: space-between;
+  justify-content: end;
   margin-left: 80px;
   @media (max-width: 900px) {
     margin-left: 20px;
