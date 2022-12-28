@@ -1,9 +1,12 @@
 import Card from 'components/common/Card';
 import HoverImage from 'components/common/HoverImage';
+import RoomCard from 'components/common/RoomCard';
 import axios from 'libs/axios';
 import { useModal, usePuzzle } from 'libs/zustand/store';
+import { useRouter } from 'next/router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
+import { NEXT_SERVER } from 'config';
 
 const images = [
   'http://res.cloudinary.com/penguinandcatpuzzle/image/upload/v1666189078/bugvpkwfmde3q21zcm4s.png',
@@ -13,6 +16,7 @@ const images = [
 ];
 
 const Main = () => {
+  const router = useRouter();
   const { addModal } = useModal();
   const { initialModal } = usePuzzle();
   const openModal = () => {
@@ -83,11 +87,16 @@ const Main = () => {
         <PuzzleContainer>
           {puzzleData.map((data, index) => {
             return (
-              <HoverImage
+              <RoomCard
                 key={index}
                 src={data.config.puzzleImage.src}
-                width={`100%`}
-                style={{ objectFit: 'cover', aspectRatio: 1 }}
+                currentPlayer={data.player.length}
+                maxPlayer={data.maximumPlayer}
+                progress={Number((data.perfection * 100).toFixed(3))}
+                title={data.title}
+                onClick={() => {
+                  window.location.href = `${NEXT_SERVER}/puzzle/${data._id}`;
+                }}
               />
             );
           })}
@@ -134,6 +143,7 @@ const FavoriteWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   margin-top: 20px;
+  padding: 0.5rem;
 `;
 
 const Title = styled.div`
