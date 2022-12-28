@@ -9,6 +9,7 @@ import { moveIndex } from 'libs/puzzle/socketMove';
 import { useLoading, useSocket } from 'libs/zustand/store';
 import Pusher from 'pusher-js';
 import { NEXT_SERVER } from 'config';
+import { useToast } from 'hooks/useToast';
 
 interface Props {
   puzzleLv: number;
@@ -19,6 +20,7 @@ interface Props {
 const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
   const { offLoading } = useLoading();
   const { setParticipant } = useSocket();
+  const { fireToast } = useToast();
   const router = useRouter();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
@@ -96,11 +98,13 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
       });
 
       // when a new user join the channel.
-      channel.bind('pusher:member_added', () => {
+      channel.bind('pusher:member_added', (member: Member) => {
+        fireToast({nickname: `${member.info.username}`, content: `님이 입장하였습니다.`, top: 100});
         setParticipant(Object.values(channel.members.members).map((item: any) => item.username));
       });
 
-      channel.bind('pusher:member_removed', () => {
+      channel.bind('pusher:member_removed', (member: Member) => {
+        fireToast({nickname: `${member.info.username}`, content: `님이 퇴장하였습니다.`, top: 100});
         setParticipant(Object.values(channel.members.members).map((item: any) => item.username));
       });
 

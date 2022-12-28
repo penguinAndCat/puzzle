@@ -62,10 +62,11 @@ type PuzzleProps = {
 
 interface Toast {
   id?: string;
+  nickname?: string;
   content: string;
   duration?: number;
   top?: number;
-  bottom?: number;
+  left?: number;
 }
 
 type ToastProps = {

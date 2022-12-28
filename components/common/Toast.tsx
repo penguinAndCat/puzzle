@@ -4,7 +4,18 @@ import styled from 'styled-components';
 
 const Toast = () => {
   const { toast } = useToast();
-  return <Wrapper>{toast.content === '' ? null : <Content toast={toast}>{toast.content}</Content>}</Wrapper>;
+  console.log(toast.left);
+  return (
+      <Wrapper>
+        {
+          toast.content !== '' && 
+          <Content toast={toast}>
+            <Nickname>{toast.nickname}</Nickname>
+            {toast.content}
+          </Content>
+        }
+      </Wrapper>
+    );
 };
 
 export default Toast;
@@ -14,6 +25,10 @@ const Wrapper = styled.div`
   left: 0;
   position: fixed;
   z-index: 999;
+`;
+
+const Nickname = styled.span`
+  color: red;
 `;
 
 const Content = styled.div<any>`
@@ -48,7 +63,7 @@ const Content = styled.div<any>`
 
   position: fixed;
   top: ${({ toast }) => toast.top}px;
-  left: 50%;
+  left: ${({ toast }) => toast.left === undefined ? '50%' : toast.left};
   transform: translate(-50%, 0);
 
   ${theme.common.flexCenter}
