@@ -92,7 +92,7 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
   }, [tab]);
 
   return (
-    <div>
+    <>
       <Head>
         <title>마이페이지</title>
       </Head>
@@ -124,7 +124,7 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
             <RoomCard
               key={index}
               src={item.config.puzzleImage.src}
-              currentPlayer={item.player.length}
+              currentPlayer={item.player.length + 1}
               maxPlayer={item.maximumPlayer}
               progress={Number((item.perfection * 100).toFixed(3))}
               title={item.title}
@@ -139,16 +139,23 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
           <div ref={myRef} />
         </PuzzleContainer>
       </Wrapper>
-    </div>
+    </>
   );
 }
 
 const PuzzleContainer = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  padding: 1rem;
+  grid-template-columns: repeat(8, 1fr);
   gap: 0.5rem;
+  @media (max-width: 1440px) {
+    grid-template-columns: repeat(6, 1fr);
+  }
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
   @media (max-width: 720px) {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 `;
 
@@ -170,7 +177,7 @@ const TabBox = styled.ul`
 `;
 
 const Wrapper = styled.div`
-  padding: 10px;
+  padding: 1rem;
   width: 100%;
 `;
 
