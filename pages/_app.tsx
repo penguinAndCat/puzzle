@@ -9,6 +9,8 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { getCookie, setCookie } from 'cookies-next';
 import axios from 'libs/axios';
 import { NEXT_SERVER } from 'config';
+import { userStore } from 'libs/zustand/store';
+import { useEffect } from 'react';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,6 +22,14 @@ const queryClient = new QueryClient({
 });
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const { setUser } = userStore();
+
+  useEffect(() => {
+    if (pageProps.user) {
+      setUser(pageProps.user);
+    }
+  }, [setUser, pageProps.user]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider pageTheme={pageProps.theme}>
@@ -53,6 +63,7 @@ MyApp.getInitialProps = async ({ ctx, Component }: { ctx: any; Component: any })
       });
     }
   }
+  
   const { req, res } = ctx;
   const { data } = await axios.get(`${NEXT_SERVER}/api/auth`, {
     headers: {
