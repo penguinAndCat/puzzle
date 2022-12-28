@@ -112,6 +112,9 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  @media (max-width: 600px) {
+    padding: 0;
+  }
 `;
 
 const Left = styled.div`
@@ -122,6 +125,7 @@ const Left = styled.div`
   }
   @media (max-width: 600px) {
     margin: 0;
+    min-width: 80px;
   }
 `;
 
@@ -135,6 +139,7 @@ const Right = styled.div`
   }
   @media (max-width: 600px) {
     margin: 0;
+    min-width: 80px;
   }
 `;
 
@@ -165,6 +170,7 @@ const Logo = styled.div`
     margin: 0 20px;
   }
   @media (max-width: 600px) {
+    width: 140px;
     margin: 0;
   }
 `;

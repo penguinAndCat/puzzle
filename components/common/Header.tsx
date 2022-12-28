@@ -49,7 +49,7 @@ const Container = styled.div`
     padding: 20px 20px;
   }
   @media (max-width: 600px) {
-    padding: 20px 10px;
+    padding: 10px 10px;
   }
 `;
 
@@ -70,7 +70,7 @@ const Left = styled.div`
     margin-right: 20px;
   }
   @media (max-width: 600px) {
-    margin: 0;
+    display: none;
   }
 `;
 
@@ -89,6 +89,7 @@ const Logo = styled.div`
     margin: 0 20px;
   }
   @media (max-width: 600px) {
+    width: 140px;
     margin: 0;
   }
 `;
@@ -114,7 +115,7 @@ const Right = styled.div`
     margin-left: 20px;
   }
   @media (max-width: 600px) {
-    margin: 0;
+    width: 110px;
   }
 `;
 
@@ -130,6 +131,9 @@ const Button = styled.button`
   text-align: center;
   cursor: pointer;
   padding: 0;
+  @media (max-width: 600px) {
+    display: none;
+  }
 `;
 
 const Notice = styled.div`

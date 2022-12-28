@@ -16,7 +16,6 @@ const images = [
 ];
 
 const Main = () => {
-  const router = useRouter();
   const { addModal } = useModal();
   const { initialModal } = usePuzzle();
   const openModal = () => {
@@ -125,11 +124,14 @@ const CreateWrapper = styled.div`
     radial-gradient(${({ theme }) => theme.textColor} 2px, transparent 0);
   background-size: 60px 60px;
   background-position: 0 0, 30px 30px;
+  @media (max-width: 600px) {
+    height: 100px;
+    padding: 30px 0;
+  }
 `;
 
 const BasicWrapper = styled.div`
   width: 100%;
-
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -138,7 +140,6 @@ const BasicWrapper = styled.div`
 
 const FavoriteWrapper = styled.div`
   width: 100%;
-
   display: flex;
   flex-direction: column;
   align-items: center;

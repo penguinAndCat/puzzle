@@ -1,3 +1,4 @@
+import { useNotice } from 'hooks/useNotice';
 import axios from 'libs/axios';
 import { theme } from 'libs/theme/theme';
 import { useModal } from 'libs/zustand/store';
@@ -8,6 +9,7 @@ import styled, { css } from 'styled-components';
 const UserButton = ({ user }: { user: UserInfo | null }) => {
   const { addModal } = useModal();
   const router = useRouter();
+  const { data, refetch } = useNotice(user);
   const [dropDown, setDropDown] = useState(false);
   const el = useRef<HTMLDivElement>(null);
   const onClick = () => {
@@ -36,7 +38,7 @@ const UserButton = ({ user }: { user: UserInfo | null }) => {
         <Button
           onClick={onClick}
         >
-          {user.name}
+          메뉴
         </Button>
       ) : (
         <Button onClick={() => addModal('login')}>로그인</Button>
@@ -44,6 +46,11 @@ const UserButton = ({ user }: { user: UserInfo | null }) => {
       {dropDown && (
         <DropDownWrapper>
           <DropDownButton onClick={() => window.location.href = '/mypage'}>프로필</DropDownButton>
+          <DropDownMobileButton>친구</DropDownMobileButton>
+          <DropDownMobileButton>
+            알림
+            {data && data.length > 0 && <Notice />}
+          </DropDownMobileButton>
           <DropDownButton onClick={() =>
             axios.delete('/api/auth').then(() => {
               router.reload();
@@ -72,6 +79,7 @@ const DropDownWrapper = styled.div`
 `;
 
 const ButtonStyle = css`
+  position: relative;
   width: 80px;
   height: 30px;
   border-radius: 4px;
@@ -91,4 +99,23 @@ const Button = styled.button`
 const DropDownButton = styled.button`
   ${ButtonStyle};
   margin-top: 4px;
+`;
+
+const DropDownMobileButton = styled.button`
+  ${ButtonStyle};
+  margin-top: 4px;
+  display: none;
+  @media (max-width: 600px) {
+    display: block;
+  }
+`;
+
+const Notice = styled.div`
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  top: 20px;
+  left: 69px;
+  background-color: #C24641;
+  border-radius: 50%;
 `;
