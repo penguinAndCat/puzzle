@@ -1,4 +1,6 @@
 import Header from 'components/common/Header';
+import RoomCard from 'components/common/RoomCard';
+import { NEXT_SERVER } from 'config';
 import axios from 'libs/axios';
 import Head from 'next/head';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -83,6 +85,12 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
     return () => observer && observer.disconnect();
   }, [isIntersect, myRef]);
 
+  useEffect(() => {
+    if (myRef.current) {
+      myRef.current.style.display = 'block';
+    }
+  }, [tab]);
+
   return (
     <div>
       <Head>
@@ -93,7 +101,6 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
         <TabBox>
           <li
             onClick={() => {
-              myRef.current!.style.display = 'block';
               myPageRef.current = 1;
               setData([]);
               setTab('my');
@@ -103,7 +110,6 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
           </li>
           <li
             onClick={() => {
-              myRef.current!.style.display = 'block';
               setData([]);
               myPageRef.current = 1;
               setTab('invited');
@@ -112,28 +118,39 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
             초대된 방
           </li>
         </TabBox>
+        <PuzzleHead>{tab === 'my' ? '나의 방' : '초대된 방'}</PuzzleHead>
         <PuzzleContainer>
-          <PuzzleHead>{tab === 'my' ? '나의 방' : '초대된 방'}</PuzzleHead>
-          <div>
-            <PuzzleWrapper>
-              {data?.map((item: any, index) => (
-                <PuzzleCard key={index}>
-                  <ImgWrapper>
-                    <img src={item.config.puzzleImage.src} alt={'puzzleimg'} />
-                  </ImgWrapper>
-                  <div>
-                    <PuzzleTitle>{item.title}</PuzzleTitle>
-                  </div>
-                </PuzzleCard>
-              ))}
-            </PuzzleWrapper>
-            <div ref={myRef} />
-          </div>
+          {data?.map((item: any, index) => (
+            <RoomCard
+              key={index}
+              src={item.config.puzzleImage.src}
+              currentPlayer={item.player.length}
+              maxPlayer={item.maximumPlayer}
+              progress={Number((item.perfection * 100).toFixed(3))}
+              title={item.title}
+              isPrivate={item.secretRoom}
+              invitedList={item.secretRoom ? item.invitedUser : null}
+              participantList={item.secretRoom ? item.player : null}
+              onClick={() => {
+                window.location.href = `${NEXT_SERVER}/puzzle/${item._id}`;
+              }}
+            />
+          ))}
+          <div ref={myRef} />
         </PuzzleContainer>
       </Wrapper>
     </div>
   );
 }
+
+const PuzzleContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 0.5rem;
+  @media (max-width: 720px) {
+    grid-template-columns: 1fr 1fr;
+  }
+`;
 
 const TabBox = styled.ul`
   display: flex;
@@ -152,55 +169,17 @@ const TabBox = styled.ul`
   border-bottom: 1px solid black;
 `;
 
-const PuzzleWrapper = styled.ul`
-  padding: 10px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 250px);
-  gap: 0.5rem;
-  justify-content: center;
-`;
-
-const PuzzleCard = styled.li`
-  width: 250px;
-  height: 312px;
-  border-radius: 4px;
-  background-color: white;
-  color: black;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  p {
-    word-break: break-all;
-    white-space: normal;
-  }
-`;
-
 const Wrapper = styled.div`
   padding: 10px;
+  width: 100%;
 `;
-
-const ImgWrapper = styled.div`
-  width: 250px;
-  height: 250px;
-  border-radius: 5px;
-
-  img {
-    width: 100%;
-    height: 100%;
-    border-radius: 5px;
-    object-fit: contain;
-  }
-`;
-
-const PuzzleContainer = styled.div``;
 
 const PuzzleHead = styled.h2`
   text-align: center;
   display: inline-block;
   width: 100%;
-  font-size: 3rem;
+  font-size: 2rem;
   font-weight: bold;
   line-height: 1.25;
-`;
-
-const PuzzleTitle = styled.p`
-  padding: 5px;
+  padding: 0.5rem;
 `;
