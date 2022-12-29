@@ -72,6 +72,9 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo, user }: Props) => {
         requestedNickname: requestedNickname,
       },
     });
+    if (res.data.message === 'success') {
+      fireToast({ content: '친구 요청을 보냈습니다.', top: 100 });
+    }
     if (res.data.message === 'duplicated') {
       fireToast({ content: '이미 친구 요청을 보냈습니다.', top: 100 });
     }

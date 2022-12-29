@@ -103,8 +103,8 @@ const Close = styled.div`
 `;
 
 const Img = styled.img`
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   object-fit: cover;
   border-radius: 50%;
 `;

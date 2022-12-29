@@ -78,7 +78,7 @@ const PuzzleModal = () => {
     removeModal('puzzle');
     setNumber(puzzleNumber);
     setTitle(roomName);
-    window.location.replace('/puzzle');
+    window.location.href = '/puzzle';
   };
 
   const createPuzzleRoom = async () => {
@@ -126,7 +126,7 @@ const PuzzleModal = () => {
         data: data,
       });
       const { item, message } = response.data;
-      window.location.replace(`/puzzle/${item._id}`);
+      window.location.href = `/puzzle/${item._id}`;
     } catch (err) {
       alert('failed');
       console.log(err);

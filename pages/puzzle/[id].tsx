@@ -1,12 +1,11 @@
 import type { NextPage } from 'next';
 import { useState } from 'react';
 import styled from 'styled-components';
-import Header from '../../components/puzzle/Header';
-import Levels from 'components/puzzle/Levels';
-import PuzzleCanvas from '../../components/puzzle/PuzzleCanvas';
-
-import { usePuzzle } from 'libs/zustand/store';
 import RoomInfo from 'components/puzzle/RoomInfo';
+import Header from 'components/puzzle/Header';
+import PuzzleCanvas from 'components/puzzle/PuzzleCanvas';
+import Levels from 'components/puzzle/Levels';
+import { usePuzzle } from 'libs/zustand/store';
 
 const Home: NextPage<{ user: UserInfo | null }> = ({ user = null }) => {
   const { modalImage, number } = usePuzzle();

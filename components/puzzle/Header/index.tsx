@@ -4,8 +4,9 @@ import { saveImage } from 'libs/common/saveImage';
 import { exportConfig } from 'libs/puzzle/createPuzzle';
 import { useLoading, useModal, usePuzzle } from 'libs/zustand/store';
 import { useRouter } from 'next/router';
-import { Dispatch, SetStateAction } from 'react';
-import styled from 'styled-components';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import styled, { css } from 'styled-components';
+import PuzzleMenu from './PuzzleMenu';
 
 interface Props {
   setShowLevel: Dispatch<SetStateAction<boolean>>;
@@ -17,7 +18,18 @@ const Header = ({ setShowLevel, setShowRoomInfo, user }: Props) => {
   const { addModal } = useModal();
   const { number, title, secretRoom } = usePuzzle();
   const { onLoading, offLoading } = useLoading();
+  const [roomInfo, setRoomInfo] = useState({title: '', secretRoom: false, level: 1});
   const router = useRouter();
+
+  useEffect(() => {
+    if (!router.isReady) return;
+    if (router.query.id === undefined) return;
+    const getData = async () => {
+      const res = await axios.get(`/api/puzzle/info/${router.query.id}`);
+      setRoomInfo(res.data.item);
+    }
+    getData();
+  }, [router.isReady, router.query.id]);
 
   const createPuzzleRoom = async () => {
     try {
@@ -45,7 +57,7 @@ const Header = ({ setShowLevel, setShowRoomInfo, user }: Props) => {
         data: data,
       });
       const { item, message } = response.data;
-      window.location.replace(`/puzzle/${item._id}`);
+      window.location.href = `/puzzle/${item._id}`;
     } catch (err) {
       alert('failed');
       offLoading();
@@ -72,12 +84,33 @@ const Header = ({ setShowLevel, setShowRoomInfo, user }: Props) => {
           <div>PUZZLE</div>
         </Logo>
         <Right>
-          <Palette />
           {router.query.id === undefined ? (
             <Button onClick={createPuzzleRoom}>방 만들기</Button>
           ) : (
+            roomInfo && roomInfo.secretRoom && 
             <Button onClick={openModal}>초대하기</Button>
           )}
+          {router.query.id === undefined ? (
+            <PuzzleMenu 
+              user={user}
+              roomInfo={roomInfo}
+              setShowLevel={setShowLevel}
+              setShowRoomInfo={setShowRoomInfo}
+              createPuzzleRoom={createPuzzleRoom}
+            />
+          ) : (
+            roomInfo && roomInfo.secretRoom ? 
+              <PuzzleMenu 
+                user={user}
+                roomInfo={roomInfo}
+                setShowLevel={setShowLevel}
+                setShowRoomInfo={setShowRoomInfo}
+                createPuzzleRoom={createPuzzleRoom}
+              />
+              :
+              <MobileButton onClick={() => setShowRoomInfo(true)}>방 정보</MobileButton>
+          )}
+          <Palette />
         </Right>
       </Wrapper>
     </Container>
@@ -92,6 +125,9 @@ const Container = styled.header`
   padding: 0 24px;
   background-color: ${({ theme }) => theme.headerColor};
   border-bottom: solid 3px ${({ theme }) => theme.headerTextColor};
+  @media (max-width: 600px) {
+    padding: 0 10px;
+  }
 `;
 
 const Wrapper = styled.div`
@@ -101,6 +137,9 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  @media (max-width: 600px) {
+    padding: 0;
+  }
 `;
 
 const Left = styled.div`
@@ -110,24 +149,25 @@ const Left = styled.div`
     margin-right: 20px;
   }
   @media (max-width: 600px) {
-    margin: 0;
+    display: none;
   }
 `;
 
 const Right = styled.div`
   min-width: 150px;
   display: flex;
-  justify-content: space-between;
+  justify-content: end;
   margin-left: 80px;
   @media (max-width: 900px) {
     margin-left: 20px;
   }
   @media (max-width: 600px) {
     margin: 0;
+    min-width: 80px;
   }
 `;
 
-const Button = styled.button`
+const ButtonStyle = css`
   width: 80px;
   height: 30px;
   border-radius: 4px;
@@ -137,6 +177,17 @@ const Button = styled.button`
   font-weight: 600;
   text-align: center;
   cursor: pointer;
+`;
+
+const Button = styled.button`
+  ${ButtonStyle};
+  @media (max-width: 600px) {
+    display: none;
+  }
+`;
+
+const MobileButton = styled.button`
+  ${ButtonStyle};
 `;
 
 const Logo = styled.div`
@@ -154,6 +205,7 @@ const Logo = styled.div`
     margin: 0 20px;
   }
   @media (max-width: 600px) {
+    width: 120px;
     margin: 0;
   }
 `;

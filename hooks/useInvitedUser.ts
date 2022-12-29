@@ -14,7 +14,6 @@ export const useInvitedUser = (puzzleId: string | undefined | string[], user: Us
       if (puzzleId === undefined) return {};
       if (user === null) return {};
       const res = await axios.get(`/api/puzzle/users/${puzzleId}?userId=${user.id}`);
-      console.log(res.data.data);
       return res.data.data;
     } catch (error) {
       throw new Error('error');

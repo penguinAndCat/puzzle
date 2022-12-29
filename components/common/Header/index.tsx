@@ -1,10 +1,12 @@
 import styled from 'styled-components';
-import Palette from './Palette';
 import { useModal } from 'libs/zustand/store';
-import UserButton from './Header/UserButton';
+import { useNotice } from 'hooks/useNotice';
+import Palette from '../Palette';
+import Menu from './Menu';
 
 const Header = ({ user }: { user: UserInfo | null }) => {
   const { addModal } = useModal();
+  const { data, refetch } = useNotice(user);
 
   return (
     <Container>
@@ -12,19 +14,22 @@ const Header = ({ user }: { user: UserInfo | null }) => {
         {user?.name ? (
           <Left>
             <Button onClick={() => addModal('friend')}>친구</Button>
-            <Button onClick={() => addModal('notice')}>알림</Button>
+            <Button onClick={() => addModal('notice')}>
+              알림
+              {data && data.length > 0 && <Notice />}
+            </Button>
           </Left>
         ) : (
           <Left />
         )}
         <Bar />
-        <Logo onClick={() => window.location.replace('/')}>
+        <Logo onClick={() => window.location.href = '/'}>
           <div>PENGCAT</div>
           <div>PUZZLE</div>
         </Logo>
         <Bar />
         <Right>
-          <UserButton user={user}/>
+          <Menu user={user}/>
           <Palette />
         </Right>
       </Wrapper>
@@ -44,7 +49,7 @@ const Container = styled.div`
     padding: 20px 20px;
   }
   @media (max-width: 600px) {
-    padding: 20px 10px;
+    padding: 10px 10px;
   }
 `;
 
@@ -65,7 +70,7 @@ const Left = styled.div`
     margin-right: 20px;
   }
   @media (max-width: 600px) {
-    margin: 0;
+    display: none;
   }
 `;
 
@@ -84,6 +89,7 @@ const Logo = styled.div`
     margin: 0 20px;
   }
   @media (max-width: 600px) {
+    width: 140px;
     margin: 0;
   }
 `;
@@ -109,11 +115,13 @@ const Right = styled.div`
     margin-left: 20px;
   }
   @media (max-width: 600px) {
+    min-width: 110px;
     margin: 0;
   }
 `;
 
 const Button = styled.button`
+  position: relative;
   width: 80px;
   height: 30px;
   border-radius: 4px;
@@ -124,4 +132,17 @@ const Button = styled.button`
   text-align: center;
   cursor: pointer;
   padding: 0;
+  @media (max-width: 600px) {
+    display: none;
+  }
+`;
+
+const Notice = styled.div`
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  top: 20px;
+  left: 69px;
+  background-color: #C24641;
+  border-radius: 50%;
 `;

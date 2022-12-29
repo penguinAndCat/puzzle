@@ -99,12 +99,12 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
 
       // when a new user join the channel.
       channel.bind('pusher:member_added', (member: Member) => {
-        fireToast({nickname: `${member.info.username}`, content: `님이 입장하였습니다.`, top: 100});
+        fireToast({ nickname: `${member.info.username}`, content: `님이 입장하였습니다.`, top: 100 });
         setParticipant(Object.values(channel.members.members).map((item: any) => item.username));
       });
 
       channel.bind('pusher:member_removed', (member: Member) => {
-        fireToast({nickname: `${member.info.username}`, content: `님이 퇴장하였습니다.`, top: 100});
+        fireToast({ nickname: `${member.info.username}`, content: `님이 퇴장하였습니다.`, top: 100 });
         setParticipant(Object.values(channel.members.members).map((item: any) => item.username));
       });
 

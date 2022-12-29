@@ -4,7 +4,6 @@ import styled from 'styled-components';
 
 const Toast = () => {
   const { toast } = useToast();
-  console.log(toast.left);
   return (
       <Wrapper>
         {
