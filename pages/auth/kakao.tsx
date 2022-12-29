@@ -1,7 +1,8 @@
+import React, { FormEvent, useEffect, useRef, useState } from 'react';
 import axios from 'libs/axios';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import React, { FormEvent, useEffect, useRef, useState } from 'react';
+import { AuthComponent } from 'components/common/Auth';
 
 const Kakao: NextPage = () => {
   const router = useRouter();
@@ -35,10 +36,11 @@ const Kakao: NextPage = () => {
 
   if (userInfo && userInfo.email) {
     return (
-      <form onSubmit={handleSubmit}>
-        <input type="text" ref={inputRef} />
-        <button>submit</button>
-      </form>
+      <AuthComponent.Form onSubmit={handleSubmit}>
+        <AuthComponent.Div>nickname</AuthComponent.Div>
+        <AuthComponent.Input type="text" ref={inputRef} />
+        <AuthComponent.Button>submit</AuthComponent.Button>
+      </AuthComponent.Form>
     );
   }
   return <div>loading</div>;
