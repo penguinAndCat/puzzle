@@ -23,8 +23,11 @@ const SearchFriend = () => {
         requestedNickname: requestedNickname,
       },
     });
+    const top = buttonRef.current?.getBoundingClientRect().top;
+    if (res.data.message === 'success') {
+      fireToast({ content: '친구 요청을 보냈습니다.', top: top });
+    }
     if (res.data.message === 'duplicated') {
-      const top = buttonRef.current?.getBoundingClientRect().top;
       fireToast({ content: '이미 친구 요청을 보냈습니다.', top: top });
     }
   };

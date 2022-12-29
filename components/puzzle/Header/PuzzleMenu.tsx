@@ -1,5 +1,3 @@
-import { useNotice } from 'hooks/useNotice';
-import axios from 'libs/axios';
 import { theme } from 'libs/theme/theme';
 import { useModal } from 'libs/zustand/store';
 import { useRouter } from 'next/router';
@@ -17,7 +15,6 @@ type Props = {
 const PuzzleMenu = ({ user, roomInfo, setShowLevel, setShowRoomInfo, createPuzzleRoom }: Props) => {
   const { addModal } = useModal();
   const router = useRouter();
-  const { data, refetch } = useNotice(user);
   const [dropDown, setDropDown] = useState(false);
   const el = useRef<HTMLDivElement>(null);
   const onClick = () => {

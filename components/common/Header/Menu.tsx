@@ -45,9 +45,13 @@ const Menu = ({ user }: { user: UserInfo | null }) => {
       )}
       {dropDown && (
         <DropDownWrapper>
-          <DropDownButton onClick={() => window.location.href = '/mypage'}>프로필</DropDownButton>
-          <DropDownMobileButton>친구</DropDownMobileButton>
-          <DropDownMobileButton>
+          <DropDownButton onClick={() => window.location.href = '/mypage'}>
+            프로필
+          </DropDownButton>
+          <DropDownMobileButton  onClick={() => addModal('friend')}>
+            친구
+          </DropDownMobileButton>
+          <DropDownMobileButton  onClick={() => addModal('notice')}>
             알림
             {data && data.length > 0 && <Notice />}
           </DropDownMobileButton>

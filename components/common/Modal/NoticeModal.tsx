@@ -26,8 +26,11 @@ const NoticeModal = () => {
         friendNickname: nickname,
       },
     });
+    const top = buttonRef.current?.getBoundingClientRect().top;
+    if (res.data.message === 'success') {
+      fireToast({ nickname: nickname, content: '님과 친구가 되었습니다.', top: top });
+    }
     if (res.data.message === 'duplicated') {
-      const top = buttonRef.current?.getBoundingClientRect().top;
       fireToast({ content: '이미 친구입니다.', top: top });
       return;
     }
@@ -42,8 +45,11 @@ const NoticeModal = () => {
         puzzleId: puzzleId,
       },
     });
+    const top = buttonRef.current?.getBoundingClientRect().top;
+    if (res.data.message === 'success') {
+      fireToast({ content: '초대를 수락하였습니다.', top: top });
+    }
     if (res.data.message === 'failed') {
-      const top = buttonRef.current?.getBoundingClientRect().top;
       fireToast({ content: '초대 수락이 실패하였습니다.', top: top });
       return;
     }
