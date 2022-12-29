@@ -49,8 +49,9 @@ export const useToastState = create<ToastProps>((set) => ({
 
 export const useLoading = create<LoadingProps>((set) => ({
   loading: false,
+  content: { first: '', second: '' },
   offLoading: () => set({ loading: false }),
-  onLoading: () => set({ loading: true }),
+  onLoading: (content) => set({ loading: true, content: content }),
 }));
 
 export const userStore = create<UserStoreProps>((set) => ({
