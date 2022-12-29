@@ -5,7 +5,8 @@ import { exportConfig } from 'libs/puzzle/createPuzzle';
 import { useLoading, useModal, usePuzzle } from 'libs/zustand/store';
 import { useRouter } from 'next/router';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+import PuzzleMenu from './PuzzleMenu';
 
 interface Props {
   setShowLevel: Dispatch<SetStateAction<boolean>>;
@@ -86,7 +87,28 @@ const Header = ({ setShowLevel, setShowRoomInfo, user }: Props) => {
           {router.query.id === undefined ? (
             <Button onClick={createPuzzleRoom}>방 만들기</Button>
           ) : (
-            roomInfo && roomInfo.secretRoom && <Button onClick={openModal}>초대하기</Button>
+            roomInfo && roomInfo.secretRoom && 
+            <Button onClick={openModal}>초대하기</Button>
+          )}
+          {router.query.id === undefined ? (
+            <PuzzleMenu 
+              user={user}
+              roomInfo={roomInfo}
+              setShowLevel={setShowLevel}
+              setShowRoomInfo={setShowRoomInfo}
+              createPuzzleRoom={createPuzzleRoom}
+            />
+          ) : (
+            roomInfo && roomInfo.secretRoom ? 
+              <PuzzleMenu 
+                user={user}
+                roomInfo={roomInfo}
+                setShowLevel={setShowLevel}
+                setShowRoomInfo={setShowRoomInfo}
+                createPuzzleRoom={createPuzzleRoom}
+              />
+              :
+              <MobileButton onClick={() => setShowRoomInfo(true)}>방 정보</MobileButton>
           )}
           <Palette />
         </Right>
@@ -103,6 +125,9 @@ const Container = styled.header`
   padding: 0 24px;
   background-color: ${({ theme }) => theme.headerColor};
   border-bottom: solid 3px ${({ theme }) => theme.headerTextColor};
+  @media (max-width: 600px) {
+    padding: 0 10px;
+  }
 `;
 
 const Wrapper = styled.div`
@@ -124,8 +149,7 @@ const Left = styled.div`
     margin-right: 20px;
   }
   @media (max-width: 600px) {
-    margin: 0;
-    min-width: 80px;
+    display: none;
   }
 `;
 
@@ -143,7 +167,7 @@ const Right = styled.div`
   }
 `;
 
-const Button = styled.button`
+const ButtonStyle = css`
   width: 80px;
   height: 30px;
   border-radius: 4px;
@@ -153,6 +177,17 @@ const Button = styled.button`
   font-weight: 600;
   text-align: center;
   cursor: pointer;
+`;
+
+const Button = styled.button`
+  ${ButtonStyle};
+  @media (max-width: 600px) {
+    display: none;
+  }
+`;
+
+const MobileButton = styled.button`
+  ${ButtonStyle};
 `;
 
 const Logo = styled.div`
@@ -170,7 +205,7 @@ const Logo = styled.div`
     margin: 0 20px;
   }
   @media (max-width: 600px) {
-    width: 140px;
+    width: 120px;
     margin: 0;
   }
 `;

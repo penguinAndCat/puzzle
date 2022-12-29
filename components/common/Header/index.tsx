@@ -1,8 +1,8 @@
 import styled from 'styled-components';
-import Palette from './Palette';
 import { useModal } from 'libs/zustand/store';
-import UserButton from './Header/UserButton';
 import { useNotice } from 'hooks/useNotice';
+import Palette from '../Palette';
+import Menu from './Menu';
 
 const Header = ({ user }: { user: UserInfo | null }) => {
   const { addModal } = useModal();
@@ -29,7 +29,7 @@ const Header = ({ user }: { user: UserInfo | null }) => {
         </Logo>
         <Bar />
         <Right>
-          <UserButton user={user}/>
+          <Menu user={user}/>
           <Palette />
         </Right>
       </Wrapper>
@@ -115,7 +115,8 @@ const Right = styled.div`
     margin-left: 20px;
   }
   @media (max-width: 600px) {
-    width: 110px;
+    min-width: 110px;
+    margin: 0;
   }
 `;
 

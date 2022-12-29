@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 
-const UserButton = ({ user }: { user: UserInfo | null }) => {
+const Menu = ({ user }: { user: UserInfo | null }) => {
   const { addModal } = useModal();
   const router = useRouter();
   const { data, refetch } = useNotice(user);
@@ -62,7 +62,7 @@ const UserButton = ({ user }: { user: UserInfo | null }) => {
   );
 };
 
-export default UserButton;
+export default Menu;
 
 const ButtonWrapper = styled.div`
   position: relative;
