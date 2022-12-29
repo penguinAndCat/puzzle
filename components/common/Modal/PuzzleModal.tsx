@@ -4,7 +4,6 @@ import { useToast } from 'hooks/useToast';
 import { exportConfig, initConfig, setPuzzleRowColumn } from 'libs/puzzle/createPuzzle';
 import { theme } from 'libs/theme/theme';
 import { useLoading, useModal, usePuzzle, userStore } from 'libs/zustand/store';
-import { useRouter } from 'next/router';
 import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { saveImage } from 'libs/common/saveImage';
@@ -20,7 +19,6 @@ const PuzzleModal = () => {
   const [puzzleNumbers, setPuzzleNumbers] = useState<number[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const router = useRouter();
   const { user } = userStore();
 
   const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
@@ -97,7 +95,11 @@ const PuzzleModal = () => {
     }
     removeModal('puzzle');
     try {
-      onLoading();
+      const content = {
+        first: '퍼즐을 생성 중입니다.',
+        second: '잠시만 기다려주세요.',
+      }
+      onLoading(content);
       const canvasSize = { width: 1000, height: 1000 };
       const canvas = document.createElement('canvas');
       Paper.setup(canvas);

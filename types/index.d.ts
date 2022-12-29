@@ -74,11 +74,18 @@ type ToastProps = {
   setToast: (value: Toast) => void;
 };
 
+interface LoadingContent {
+  first: string;
+  second: string;
+}
+
 type LoadingProps = {
   loading: boolean;
+  content: LoadingContent;
   offLoading: () => void;
-  onLoading: () => void;
+  onLoading: (content: LoadingContent) => void;
 };
+
 type UserInfo = {
   id: string;
   name: string;
@@ -87,6 +94,7 @@ type UserInfo = {
   nickname: string;
   picture: string;
 };
+
 type UserStoreProps = {
   user: userInfo | null;
   setUser: (user: userInfo | null) => void;

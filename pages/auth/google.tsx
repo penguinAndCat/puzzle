@@ -3,11 +3,15 @@ import axios from 'libs/axios';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { AuthComponent } from 'components/common/Auth';
+import Loading from 'components/common/Loading';
+import { useLoading } from 'libs/zustand/store';
+import LoginLoading from 'components/common/LoginLoading';
 
 const Google: NextPage = () => {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [userInfo, setUserInfo] = useState<any>(null);
+
   useEffect(() => {
     const accessCode = window.location.hash.substring(1).split('&')[0].split('=')[1];
     if (accessCode) {
@@ -43,7 +47,7 @@ const Google: NextPage = () => {
       </AuthComponent.Form>
     );
   }
-  return <div>loading</div>;
+  return <LoginLoading />;
 };
 
 export default Google;

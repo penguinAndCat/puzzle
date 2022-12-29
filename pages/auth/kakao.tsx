@@ -3,12 +3,16 @@ import axios from 'libs/axios';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { AuthComponent } from 'components/common/Auth';
+import Loading from 'components/common/Loading';
+import { useLoading } from 'libs/zustand/store';
+import LoginLoading from 'components/common/LoginLoading';
 
 const Kakao: NextPage = () => {
   const router = useRouter();
   const { code } = router.query;
   const inputRef = useRef<HTMLInputElement>(null);
   const [userInfo, setUserInfo] = useState<any>(null);
+  
   useEffect(() => {
     if (code) {
       axios
@@ -43,7 +47,8 @@ const Kakao: NextPage = () => {
       </AuthComponent.Form>
     );
   }
-  return <div>loading</div>;
+  
+  return <LoginLoading />;
 };
 
 export default Kakao;

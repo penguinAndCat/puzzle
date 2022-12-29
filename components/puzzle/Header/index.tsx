@@ -33,7 +33,11 @@ const Header = ({ setShowLevel, setShowRoomInfo, user }: Props) => {
 
   const createPuzzleRoom = async () => {
     try {
-      onLoading();
+      const content = {
+        first: '퍼즐을 생성 중입니다.',
+        second: '잠시만 기다려주세요.',
+      }
+      onLoading(content);
 
       const puzzleData = exportConfig();
       delete puzzleData.project;
