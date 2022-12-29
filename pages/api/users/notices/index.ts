@@ -1,5 +1,8 @@
+import { getCookie } from 'cookies-next';
 import dbConnect from 'libs/db/mongoose';
+import { decodePayload } from 'libs/jwt';
 import Notice from 'models/Notice';
+import User from 'models/User';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 type Data = {
@@ -12,13 +15,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   const { method } = req;
   await dbConnect();
   if (method === 'GET') {
-    const { id } = req.query;
+    const accessToken = getCookie('accessToken', { req, res });
+    if (!accessToken) {
+      return res.status(401).json({ message: 'not authorizied' });
+    }
+    const userInfo = decodePayload<{
+      name: string;
+      nickname: string;
+      provider: string;
+      iat: number;
+      exp: number;
+      iss: string;
+    }>(accessToken);
+
+    const user = await User.findOne({ nickname: userInfo.nickname });
     try {
       // let notice = await Notice.find({ requested: id }, { _id: 0, requester: 1 });
       // const array = notice.map((item) => item.requester);
       // notice = await User.find({ _id: { $in: array } }, { _id: 0, nickname: 1 });
       const notice = await Notice.aggregate([
-        { $match: { requested: id } }, // notices Collection에서 userId: id 일치하는 정보 조회
+        { $match: { requested: user._id } }, // notices Collection에서 userId: id 일치하는 정보 조회
         {
           $lookup: {
             // 다른 Collection에서 찾기

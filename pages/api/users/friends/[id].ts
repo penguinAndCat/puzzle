@@ -2,6 +2,9 @@ import dbConnect from 'libs/db/mongoose';
 import mongoose from 'mongoose';
 import Friend from 'models/Friend';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { getCookie } from 'cookies-next';
+import { decodePayload } from 'libs/jwt';
+import User from 'models/User';
 
 type Data = {
   friends?: any;
@@ -13,12 +16,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   const { method } = req;
   await dbConnect();
   if (method === 'GET') {
-    const { id } = req.query;
-    const { puzzleId } = req.query;
     try {
-      if(puzzleId === undefined) {
+      const accessToken = getCookie('accessToken', { req, res });
+      if (!accessToken) {
+        return res.status(401).json({ message: 'not authorizied' });
+      }
+      const userInfo = decodePayload<{
+        name: string;
+        nickname: string;
+        provider: string;
+        iat: number;
+        exp: number;
+        iss: string;
+      }>(accessToken);
+
+      const user = await User.findOne({ nickname: userInfo.nickname });
+
+      const { puzzleId } = req.query;
+      if (puzzleId === undefined) {
         const friends = await Friend.aggregate([
-          { $match: { userId: id } },
+          { $match: { userId: user._id } },
           {
             $lookup: {
               from: 'users',
@@ -28,18 +45,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             },
           },
           { $unwind: '$user' },
-          { 
-            $project: { 
-              _id: 0, 
-              nickname: '$user.nickname', 
-              picture: '$user.picture', 
+          {
+            $project: {
+              _id: 0,
+              nickname: '$user.nickname',
+              picture: '$user.picture',
             },
           },
         ]);
         return res.status(201).json({ friends: friends, message: 'success' });
       }
       const friends = await Friend.aggregate([
-        { $match: { userId: id } },
+        { $match: { userId: user._id } },
         {
           $lookup: {
             from: 'users',
@@ -58,21 +75,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           },
         },
         { $unwind: '$puzzle' },
-        { 
+        {
           $addFields: {
-            'userId': { $toString: '$user._id' }
-        }},
-        { 
-          $addFields: {
-            'isInvited': {
-              '$cond': [ { '$in': [ '$userId', '$puzzle.invitedUser' ] }, true, false ]
-          }}
+            userId: { $toString: '$user._id' },
+          },
         },
-        { 
-          $project: { 
-            _id: 0, 
-            nickname: '$user.nickname', 
-            picture: '$user.picture', 
+        {
+          $addFields: {
+            isInvited: {
+              $cond: [{ $in: ['$userId', '$puzzle.invitedUser'] }, true, false],
+            },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            nickname: '$user.nickname',
+            picture: '$user.picture',
             isInvited: '$isInvited',
           },
         },
