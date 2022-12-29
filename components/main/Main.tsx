@@ -15,7 +15,7 @@ const images = [
   'http://res.cloudinary.com/penguinandcatpuzzle/image/upload/v1666189365/qtpra1i8dps1nwjhc17a.png',
 ];
 
-const Main = () => {
+const Main = ({ user }: { user: UserInfo | null }) => {
   const { addModal } = useModal();
   const { initialModal } = usePuzzle();
   const openModal = () => {
@@ -94,6 +94,7 @@ const Main = () => {
                 progress={Number((data.perfection * 100).toFixed(3))}
                 title={data.title}
                 onClick={() => {
+                  if (!user) return;
                   window.location.href = `${NEXT_SERVER}/puzzle/${data._id}`;
                 }}
               />

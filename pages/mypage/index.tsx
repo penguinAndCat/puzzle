@@ -1,7 +1,9 @@
+import { AxiosError } from 'axios';
 import Header from 'components/common/Header';
 import RoomCard from 'components/common/RoomCard';
 import { NEXT_SERVER } from 'config';
 import axios from 'libs/axios';
+import { saveImage } from 'libs/common/saveImage';
 import Head from 'next/head';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -12,6 +14,9 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
   const myRef = useRef<HTMLDivElement>(null);
   const myPageRef = useRef(1);
   const [myLoading, setMyLoading] = useState(false);
+  const [profileImg, setProfileImg] = useState<string>(user?.picture || '');
+  const [nickname, setNickname] = useState<string>(user?.nickname || '');
+  const inputFileRef = useRef<HTMLInputElement>(null);
 
   const getMoreMyPuzzle = useCallback(async () => {
     try {
@@ -91,6 +96,12 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
     }
   }, [tab]);
 
+  useEffect(() => {
+    if (!user) {
+      window.location.href = '/';
+    }
+  }, [user]);
+
   return (
     <>
       <Head>
@@ -98,9 +109,92 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
       </Head>
       <Header user={user} />
       <Wrapper>
+        <ProfileWrapper>
+          <Title>프로필</Title>
+          <ProfileBox>
+            <Profile>
+              <ProfileImageBox>
+                <img
+                  src={profileImg}
+                  alt="profile"
+                  onClick={() => {
+                    if (!inputFileRef.current) return;
+                    inputFileRef.current.click();
+                  }}
+                />
+                <input
+                  type="file"
+                  multiple={false}
+                  ref={inputFileRef}
+                  accept="image/png, image/jpeg"
+                  onChange={(e) => {
+                    if (!e.target.files) {
+                      return;
+                    }
+                    const reader = new FileReader();
+                    reader?.readAsDataURL(e.target.files[0]);
+                    reader.onload = () => {
+                      setProfileImg(String(reader.result));
+                    };
+                  }}
+                />
+              </ProfileImageBox>
+              <ProfileText>
+                <div>
+                  이메일: <span>{`${user?.email}`}</span>
+                </div>
+                <div>
+                  이름: <span>{`${user?.name}`}</span>
+                </div>
+                <div>
+                  닉네임: <input value={nickname} onChange={(e) => setNickname(e.target.value)} />
+                </div>
+              </ProfileText>
+              <div style={{ width: '100%' }}>
+                <button
+                  disabled={user?.nickname === nickname && profileImg === user.picture}
+                  type="button"
+                  style={{ width: '50%' }}
+                  onClick={async (e) => {
+                    const data: { nickname: string; profileImage: string } = {
+                      nickname: '',
+                      profileImage: '',
+                    };
+                    if (user?.nickname !== nickname) {
+                      data.nickname = nickname;
+                    }
+                    if (user?.picture !== profileImg) {
+                      data.profileImage = profileImg;
+                    }
+                    try {
+                      await axios.put('/api/users', data);
+                    } catch (err) {
+                      if (err instanceof AxiosError) {
+                        alert(err.response?.data.message || 'error');
+                      }
+                    }
+                  }}
+                >
+                  수정하기
+                </button>
+                <button
+                  type="button"
+                  style={{ width: '50%' }}
+                  onClick={() => {
+                    setProfileImg(user?.picture || '');
+                    setNickname(user?.nickname || '');
+                  }}
+                >
+                  되돌리기
+                </button>
+              </div>
+            </Profile>
+          </ProfileBox>
+        </ProfileWrapper>
         <TabBox>
           <li
             onClick={() => {
+              if (tab === 'my') return;
               myPageRef.current = 1;
               setData([]);
               setTab('my');
@@ -110,6 +204,7 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
           </li>
           <li
             onClick={() => {
+              if (tab === 'invited') return;
               setData([]);
               myPageRef.current = 1;
               setTab('invited');
@@ -118,7 +213,7 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
             초대된 방
           </li>
         </TabBox>
-        <PuzzleHead>{tab === 'my' ? '나의 방' : '초대된 방'}</PuzzleHead>
+        <Title>{tab === 'my' ? '나의 방' : '초대된 방'}</Title>
         <PuzzleContainer>
           {data?.map((item: any, index) => (
             <RoomCard
@@ -159,6 +254,57 @@ const PuzzleContainer = styled.div`
   }
 `;
 
+const ProfileWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 0.5rem;
+  border-bottom: 1px solid black;
+  margin-bottom: 1rem;
+`;
+
+const ProfileBox = styled.div`
+  width: 80%;
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Profile = styled.div`
+  display: flex;
+  padding: 0.25rem;
+  flex-wrap: wrap;
+  box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.5);
+`;
+
+const ProfileText = styled.div`
+  padding: 0.5rem;
+`;
+
+const ProfileImageBox = styled.div`
+  width: 150px;
+  height: 150px;
+  img {
+    width: 100%;
+    cursor: pointer;
+    object-position: 50% 50%;
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+  input[type='file'] {
+    display: none;
+  }
+`;
+
+const Title = styled.h1`
+  font-size: 1.5rem;
+  line-height: 1.5;
+  text-align: center;
+  width: 100%;
+`;
+
 const TabBox = styled.ul`
   display: flex;
   gap: 10px;
@@ -179,14 +325,4 @@ const TabBox = styled.ul`
 const Wrapper = styled.div`
   padding: 10px;
   width: 100%;
-`;
-
-const PuzzleHead = styled.h2`
-  text-align: center;
-  display: inline-block;
-  width: 100%;
-  font-size: 2rem;
-  font-weight: bold;
-  line-height: 1.25;
-  padding: 0.5rem;
 `;

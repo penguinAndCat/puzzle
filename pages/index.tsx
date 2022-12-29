@@ -7,7 +7,7 @@ const Home: NextPage<{ user: UserInfo | null }> = ({ user = null }) => {
   return (
     <Container>
       <Header user={user} />
-      <Main />
+      <Main user={user} />
     </Container>
   );
 };

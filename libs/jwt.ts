@@ -13,8 +13,8 @@ function makeRefreshToken(payload: object) {
   return jwt.sign(payload, secretKey, { algorithm, expiresIn: refreshTokenExp, issuer });
 }
 
-function decodePayload(token: string) {
-  return jwt.verify(token, secretKey);
+function decodePayload<T>(token: any): T {
+  return jwt.verify(token, secretKey) as T;
 }
 
 export { makeAccessToken, makeRefreshToken, decodePayload };

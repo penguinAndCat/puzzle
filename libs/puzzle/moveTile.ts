@@ -3,7 +3,6 @@ import axios from 'libs/axios';
 import { getMargin } from './createPuzzle';
 
 const moveTile = (config: Config, query?: string | string[], socket?: any, userNickName?: string) => {
-  console.log(config);
   config.groupTiles.forEach((item, index) => {
     if (!item.movable) return;
     item.tile.onMouseDown = (event: any) => {

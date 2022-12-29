@@ -23,13 +23,13 @@ const Header = ({ user }: { user: UserInfo | null }) => {
           <Left />
         )}
         <Bar />
-        <Logo onClick={() => window.location.href = '/'}>
+        <Logo onClick={() => (window.location.href = '/')}>
           <div>PENGCAT</div>
           <div>PUZZLE</div>
         </Logo>
         <Bar />
         <Right>
-          <Menu user={user}/>
+          <Menu user={user} />
           <Palette />
         </Right>
       </Wrapper>
@@ -143,6 +143,6 @@ const Notice = styled.div`
   height: 10px;
   top: 20px;
   left: 69px;
-  background-color: #C24641;
+  background-color: #c24641;
   border-radius: 50%;
 `;
