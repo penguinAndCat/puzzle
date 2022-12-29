@@ -177,7 +177,7 @@ const TabBox = styled.ul`
 `;
 
 const Wrapper = styled.div`
-  padding: 1rem;
+  padding: 10px;
   width: 100%;
 `;
 

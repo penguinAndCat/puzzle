@@ -76,7 +76,7 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
   useEffect(() => {
     if (!router.isReady) return;
     if (user === null) return;
-    if(router.query.id === undefined) return;
+    if (router.query.id === undefined) return;
     let subscribe = true;
     const pusher = new Pusher(process.env.NEXT_PUBLIC_KEY ? process.env.NEXT_PUBLIC_KEY : '', {
       cluster: 'ap3',
@@ -110,7 +110,7 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
 
       // when someone send a message.
       channel.bind('movePuzzle', (data: any) => {
-        const { groupTiles, indexArr, socketCanvasSize} = data;
+        const { groupTiles, indexArr, socketCanvasSize } = data;
         if (data.socketId !== socketId) {
           moveIndex(groupTiles, indexArr, socketCanvasSize);
         }

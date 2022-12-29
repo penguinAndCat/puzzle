@@ -5,6 +5,7 @@ export const moveIndex = (groupTiles: any, indexArr: number[], socketCanvasSize:
   const config = exportConfig();
   config.groupTiles.forEach((item, tilesIndex) => {
     item.groupIndex = groupTiles[tilesIndex][2];
+    item.movable = groupTiles[tilesIndex][3];
   });
   let counter = 0;
   let movePositionX: number[] = [];

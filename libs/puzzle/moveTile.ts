@@ -1,19 +1,58 @@
-import axios from 'axios';
 import { openConfetti } from 'hooks/useConfetti';
+import axios from 'libs/axios';
 import { getMargin } from './createPuzzle';
 
 const moveTile = (config: Config, query?: string | string[], socket?: any, userNickName?: string) => {
+  console.log(config);
   config.groupTiles.forEach((item, index) => {
+    if (!item.movable) return;
     item.tile.onMouseDown = (event: any) => {
       const gIndex = item.groupIndex;
+      // local movable setting && zindex setting
+      item.movable = false;
       if (gIndex !== null) {
-        config.groupTiles.forEach(({ tile, groupIndex }) => {
-          if (groupIndex === gIndex) {
+        config.groupTiles.forEach(({ tile, groupIndex, movable }) => {
+          if (groupIndex && groupIndex === gIndex) {
             config.project.project.activeLayer.addChild(tile);
+            movable = false;
           }
         });
       } else {
         config.project.project.activeLayer.addChild(event.target);
+      }
+
+      // target index array
+      let indexArr = [];
+      if (gIndex === null) {
+        indexArr.push(index);
+      } else {
+        config.groupTiles.forEach((item, index) => {
+          if (item.groupIndex === gIndex) {
+            indexArr.push(index);
+          }
+        });
+      }
+
+      // sockect
+      if (query !== undefined) {
+        const data = {
+          config: {
+            ...config,
+            groupTiles: config.groupTiles.map((item, groupIndex) => {
+              if (item.groupIndex === gIndex || index == groupIndex) {
+                return [item.tile.position.x, item.tile.position.y, item.groupIndex, false];
+              } else {
+                return [item.tile.position.x, item.tile.position.y, item.groupIndex, true];
+              }
+            }),
+          },
+          socketId: socket,
+          indexArr,
+          userNickName,
+        };
+        axios.put(`/api/puzzle/${query}`, {
+          data,
+        });
       }
     };
     item.tile.onMouseDrag = (event: any) => {
@@ -65,16 +104,16 @@ const moveTile = (config: Config, query?: string | string[], socket?: any, userN
         });
       }
 
-      let groupTiles = [ ...config.groupTiles ];
+      let groupTiles = [...config.groupTiles];
       let matchedTiles = 0;
       const totalTiles = groupTiles.length;
       groupTiles = groupTiles.filter((item) => item.groupIndex !== null);
-      const result = groupTiles.reduce((accu, curr) => { 
-        accu[curr.groupIndex] = (accu[curr.groupIndex] || 0) + 1; 
+      const result = groupTiles.reduce((accu, curr) => {
+        accu[curr.groupIndex] = (accu[curr.groupIndex] || 0) + 1;
         return accu;
       }, {});
-      for(const num in result){
-        matchedTiles = matchedTiles + (result[num]) - 1
+      for (const num in result) {
+        matchedTiles = matchedTiles + result[num] - 1;
       }
       const perfection = matchedTiles / (totalTiles - 1);
 
@@ -83,16 +122,16 @@ const moveTile = (config: Config, query?: string | string[], socket?: any, userN
           config: {
             ...config,
             groupTiles: config.groupTiles.map((item) => {
-              return [item.tile.position.x, item.tile.position.y, item.groupIndex];
+              return [item.tile.position.x, item.tile.position.y, item.groupIndex, true];
             }),
           },
           indexArr: indexArr,
           socketId: socket,
           userNickName: userNickName,
           perfection: perfection,
-        }
+        };
         axios.put(`/api/puzzle/${query}`, {
-          data
+          data,
         });
       }
 
