@@ -4,16 +4,18 @@ import { getMargin } from './createPuzzle';
 
 const moveTile = (config: Config, query?: string | string[], socket?: any, userNickName?: string) => {
   config.groupTiles.forEach((item, index) => {
-    if (!item.movable) return;
     item.tile.onMouseDown = (event: any) => {
+      if (!item.movable) {
+        document.body.style.cursor = 'not-allowed';
+        return;
+      }
+      document.body.style.cursor = 'grabbing';
       const gIndex = item.groupIndex;
       // local movable setting && zindex setting
-      item.movable = false;
       if (gIndex !== null) {
         config.groupTiles.forEach(({ tile, groupIndex, movable }) => {
           if (groupIndex && groupIndex === gIndex) {
             config.project.project.activeLayer.addChild(tile);
-            movable = false;
           }
         });
       } else {
@@ -55,6 +57,9 @@ const moveTile = (config: Config, query?: string | string[], socket?: any, userN
       }
     };
     item.tile.onMouseDrag = (event: any) => {
+      if (!item.movable) {
+        return;
+      }
       const groupIndex = item.groupIndex;
       if (
         item.tile.position.x + event.delta.x < 0 ||
@@ -80,6 +85,10 @@ const moveTile = (config: Config, query?: string | string[], socket?: any, userN
       }
     };
     item.tile.onMouseUp = (event: any) => {
+      document.body.style.cursor = 'default';
+      if (!item.movable) {
+        return;
+      }
       const groupIndex = item.groupIndex;
       if (groupIndex === null) {
         fitTile(config, item.tile, item.groupIndex);
