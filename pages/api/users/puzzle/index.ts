@@ -1,9 +1,9 @@
 import dbConnect from 'libs/db/mongoose';
-import mongoose from 'mongoose';
 import Notice from 'models/Notice';
 import User from 'models/User';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import Puzzle from 'models/Puzzle';
+import { pusher } from 'libs/pusher';
 
 type Data = {
   user?: any;
@@ -16,6 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   await dbConnect();
   if (method === 'PUT') {
     const { userId, puzzleId } = req.body.data;
+    console.log(userId);
     try {
       const puzzle = await Puzzle.find({ _id: puzzleId, invitedUser: userId });
       if (puzzle.length > 0) {
@@ -44,6 +45,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         requested: user._id,
         puzzleId: puzzleId,
         type: 'puzzle',
+      });
+      await pusher.trigger(`presence-notice`, 'onNotice', {
+        puzzle: true,
+        nickname: requestedNickname,
+        requestedUserId: user._id,
       });
       res.status(201).json({ message: 'success' });
     } catch (err) {

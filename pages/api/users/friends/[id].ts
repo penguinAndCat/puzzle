@@ -31,11 +31,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       }>(accessToken);
 
       const user = await User.findOne({ nickname: userInfo.nickname });
-
       const { puzzleId } = req.query;
+
       if (puzzleId === undefined) {
         const friends = await Friend.aggregate([
-          { $match: { userId: user._id } },
+          { $match: { userId: user._id.toString() } },
           {
             $lookup: {
               from: 'users',
@@ -56,7 +56,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         return res.status(201).json({ friends: friends, message: 'success' });
       }
       const friends = await Friend.aggregate([
-        { $match: { userId: user._id } },
+        { $match: { userId: user._id.toString() } },
         {
           $lookup: {
             from: 'users',

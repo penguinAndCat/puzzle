@@ -11,6 +11,7 @@ import axios from 'libs/axios';
 import { NEXT_SERVER } from 'config';
 import { userStore } from 'libs/zustand/store';
 import { useEffect } from 'react';
+import SocketNotice from 'components/common/SocketNotice';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -38,6 +39,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <Toast />
         <Loading />
         <Modal />
+        <SocketNotice user={pageProps.user} />
       </ThemeProvider>
     </QueryClientProvider>
   );
