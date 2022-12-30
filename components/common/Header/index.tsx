@@ -42,23 +42,26 @@ export default Header;
 const Container = styled.div`
   display: flex;
   justify-content: center;
-  padding: 20px 60px;
+  padding: 0 60px;
   border-bottom: 3px ${({ theme }) => theme.borderColor};
   background-color: ${({ theme }) => theme.headerColor};
   @media (max-width: 720px) {
-    padding: 20px 20px;
+    padding: 0 20px;
   }
   @media (max-width: 600px) {
-    padding: 10px 10px;
+    padding: 0 10px;
   }
 `;
 
 const Wrapper = styled.div`
   width: 100%;
-  height: 70px;
+  height: 100px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  @media (max-width: 600px) {
+    height: 90px;
+  }
 `;
 
 const Left = styled.div`
