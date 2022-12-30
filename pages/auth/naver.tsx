@@ -11,7 +11,7 @@ const Naver: NextPage = () => {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [userInfo, setUserInfo] = useState<any>(null);
-  
+
   useEffect(() => {
     const accessCode = window.location.hash.substring(1).split('&')[0].split('=')[1];
     if (accessCode) {

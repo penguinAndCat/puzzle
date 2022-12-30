@@ -31,28 +31,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           $lookup: {
             from: 'friends',
             let: { friendId: '$invitedUser' },
-            pipeline: [{ 
-              $match: { 
-                $expr: { 
-                  $and: [ 
-                    { $eq: ['$friend', '$$friendId'] },
-                    { $eq: ['$userId', userId] }
-                  ] 
-                } 
-              } 
-            }],
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [{ $eq: ['$friend', '$$friendId'] }, { $eq: ['$userId', userId] }],
+                  },
+                },
+              },
+            ],
             as: 'friend',
           },
         },
         { $unwind: '$user' },
-        { 
+        {
           $project: {
-            _id: 0, 
-            nickname: '$user.nickname', 
-            id: '$user._id', 
-            picture: '$user.picture', 
-            isFriend: { $size : '$friend' },
-          } 
+            _id: 0,
+            nickname: '$user.nickname',
+            id: '$user._id',
+            picture: '$user.picture',
+            isFriend: { $size: '$friend' },
+          },
         },
       ]);
       const host = await Puzzle.aggregate([
@@ -66,19 +65,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           },
         },
         { $unwind: '$user' },
-        { 
+        {
           $project: {
-            _id: 0, 
-            nickname: '$user.nickname', 
-            id: '$user._id', 
-            picture: '$user.picture', 
-          } 
+            _id: 0,
+            nickname: '$user.nickname',
+            id: '$user._id',
+            picture: '$user.picture',
+          },
         },
       ]);
       const data = {
         host: host[0],
         users: users,
-      }
+      };
       res.status(201).json({ data: data, message: 'success' });
     } catch (err) {
       res.status(500).json({ error: err, message: 'failed' });

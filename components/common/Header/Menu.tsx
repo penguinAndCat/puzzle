@@ -34,32 +34,24 @@ const Menu = ({ user }: { user: UserInfo | null }) => {
 
   return (
     <ButtonWrapper ref={el}>
-      {user?.name ? (
-        <Button
-          onClick={onClick}
-        >
-          메뉴
-        </Button>
-      ) : (
-        <Button onClick={() => addModal('login')}>로그인</Button>
-      )}
+      {user?.name ? <Button onClick={onClick}>메뉴</Button> : <Button onClick={() => addModal('login')}>로그인</Button>}
       {dropDown && (
         <DropDownWrapper>
-          <DropDownButton onClick={() => window.location.href = '/mypage'}>
-            프로필
-          </DropDownButton>
-          <DropDownMobileButton  onClick={() => addModal('friend')}>
-            친구
-          </DropDownMobileButton>
-          <DropDownMobileButton  onClick={() => addModal('notice')}>
+          <DropDownButton onClick={() => (window.location.href = '/mypage')}>프로필</DropDownButton>
+          <DropDownMobileButton onClick={() => addModal('friend')}>친구</DropDownMobileButton>
+          <DropDownMobileButton onClick={() => addModal('notice')}>
             알림
             {data && data.length > 0 && <Notice />}
           </DropDownMobileButton>
-          <DropDownButton onClick={() =>
-            axios.delete('/api/auth').then(() => {
-              router.reload();
-            })
-          }>로그아웃</DropDownButton>
+          <DropDownButton
+            onClick={() =>
+              axios.delete('/api/auth').then(() => {
+                router.reload();
+              })
+            }
+          >
+            로그아웃
+          </DropDownButton>
         </DropDownWrapper>
       )}
     </ButtonWrapper>
@@ -94,7 +86,7 @@ const ButtonStyle = css`
   text-align: center;
   cursor: pointer;
   padding: 0;
-`
+`;
 
 const Button = styled.button`
   ${ButtonStyle};
@@ -120,6 +112,6 @@ const Notice = styled.div`
   height: 10px;
   top: 20px;
   left: 69px;
-  background-color: #C24641;
+  background-color: #c24641;
   border-radius: 50%;
 `;

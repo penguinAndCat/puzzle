@@ -4,7 +4,7 @@ import { ThemeContext, ThemeProvider as StyledProvider } from 'styled-components
 
 interface Props {
   children: React.ReactNode;
-  pageTheme: "pink" | "dark" | "silver" | "mint";
+  pageTheme: 'pink' | 'dark' | 'silver' | 'mint';
 }
 
 const THEME: {

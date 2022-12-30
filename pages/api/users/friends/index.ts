@@ -49,7 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       await Notice.create({
         requester: requester,
         requested: user._id,
-        type: 'friend'
+        type: 'friend',
       });
       res.status(201).json({ message: 'success' });
     } catch (err) {

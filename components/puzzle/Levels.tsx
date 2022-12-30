@@ -15,14 +15,14 @@ const Levels = ({ showLevel, setShowLevel }: Props) => {
   const el = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if(showLevel){
+    if (showLevel) {
       const levels = exportLevels();
       setList(levels);
       setDisplay(true);
     } else {
       setTimeout(() => {
         setDisplay(false);
-      }, 450); 
+      }, 450);
     }
   }, [showLevel]);
 
@@ -69,7 +69,7 @@ const Levels = ({ showLevel, setShowLevel }: Props) => {
 
 export default Levels;
 
-const Container = styled.div<{show: boolean}>`
+const Container = styled.div<{ show: boolean }>`
   @keyframes fadein {
     0% {
       transform: translateX(-100%);
@@ -92,7 +92,7 @@ const Container = styled.div<{show: boolean}>`
       transform: translateX(-100%);
     }
   }
-  animation: ${({ show }) => show ? `fadein` : `fadeout` } 0.5s;
+  animation: ${({ show }) => (show ? `fadein` : `fadeout`)} 0.5s;
 
   position: absolute;
   width: 300px;

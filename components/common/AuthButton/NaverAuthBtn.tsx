@@ -25,7 +25,7 @@ export default function NaverAuthBtn() {
 
   const onClick = () => {
     el.current.children[0].click();
-  }
+  };
 
   useEffect(() => {
     initializeNaverLogin();
@@ -34,10 +34,10 @@ export default function NaverAuthBtn() {
   return (
     <BtnWrapper onClick={onClick}>
       <Btn id="naverIdLogin" ref={el} />
-      <Img src='icon-login-naver-btn.svg' alt='naver_icon'/>
+      <Img src="icon-login-naver-btn.svg" alt="naver_icon" />
       <Span>네이버로 시작</Span>
     </BtnWrapper>
-  )
+  );
 }
 
 const Btn = styled.div`

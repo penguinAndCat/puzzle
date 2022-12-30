@@ -66,33 +66,39 @@ const NoticeModal = () => {
         </Close>
       </TitleWrapper>
       <Ul>
-        {data && data.length > 0 ? data.map((item: { nickname: string; type: 'friend' | 'puzzle'; puzzleId: string; }, index: Key | null | undefined) => {
-          if(item.type === 'friend')
-          return (
-            <Li key={index}>
-              <NoticeMessage>
-                <Span>{item.nickname}</Span>님께서 당신과 친구를 하고 싶어합니다.
-              </NoticeMessage>
-              <AcceptButton onClick={() => acceptFriend(item.nickname)} ref={buttonRef}>
-                수락
-              </AcceptButton>
-            </Li>
-          );
-          if(item.type === 'puzzle')
-          return (
-            <Li key={index}>
-              <NoticeMessage>
-                <Span>{item.nickname}</Span>님께서 당신을 퍼즐 방에 초대합니다.
-              </NoticeMessage>
-              <AcceptButton onClick={() => acceptInvite(item.puzzleId)} ref={buttonRef}>
-                수락
-              </AcceptButton>
-            </Li>
-          );
-        })
-        :
-        <NoneNotice>알림이 없습니다.</NoneNotice>
-        }
+        {data && data.length > 0 ? (
+          data.map(
+            (
+              item: { nickname: string; type: 'friend' | 'puzzle'; puzzleId: string },
+              index: Key | null | undefined
+            ) => {
+              if (item.type === 'friend')
+                return (
+                  <Li key={index}>
+                    <NoticeMessage>
+                      <Span>{item.nickname}</Span>님께서 당신과 친구를 하고 싶어합니다.
+                    </NoticeMessage>
+                    <AcceptButton onClick={() => acceptFriend(item.nickname)} ref={buttonRef}>
+                      수락
+                    </AcceptButton>
+                  </Li>
+                );
+              if (item.type === 'puzzle')
+                return (
+                  <Li key={index}>
+                    <NoticeMessage>
+                      <Span>{item.nickname}</Span>님께서 당신을 퍼즐 방에 초대합니다.
+                    </NoticeMessage>
+                    <AcceptButton onClick={() => acceptInvite(item.puzzleId)} ref={buttonRef}>
+                      수락
+                    </AcceptButton>
+                  </Li>
+                );
+            }
+          )
+        ) : (
+          <NoneNotice>알림이 없습니다.</NoneNotice>
+        )}
       </Ul>
     </Container>
   );
@@ -199,4 +205,4 @@ const AcceptButton = styled.button`
 const NoneNotice = styled.div`
   margin-top: 12px;
   font-size: 12px;
-`
+`;

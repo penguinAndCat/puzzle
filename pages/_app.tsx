@@ -63,7 +63,7 @@ MyApp.getInitialProps = async ({ ctx, Component }: { ctx: any; Component: any })
       });
     }
   }
-  
+
   const { req, res } = ctx;
   const { data } = await axios.get(`${NEXT_SERVER}/api/auth`, {
     headers: {

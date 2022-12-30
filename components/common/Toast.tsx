@@ -5,16 +5,15 @@ import styled from 'styled-components';
 const Toast = () => {
   const { toast } = useToast();
   return (
-      <Wrapper>
-        {
-          toast.content !== '' && 
-          <Content toast={toast}>
-            <Nickname>{toast.nickname}</Nickname>
-            {toast.content}
-          </Content>
-        }
-      </Wrapper>
-    );
+    <Wrapper>
+      {toast.content !== '' && (
+        <Content toast={toast}>
+          <Nickname>{toast.nickname}</Nickname>
+          {toast.content}
+        </Content>
+      )}
+    </Wrapper>
+  );
 };
 
 export default Toast;
@@ -62,7 +61,7 @@ const Content = styled.div<any>`
 
   position: fixed;
   top: ${({ toast }) => toast.top}px;
-  left: ${({ toast }) => toast.left === undefined ? '50%' : toast.left};
+  left: ${({ toast }) => (toast.left === undefined ? '50%' : toast.left)};
   transform: translate(-50%, 0);
 
   ${theme.common.flexCenter}

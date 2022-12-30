@@ -17,16 +17,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   if (method === 'PUT') {
     const { userId, puzzleId } = req.body.data;
     try {
-      const puzzle = await Puzzle.find(
-        { _id: puzzleId, invitedUser: userId }
-      );
-      if(puzzle.length > 0) {
+      const puzzle = await Puzzle.find({ _id: puzzleId, invitedUser: userId });
+      if (puzzle.length > 0) {
         return res.status(400).json({ message: 'failed' });
       }
-      await Puzzle.updateOne(
-        { _id: puzzleId },
-        { $push: { invitedUser: userId } 
-      });
+      await Puzzle.updateOne({ _id: puzzleId }, { $push: { invitedUser: userId } });
       await Notice.deleteOne({
         requested: userId,
         puzzleId: puzzleId,

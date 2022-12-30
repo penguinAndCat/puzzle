@@ -44,5 +44,5 @@ export const AuthComponent = {
   Form,
   Div,
   Input,
-  Button
-}
+  Button,
+};

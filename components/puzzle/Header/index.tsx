@@ -18,7 +18,7 @@ const Header = ({ setShowLevel, setShowRoomInfo, user }: Props) => {
   const { addModal } = useModal();
   const { number, title, secretRoom } = usePuzzle();
   const { onLoading, offLoading } = useLoading();
-  const [roomInfo, setRoomInfo] = useState({title: '', secretRoom: false, level: 1});
+  const [roomInfo, setRoomInfo] = useState({ title: '', secretRoom: false, level: 1 });
   const router = useRouter();
 
   useEffect(() => {
@@ -27,7 +27,7 @@ const Header = ({ setShowLevel, setShowRoomInfo, user }: Props) => {
     const getData = async () => {
       const res = await axios.get(`/api/puzzle/info/${router.query.id}`);
       setRoomInfo(res.data.item);
-    }
+    };
     getData();
   }, [router.isReady, router.query.id]);
 
@@ -36,7 +36,7 @@ const Header = ({ setShowLevel, setShowRoomInfo, user }: Props) => {
       const content = {
         first: '퍼즐을 생성 중입니다.',
         second: '잠시만 기다려주세요.',
-      }
+      };
       onLoading(content);
 
       const puzzleData = exportConfig();
@@ -91,11 +91,18 @@ const Header = ({ setShowLevel, setShowRoomInfo, user }: Props) => {
           {router.query.id === undefined ? (
             <Button onClick={createPuzzleRoom}>방 만들기</Button>
           ) : (
-            roomInfo && roomInfo.secretRoom && 
-            <Button onClick={openModal}>초대하기</Button>
+            roomInfo && roomInfo.secretRoom && <Button onClick={openModal}>초대하기</Button>
           )}
           {router.query.id === undefined ? (
-            <PuzzleMenu 
+            <PuzzleMenu
+              user={user}
+              roomInfo={roomInfo}
+              setShowLevel={setShowLevel}
+              setShowRoomInfo={setShowRoomInfo}
+              createPuzzleRoom={createPuzzleRoom}
+            />
+          ) : roomInfo && roomInfo.secretRoom ? (
+            <PuzzleMenu
               user={user}
               roomInfo={roomInfo}
               setShowLevel={setShowLevel}
@@ -103,16 +110,7 @@ const Header = ({ setShowLevel, setShowRoomInfo, user }: Props) => {
               createPuzzleRoom={createPuzzleRoom}
             />
           ) : (
-            roomInfo && roomInfo.secretRoom ? 
-              <PuzzleMenu 
-                user={user}
-                roomInfo={roomInfo}
-                setShowLevel={setShowLevel}
-                setShowRoomInfo={setShowRoomInfo}
-                createPuzzleRoom={createPuzzleRoom}
-              />
-              :
-              <MobileButton onClick={() => setShowRoomInfo(true)}>방 정보</MobileButton>
+            <MobileButton onClick={() => setShowRoomInfo(true)}>방 정보</MobileButton>
           )}
           <Palette />
         </Right>

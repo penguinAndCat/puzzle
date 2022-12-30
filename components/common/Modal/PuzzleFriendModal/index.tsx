@@ -26,7 +26,7 @@ const PuzzleFriendModal = () => {
     const res = await axios.get(`/api/users/friends/${user.id}?puzzleId=${router.query.id}`);
     setFriends(res.data.friends);
   };
-  
+
   const inviteFriend = async (requestedNickname: string) => {
     if (!user?.id) return;
     const res = await axios.post(`/api/users/puzzle`, {
@@ -51,15 +51,15 @@ const PuzzleFriendModal = () => {
       </TitleWrapper>
       <div>친구 목록</div>
       <Ul>
-        {frineds.map((item: { nickname: string; picture: string; isInvited: boolean; }) => {
-          if(item.isInvited) 
+        {frineds.map((item: { nickname: string; picture: string; isInvited: boolean }) => {
+          if (item.isInvited)
             return (
               <Li key={item.nickname}>
-              <Img src={item.picture} />
-              <Nickname>{item.nickname}</Nickname>
-              <InviteDiv>초대됨</InviteDiv>
-            </Li>
-          )
+                <Img src={item.picture} />
+                <Nickname>{item.nickname}</Nickname>
+                <InviteDiv>초대됨</InviteDiv>
+              </Li>
+            );
           return (
             <Li key={item.nickname}>
               <Img src={item.picture} />

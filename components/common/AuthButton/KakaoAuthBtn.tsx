@@ -21,11 +21,11 @@ export default function KakaoAuthBtn() {
   }, []);
 
   return (
-  <BtnWrapper onClick={loginWithKakao}>
-    <Img src='icon-login-kakaotalk-btn.svg' alt='kakaotalk_icon'/>
-    <Span>카카오로 시작</Span>
-  </BtnWrapper>
-  )
+    <BtnWrapper onClick={loginWithKakao}>
+      <Img src="icon-login-kakaotalk-btn.svg" alt="kakaotalk_icon" />
+      <Span>카카오로 시작</Span>
+    </BtnWrapper>
+  );
 }
 
 const BtnWrapper = styled.button`

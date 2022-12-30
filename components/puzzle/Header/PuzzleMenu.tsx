@@ -6,11 +6,11 @@ import styled, { css } from 'styled-components';
 
 type Props = {
   user: UserInfo | null;
-  roomInfo: {title: string, secretRoom: boolean, level: number};
+  roomInfo: { title: string; secretRoom: boolean; level: number };
   setShowLevel: Dispatch<SetStateAction<boolean>>;
   setShowRoomInfo: Dispatch<SetStateAction<boolean>>;
   createPuzzleRoom: () => void;
-}
+};
 
 const PuzzleMenu = ({ user, roomInfo, setShowLevel, setShowRoomInfo, createPuzzleRoom }: Props) => {
   const { addModal } = useModal();
@@ -39,9 +39,7 @@ const PuzzleMenu = ({ user, roomInfo, setShowLevel, setShowRoomInfo, createPuzzl
 
   return (
     <ButtonWrapper ref={el}>
-      <Button onClick={onClick} >
-        메뉴
-      </Button>
+      <Button onClick={onClick}>메뉴</Button>
       {dropDown && (
         <DropDownWrapper>
           {router.query.id === undefined ? (
@@ -52,7 +50,8 @@ const PuzzleMenu = ({ user, roomInfo, setShowLevel, setShowRoomInfo, createPuzzl
           {router.query.id === undefined ? (
             <DropDownButton onClick={createPuzzleRoom}>방 만들기</DropDownButton>
           ) : (
-            roomInfo && roomInfo.secretRoom && <DropDownButton onClick={() => addModal('puzzleFriend')}>초대하기</DropDownButton>
+            roomInfo &&
+            roomInfo.secretRoom && <DropDownButton onClick={() => addModal('puzzleFriend')}>초대하기</DropDownButton>
           )}
         </DropDownWrapper>
       )}
@@ -91,7 +90,7 @@ const ButtonStyle = css`
   text-align: center;
   cursor: pointer;
   padding: 0;
-`
+`;
 
 const Button = styled.button`
   ${ButtonStyle};
@@ -108,6 +107,6 @@ const Notice = styled.div`
   height: 10px;
   top: 20px;
   left: 69px;
-  background-color: #C24641;
+  background-color: #c24641;
   border-radius: 50%;
 `;

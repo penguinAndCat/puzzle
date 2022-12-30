@@ -16,7 +16,7 @@ interface Props {
 const RoomInfo = ({ showRoomInfo, setShowRoomInfo, user }: Props) => {
   const router = useRouter();
   const { participants } = useSocket();
-  const [roomInfo, setRoomInfo] = useState({title: '', secretRoom: false, level: 1});
+  const [roomInfo, setRoomInfo] = useState({ title: '', secretRoom: false, level: 1 });
   const [list, setList] = useState<number[][]>([]);
   const [display, setDisplay] = useState(false); // fadeout animaition 기다림
   const el = useRef<HTMLDivElement>(null);
@@ -24,14 +24,14 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo, user }: Props) => {
   const { data, refetch } = useInvitedUser(router.query.id, user);
 
   useEffect(() => {
-    if(showRoomInfo){
+    if (showRoomInfo) {
       const levels = exportLevels();
       setList(levels);
       setDisplay(true);
     } else {
       setTimeout(() => {
         setDisplay(false);
-      }, 450); 
+      }, 450);
     }
   }, [showRoomInfo]);
 
@@ -41,14 +41,14 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo, user }: Props) => {
     const getData = async () => {
       const res = await axios.get(`/api/puzzle/info/${router.query.id}`);
       setRoomInfo(res.data.item);
-    }
+    };
     getData();
     refetch();
   }, [router.isReady, router.query.id]);
 
   useEffect(() => {
-    if(list.length > 0){
-      setRoomInfo({...roomInfo, level: list[roomInfo.level][0] * list[roomInfo.level][1]});
+    if (list.length > 0) {
+      setRoomInfo({ ...roomInfo, level: list[roomInfo.level][0] * list[roomInfo.level][1] });
     }
   }, [list]);
 
@@ -100,10 +100,7 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo, user }: Props) => {
                 <UserWrapper>
                   <Img src={data.host.picture} alt={data.host.nickname} />
                   <Nickname>{data.host.nickname}</Nickname>
-                    {participants.includes(data.host.nickname) ? 
-                      <OnParticipant /> : 
-                      <OffParticipant />
-                    }
+                  {participants.includes(data.host.nickname) ? <OnParticipant /> : <OffParticipant />}
                   <FriendButton>방장</FriendButton>
                 </UserWrapper>
                 {data.users.map((participant: any, index: Key | null | undefined) => {
@@ -111,18 +108,18 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo, user }: Props) => {
                     <UserWrapper key={index}>
                       <Img src={participant.picture} alt={participant.nickname} />
                       <Nickname>{participant.nickname}</Nickname>
-                      {participants.includes(participant.nickname) ? 
-                        <OnParticipant /> : 
-                        <OffParticipant />
-                      }
-                      {
-                        user?.nickname === participant.nickname ? <FriendButton>나</FriendButton> :
-                        participant.isFriend > 0 ? 
-                        <FriendButton>친구</FriendButton> :
-                        <FriendRequireButton onClick={() => requestFriend(participant.nickname)}>친구하기</FriendRequireButton>
-                      }
+                      {participants.includes(participant.nickname) ? <OnParticipant /> : <OffParticipant />}
+                      {user?.nickname === participant.nickname ? (
+                        <FriendButton>나</FriendButton>
+                      ) : participant.isFriend > 0 ? (
+                        <FriendButton>친구</FriendButton>
+                      ) : (
+                        <FriendRequireButton onClick={() => requestFriend(participant.nickname)}>
+                          친구하기
+                        </FriendRequireButton>
+                      )}
                     </UserWrapper>
-                  )
+                  );
                 })}
               </div>
             </InvitedUserWrapper>
@@ -135,7 +132,7 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo, user }: Props) => {
 
 export default RoomInfo;
 
-const Container = styled.div<{show: boolean}>`
+const Container = styled.div<{ show: boolean }>`
   @keyframes fadeinRight {
     0% {
       transform: translateX(-100%);
@@ -158,7 +155,7 @@ const Container = styled.div<{show: boolean}>`
       transform: translateX(-100%);
     }
   }
-  animation: ${({ show }) => show ? `fadeinRight` : `fadeoutLeft` } 0.5s;
+  animation: ${({ show }) => (show ? `fadeinRight` : `fadeoutLeft`)} 0.5s;
 
   position: absolute;
   width: 260px;
@@ -181,7 +178,6 @@ const Title = styled.h1`
   border-bottom: 2px ${({ theme }) => theme.borderColor};
 `;
 
-
 const Content = styled.div`
   margin-top: 24px;
   padding: 0 18px;
@@ -192,13 +188,9 @@ const Content = styled.div`
   }
 `;
 
-const SecretRoomWrapper = styled.div`
-  
-`;
+const SecretRoomWrapper = styled.div``;
 
-const SecretRoom = styled.div`
-  
-`;
+const SecretRoom = styled.div``;
 
 const PuzzleNumberWrapper = styled.div`
   display: flex;
@@ -211,9 +203,7 @@ const MiniTitle = styled.div`
   margin-bottom: 6px;
 `;
 
-const InvitedUserWrapper = styled.div`
-
-`;
+const InvitedUserWrapper = styled.div``;
 
 const OnParticipant = styled.div`
   position: absolute;
@@ -221,8 +211,8 @@ const OnParticipant = styled.div`
   height: 12px;
   top: 19px;
   left: 19px;
-  background-color: #4AA02C;
-  border: 2px solid #3A3B3C;
+  background-color: #4aa02c;
+  border: 2px solid #3a3b3c;
   border-radius: 50%;
 `;
 
@@ -233,7 +223,7 @@ const OffParticipant = styled.div`
   top: 19px;
   left: 19px;
   background-color: #797979;
-  border: 2px solid #3A3B3C;
+  border: 2px solid #3a3b3c;
   border-radius: 50%;
 `;
 

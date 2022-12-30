@@ -21,12 +21,14 @@ export default function GoogleAuthBtn() {
     }
   };
 
-  return <BtnWrapper onClick={onGoogleSignIn}>
-  <AuthWrapper>
-    <GoogleAuth />
-  </AuthWrapper>
-  <div>구글로 시작</div>
-</BtnWrapper>;
+  return (
+    <BtnWrapper onClick={onGoogleSignIn}>
+      <AuthWrapper>
+        <GoogleAuth />
+      </AuthWrapper>
+      <div>구글로 시작</div>
+    </BtnWrapper>
+  );
 }
 
 const BtnWrapper = styled.div`
@@ -35,8 +37,8 @@ const BtnWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #FFF;
-  background-color: #4285F4;
+  color: #fff;
+  background-color: #4285f4;
   font-size: 12px;
   cursor: pointer;
   border-radius: 0.25rem;
@@ -49,7 +51,7 @@ const AuthWrapper = styled.div`
 
 const Btn = styled.button`
   z-index: 1;
-  background-color: #FFF;
+  background-color: #fff;
   border: none;
   width: 32px;
   height: 32px;

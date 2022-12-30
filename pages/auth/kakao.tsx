@@ -12,7 +12,7 @@ const Kakao: NextPage = () => {
   const { code } = router.query;
   const inputRef = useRef<HTMLInputElement>(null);
   const [userInfo, setUserInfo] = useState<any>(null);
-  
+
   useEffect(() => {
     if (code) {
       axios
@@ -47,7 +47,7 @@ const Kakao: NextPage = () => {
       </AuthComponent.Form>
     );
   }
-  
+
   return <LoginLoading />;
 };
 

@@ -98,7 +98,7 @@ const PuzzleModal = () => {
       const content = {
         first: '퍼즐을 생성 중입니다.',
         second: '잠시만 기다려주세요.',
-      }
+      };
       onLoading(content);
       const canvasSize = { width: 1000, height: 1000 };
       const canvas = document.createElement('canvas');
