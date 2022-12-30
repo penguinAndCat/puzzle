@@ -2,10 +2,11 @@ import { AxiosError } from 'axios';
 import Header from 'components/common/Header';
 import RoomCard from 'components/common/RoomCard';
 import { NEXT_SERVER } from 'config';
+import useInfiniteScroll from 'hooks/useInfiniteScroll';
 import axios from 'libs/axios';
 import { saveImage } from 'libs/common/saveImage';
 import Head from 'next/head';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 export default function MyPage({ user }: { user: UserInfo | null }) {
@@ -13,88 +14,45 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
   const [data, setData] = useState<any[]>([]);
   const myRef = useRef<HTMLDivElement>(null);
   const myPageRef = useRef(1);
-  const [myLoading, setMyLoading] = useState(false);
   const [profileImg, setProfileImg] = useState<string>(user?.picture || '');
   const [nickname, setNickname] = useState<string>(user?.nickname || '');
   const inputFileRef = useRef<HTMLInputElement>(null);
 
-  const getMoreMyPuzzle = useCallback(async () => {
-    try {
-      if (!user?.id) {
-        return;
-      }
-      setMyLoading(true);
+  const [{ data: myPuzzle }, myPuzzleRef] = useInfiniteScroll({
+    queryKey: 'myPuzzle',
+    queryFn: async ({ pageParam = 1 }) => {
       const response = await axios.get('/api/puzzle/myPuzzle', {
         params: {
           id: user?.id,
-          page: myPageRef.current,
+          page: pageParam,
         },
       });
-      const { item } = response.data;
-      if (!item || item.length < 10) {
-        myRef.current!.style.display = 'none';
-      }
-      myPageRef.current += 1;
-      setData((prev) => [...prev, ...item]);
-    } catch (err) {
-      console.log(err);
-    }
+      return response.data;
+    },
+    getNextPageParam: (lastPage) => (lastPage.isLast ? undefined : lastPage.page + 1),
+  });
 
-    setMyLoading(false);
-  }, [user?.id]);
+  const puzzleData = useMemo(() => {
+    return myPuzzle?.pages.reduce((acc, cur) => [...acc, ...cur.item], []);
+  }, [myPuzzle?.pages]);
 
-  const getMoreInvited = useCallback(async () => {
-    try {
-      if (!user?.id) {
-        return;
-      }
-      setMyLoading(true);
+  const [{ data: invitedPuzzle }, invitedRef] = useInfiniteScroll({
+    queryKey: 'invitedPuzzle',
+    queryFn: async ({ pageParam = 1 }) => {
       const response = await axios.get('/api/puzzle/invited', {
         params: {
           id: user?.id,
-          page: myPageRef.current,
+          page: pageParam,
         },
       });
-      const { item } = response.data;
-      if (!item || item.length < 10) {
-        myRef.current!.style.display = 'none';
-      }
-      myPageRef.current += 1;
-      setData((prev) => [...prev, ...item]);
-    } catch (err) {
-      console.log(err);
-    }
-
-    setMyLoading(false);
-  }, [user?.id]);
-
-  const isIntersect: IntersectionObserverCallback = useCallback(
-    async (entries, observer) => {
-      if (entries[0].isIntersecting) {
-        observer.unobserve(entries[0].target);
-        tab === 'my' ? await getMoreMyPuzzle() : await getMoreInvited();
-        observer.observe(entries[0].target);
-      }
+      return response.data;
     },
-    [getMoreInvited, getMoreMyPuzzle, tab]
-  );
+    getNextPageParam: (lastPage) => (lastPage.isLast ? undefined : lastPage.page + 1),
+  });
 
-  useEffect(() => {
-    let observer: IntersectionObserver;
-    if (myRef.current) {
-      observer = new IntersectionObserver(isIntersect, {
-        rootMargin: '-10px',
-      });
-      observer.observe(myRef.current);
-    }
-    return () => observer && observer.disconnect();
-  }, [isIntersect, myRef]);
-
-  useEffect(() => {
-    if (myRef.current) {
-      myRef.current.style.display = 'block';
-    }
-  }, [tab]);
+  const invitedPuzzleData = useMemo(() => {
+    return invitedPuzzle?.pages.reduce((acc, cur) => [...acc, ...cur.item], []);
+  }, [invitedPuzzle?.pages]);
 
   useEffect(() => {
     if (!user) {
@@ -215,23 +173,48 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
         </TabBox>
         <Title>{tab === 'my' ? '나의 방' : '초대된 방'}</Title>
         <PuzzleContainer>
-          {data?.map((item: any, index) => (
-            <RoomCard
-              key={index}
-              src={item.config.puzzleImage.src}
-              currentPlayer={item.player.length + 1}
-              maxPlayer={item.maximumPlayer}
-              progress={Number((item.perfection * 100).toFixed(3))}
-              title={item.title}
-              isPrivate={item.secretRoom}
-              invitedList={item.secretRoom ? item.invitedUser : null}
-              participantList={item.secretRoom ? item.player : null}
-              onClick={() => {
-                window.location.href = `${NEXT_SERVER}/puzzle/${item._id}`;
-              }}
-            />
-          ))}
-          <div ref={myRef} />
+          {tab == 'my' && (
+            <>
+              {puzzleData?.map((item: any, index: number) => (
+                <RoomCard
+                  key={index}
+                  src={item.config.puzzleImage.src}
+                  currentPlayer={item.player.length + 1}
+                  maxPlayer={item.maximumPlayer}
+                  progress={Number((item.perfection * 100).toFixed(3))}
+                  title={item.title}
+                  isPrivate={item.secretRoom}
+                  invitedList={item.secretRoom ? item.invitedUser : null}
+                  participantList={item.secretRoom ? item.player : null}
+                  onClick={() => {
+                    window.location.href = `${NEXT_SERVER}/puzzle/${item._id}`;
+                  }}
+                />
+              ))}
+              <div ref={myPuzzleRef} />
+            </>
+          )}
+          {tab === 'invited' && (
+            <>
+              {invitedPuzzleData?.map((item: any, index: number) => (
+                <RoomCard
+                  key={index}
+                  src={item.config.puzzleImage.src}
+                  currentPlayer={item.player.length + 1}
+                  maxPlayer={item.maximumPlayer}
+                  progress={Number((item.perfection * 100).toFixed(3))}
+                  title={item.title}
+                  isPrivate={item.secretRoom}
+                  invitedList={item.secretRoom ? item.invitedUser : null}
+                  participantList={item.secretRoom ? item.player : null}
+                  onClick={() => {
+                    window.location.href = `${NEXT_SERVER}/puzzle/${item._id}`;
+                  }}
+                />
+              ))}
+              <div ref={invitedRef} />
+            </>
+          )}
         </PuzzleContainer>
       </Wrapper>
     </>

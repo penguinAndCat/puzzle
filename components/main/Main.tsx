@@ -1,12 +1,11 @@
 import Card from 'components/common/Card';
-import HoverImage from 'components/common/HoverImage';
 import RoomCard from 'components/common/RoomCard';
 import axios from 'libs/axios';
 import { useModal, usePuzzle } from 'libs/zustand/store';
-import { useRouter } from 'next/router';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { NEXT_SERVER } from 'config';
+import useInfiniteScroll from 'hooks/useInfiniteScroll';
 
 const images = [
   'http://res.cloudinary.com/penguinandcatpuzzle/image/upload/v1666189078/bugvpkwfmde3q21zcm4s.png',
@@ -22,43 +21,23 @@ const Main = ({ user }: { user: UserInfo | null }) => {
     initialModal();
     addModal('puzzle');
   };
-  const publicRef = useRef<HTMLDivElement>(null);
-  const [puzzleData, setPuzzleData] = useState<any[]>([]);
-  const [page, setPage] = useState(1);
-  const getPublic = useCallback(async () => {
-    const { data: publicPuzzle } = await axios.get('/api/puzzle', {
-      params: {
-        page: page,
-      },
-    });
-    setPuzzleData((prev) => [...prev, ...publicPuzzle.item]);
-    if (!publicPuzzle.item || publicPuzzle.item.length < 10) {
-      publicRef.current!.style.display = 'none';
-    }
-    setPage((prev) => (prev += 1));
-  }, [page]);
 
-  const isIntersect: IntersectionObserverCallback = useCallback(
-    async (entries, observer) => {
-      if (entries[0].isIntersecting) {
-        observer.unobserve(entries[0].target);
-        await getPublic();
-        observer.observe(entries[0].target);
-      }
-    },
-    [getPublic]
-  );
-
-  useEffect(() => {
-    let observer: IntersectionObserver;
-    if (publicRef.current) {
-      observer = new IntersectionObserver(isIntersect, {
-        rootMargin: '10px',
+  const [{ data }, flagRef] = useInfiniteScroll({
+    queryKey: 'public',
+    queryFn: async ({ pageParam = 1 }) => {
+      const { data } = await axios.get('/api/puzzle', {
+        params: {
+          page: pageParam,
+        },
       });
-      observer.observe(publicRef.current);
-    }
-    return () => observer && observer.disconnect();
-  }, [isIntersect, publicRef]);
+      return data;
+    },
+    getNextPageParam: (lastPage) => (lastPage.isLast ? undefined : lastPage.page + 1),
+  });
+
+  const puzzleData = useMemo(() => {
+    return data?.pages.reduce((acc, cur) => [...acc, ...cur.item], []);
+  }, [data?.pages]);
 
   return (
     <Wrapper>
@@ -84,7 +63,7 @@ const Main = ({ user }: { user: UserInfo | null }) => {
       <FavoriteWrapper>
         <Title>공개방</Title>
         <PuzzleContainer>
-          {puzzleData.map((data, index) => {
+          {puzzleData?.map((data: any, index: number) => {
             return (
               <RoomCard
                 key={index}
@@ -100,7 +79,7 @@ const Main = ({ user }: { user: UserInfo | null }) => {
               />
             );
           })}
-          <div ref={publicRef} style={{ height: '10px' }} />
+          <div ref={flagRef} style={{ height: '100px' }} />
         </PuzzleContainer>
       </FavoriteWrapper>
     </Wrapper>
