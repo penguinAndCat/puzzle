@@ -61,17 +61,15 @@ type PuzzleProps = {
 };
 
 interface Toast {
-  id?: string;
   nickname?: string;
   content: string;
-  duration?: number;
-  top?: number;
-  left?: number;
+  type: 'success' | 'warn';
 }
 
 type ToastProps = {
-  toast: Toast;
-  setToast: (value: Toast) => void;
+  toast: Toast[];
+  addToast: (data: Toast) => void;
+  removeToast: () => void;
 };
 
 interface LoadingContent {

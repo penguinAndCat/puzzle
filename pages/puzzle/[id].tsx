@@ -1,16 +1,31 @@
 import type { NextPage } from 'next';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import RoomInfo from 'components/puzzle/RoomInfo';
 import Header from 'components/puzzle/Header';
 import PuzzleCanvas from 'components/puzzle/PuzzleCanvas';
 import Levels from 'components/puzzle/Levels';
 import { usePuzzle } from 'libs/zustand/store';
+import { useRouter } from 'next/router';
 
-const Home: NextPage<{ user: UserInfo | null }> = ({ user = null }) => {
+const Home: NextPage<{ user: UserInfo | null }> = ({ user }) => {
   const { modalImage, number } = usePuzzle();
   const [showLevel, setShowLevel] = useState(false);
   const [showRoomInfo, setShowRoomInfo] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!user) {
+      router.replace({
+        pathname: '/',
+        query: { redirect: true },
+      });
+    }
+  }, [router, user]);
+
+  if (!user) {
+    return <div></div>;
+  }
 
   return (
     <Container>

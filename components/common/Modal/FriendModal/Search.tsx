@@ -8,7 +8,7 @@ import styled, { css } from 'styled-components';
 const SearchFriend = () => {
   const [searched, setSearched] = useState('');
   const [searchedUser, setSearchedUser] = useState<any>([]);
-  const { fireToast } = useToast();
+  const toast = useToast();
   const { user } = userStore();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const searchUser = async () => {
@@ -25,10 +25,10 @@ const SearchFriend = () => {
     });
     const top = buttonRef.current?.getBoundingClientRect().top;
     if (res.data.message === 'success') {
-      fireToast({ content: '친구 요청을 보냈습니다.', top: top });
+      toast({ content: '친구 요청을 보냈습니다.', type: 'success' });
     }
     if (res.data.message === 'duplicated') {
-      fireToast({ content: '이미 친구 요청을 보냈습니다.', top: top });
+      toast({ content: '이미 친구 요청을 보냈습니다.', type: 'warn' });
     }
   };
   return (

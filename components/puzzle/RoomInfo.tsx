@@ -15,13 +15,13 @@ interface Props {
 
 const RoomInfo = ({ showRoomInfo, setShowRoomInfo, user }: Props) => {
   const router = useRouter();
+  const toast = useToast();
   const { participants } = useSocket();
+  const { invitedUser, refetchInvitedUser } = useInvitedUser(router.query.id, user);
   const [roomInfo, setRoomInfo] = useState({ title: '', secretRoom: false, level: 1 });
   const [list, setList] = useState<number[][]>([]);
   const [display, setDisplay] = useState(false); // fadeout animaition 기다림
   const el = useRef<HTMLDivElement>(null);
-  const { fireToast } = useToast();
-  const { invitedUser, refetchInvitedUser } = useInvitedUser(router.query.id, user);
 
   useEffect(() => {
     if (showRoomInfo) {
@@ -73,10 +73,10 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo, user }: Props) => {
       },
     });
     if (res.data.message === 'success') {
-      fireToast({ content: '친구 요청을 보냈습니다.', top: 100 });
+      toast({ content: '친구 요청을 보냈습니다.', type: 'success' });
     }
     if (res.data.message === 'duplicated') {
-      fireToast({ content: '이미 친구 요청을 보냈습니다.', top: 100 });
+      toast({ content: '이미 친구 요청을 보냈습니다.', type: 'warn' });
     }
   };
 

@@ -4,7 +4,7 @@ import { useQuery } from 'react-query';
 export const useInvitedUser = (puzzleId: string | undefined | string[], user: UserInfo | null) => {
   const { data, refetch } = useQuery(['roomInfo-invitedUser'], () => getInvitedUser(), {
     onError: (error: Error) => {
-      alert(error.message);
+      console.log(error);
     },
   });
 

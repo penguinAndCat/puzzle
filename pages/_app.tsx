@@ -2,7 +2,6 @@ import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import { ThemeProvider } from 'libs/theme/ThemeProvider';
 import { GlobalStyle } from 'libs/theme/GlobalStyle';
-import Toast from 'components/common/Toast';
 import Loading from 'components/common/Loading';
 import Modal from 'components/common/Modal';
 import { QueryClient, QueryClientProvider } from 'react-query';
@@ -12,6 +11,7 @@ import { NEXT_SERVER } from 'config';
 import { userStore } from 'libs/zustand/store';
 import { useEffect } from 'react';
 import SocketNotice from 'components/common/SocketNotice';
+import ToastList from 'components/common/Toast/ToastList';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,7 +36,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <ThemeProvider pageTheme={pageProps.theme}>
         <GlobalStyle />
         <Component {...pageProps} />
-        <Toast />
+        <ToastList />
         <Loading />
         <Modal />
         <SocketNotice user={pageProps.user} />
@@ -52,7 +52,7 @@ MyApp.getInitialProps = async ({ ctx, Component }: { ctx: any; Component: any })
     pageProps = await Component.getInitialProps(ctx);
   }
 
-  const cookie = ctx.req.cookies;
+  const cookie = ctx.req?.cookies;
   if (cookie) {
     const localTheme = getCookie('localTheme', ctx) as ThemeKey;
     if (themeKeys.includes(localTheme)) {
@@ -69,7 +69,7 @@ MyApp.getInitialProps = async ({ ctx, Component }: { ctx: any; Component: any })
   const { req, res } = ctx;
   const { data } = await axios.get(`${NEXT_SERVER}/api/auth`, {
     headers: {
-      Cookie: req.headers.cookie || '',
+      Cookie: req?.headers.cookie || '',
     },
   });
   if (data.accessToken) {
