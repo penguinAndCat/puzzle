@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import HoverImage from './HoverImage';
+import ProgressBar from './ProgressBar';
 
 export default function RoomCard({
   src,
@@ -10,6 +11,7 @@ export default function RoomCard({
   onClick,
   invitedList,
   onDelete,
+  isMain = false,
 }: {
   src: string;
   progress: number;
@@ -18,6 +20,7 @@ export default function RoomCard({
   invitedList?: any[];
   onClick: () => void;
   onDelete?: () => void;
+  isMain?: boolean;
 }) {
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState<any[]>([]);
@@ -45,8 +48,10 @@ export default function RoomCard({
         <div onClick={(e) => e.stopPropagation()}>
           <Title>{title}</Title>
           <TextWrapper>
-            <p>{`${progress}%`}</p>
-            {isPrivate ? '비밀방' : '공개방'}
+            <div style={{ height: '10px', width: '100%' }}>
+              <ProgressBar percent={progress} />
+            </div>
+            {!isMain && <p>{isPrivate ? '비밀방' : '공개방'}</p>}
             {isPrivate && (
               <ClickableP onClick={() => openModal(invitedList || [], '초대받은 사람')}>초대받은 사람</ClickableP>
             )}

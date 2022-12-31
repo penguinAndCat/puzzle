@@ -70,10 +70,9 @@ const Main = ({ user }: { user: UserInfo | null }) => {
               <RoomCard
                 key={index}
                 src={data.config.puzzleImage.src}
-                currentPlayer={data.player.length}
-                maxPlayer={data.maximumPlayer}
                 progress={Number((data.perfection * 100).toFixed(3))}
                 title={data.title}
+                isMain={true}
                 onClick={() => {
                   if (!user) {
                     toast({ content: '로그인이 필요합니다', type: 'warn' });
