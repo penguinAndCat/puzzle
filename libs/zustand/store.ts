@@ -37,30 +37,44 @@ export const usePuzzle = create<PuzzleProps>()(
 );
 
 export const useToastState = create<ToastProps>((set) => ({
-  toast: {
-    id: '',
-    content: '',
-    duration: 0,
-    top: 0,
-    bottom: 0,
-  },
-  setToast: (toast) => set({ toast: toast }),
+  toast: [],
+  addToast: (data) =>
+    set((state) => ({
+      toast: [...state.toast, data],
+    })),
+  removeToast: () =>
+    set((state) => ({
+      toast: state.toast.filter((item, index) => index !== 0),
+    })),
 }));
 
 export const useLoading = create<LoadingProps>((set) => ({
   loading: false,
+  content: { first: '', second: '' },
   offLoading: () => set({ loading: false }),
-  onLoading: () => set({ loading: true }),
+  onLoading: (content) => set({ loading: true, content: content }),
 }));
 
-export const userStore = create<userStoreProps>((set) => ({
-  user: {
-    id: '',
-    name: '',
-    picture: '',
-    email: '',
-    provider: '',
-    nickname: '',
+export const userStore = create<UserStoreProps>((set) => ({
+  user: null,
+  setUser: (user: UserInfo | null) => set({ user: user }),
+}));
+
+export const useSocket = create<SocketProps>((set) => ({
+  participants: [],
+  setParticipant: (value) => {
+    set(() => ({
+      participants: value,
+    }));
   },
-  setUser: (user: userInfo | null) => set({ user: user }),
+  addParticipant: (value) => {
+    set((state) => ({
+      participants: [...state.participants, value],
+    }));
+  },
+  removeParticipant: (value) => {
+    set((state) => ({
+      participants: state.participants.filter((participants: string) => participants !== value),
+    }));
+  },
 }));

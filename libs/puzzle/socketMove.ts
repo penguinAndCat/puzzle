@@ -5,6 +5,9 @@ export const moveIndex = (groupTiles: any, indexArr: number[], socketCanvasSize:
   const config = exportConfig();
   config.groupTiles.forEach((item, tilesIndex) => {
     item.groupIndex = groupTiles[tilesIndex][2];
+    if (!groupTiles[tilesIndex][3]) {
+      item.movable = groupTiles[tilesIndex][3];
+    }
   });
   let counter = 0;
   let movePositionX: number[] = [];
@@ -30,6 +33,11 @@ export const moveIndex = (groupTiles: any, indexArr: number[], socketCanvasSize:
           (groupTiles[index][1] / socketCanvasSize.width) * config.canvasSize.width;
       });
       cancelAnimationFrame(moveAnimation);
+      config.groupTiles.forEach((item, tilesIndex) => {
+        if (groupTiles[tilesIndex][3]) {
+          item.movable = groupTiles[tilesIndex][3];
+        }
+      });
       return;
     }
     counter++;

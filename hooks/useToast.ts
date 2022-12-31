@@ -1,21 +1,20 @@
 import { useToastState } from 'libs/zustand/store';
+import { useEffect } from 'react';
+import useDebounce from './useDebounce';
 
 export const useToast = () => {
-  const { setToast, toast } = useToastState();
-  const fireToast = (toastProps: Toast) => {
-    if (toast.content !== '') return;
-    setToast(toastProps);
-    setTimeout(
-      () =>
-        setToast({
-          id: '',
-          content: '',
-          duration: 0,
-          top: 0,
-          bottom: 0,
-        }),
-      2000 + (toastProps.duration ?? 700)
-    );
+  const { toast, addToast, removeToast } = useToastState();
+  const toastData = useDebounce<Toast[]>(toast, 3000);
+
+  const handleToast = (option: Toast) => {
+    addToast(option);
   };
-  return { toast, fireToast };
+
+  useEffect(() => {
+    toastData.forEach(() => {
+      removeToast();
+    });
+  }, [removeToast, toastData]);
+
+  return handleToast;
 };

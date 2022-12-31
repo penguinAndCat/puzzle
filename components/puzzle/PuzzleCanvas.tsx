@@ -1,35 +1,42 @@
-import { useRef, useState, useEffect, useContext } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import Paper from 'paper';
 import styled from 'styled-components';
 import { exportConfig, initConfig, restartConfig } from 'libs/puzzle/createPuzzle';
 import { useRouter } from 'next/router';
 
-import axios from 'axios';
-import { SocketContext } from 'libs/context/socket';
 import { moveIndex } from 'libs/puzzle/socketMove';
-import { useLoading } from 'libs/zustand/store';
+import { useLoading, useSocket } from 'libs/zustand/store';
+import Pusher from 'pusher-js';
+import { NEXT_SERVER } from 'config';
+import { useToast } from 'hooks/useToast';
+import { useInvitedUser } from 'hooks/useInvitedUser';
+import axios from 'libs/axios';
 
 interface Props {
   puzzleLv: number;
   puzzleImg: img;
+  user: UserInfo | null;
 }
 
-const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
+const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
   const { offLoading } = useLoading();
+  const { setParticipant } = useSocket();
+  const toast = useToast();
   const router = useRouter();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
-  const socket = useContext(SocketContext);
+  const [socket, setSocket] = useState();
+  const { refetchInvitedUser } = useInvitedUser(router.query.id, user);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas === null) return;
 
     const imgResize = () => {
-      if (window.innerWidth < window.innerHeight - 60) {
+      if (window.innerWidth < window.innerHeight - 61) {
         setCanvasSize({ width: window.innerWidth, height: window.innerWidth });
       } else {
-        setCanvasSize({ width: window.innerHeight - 60, height: window.innerHeight - 60 });
+        setCanvasSize({ width: window.innerHeight - 61, height: window.innerHeight - 61 });
       }
     };
 
@@ -55,35 +62,81 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
         initConfig(Paper, puzzleImg, config, canvasSize, puzzleLv);
         offLoading();
       } else {
-        const response = await axios.get(`/api/puzzle?id=${router.query.id}`);
+        if (user === null) return;
+        if (socket === undefined) return;
+        const response = await axios.get(`/api/puzzle/${router.query.id}`);
         const item = response.data.item;
         const config = { ...item.config };
         const puzzleImage = { ...config.puzzleImage };
-        restartConfig(Paper, puzzleImage, config, canvasSize, item.level, router.query.id, socket);
+        restartConfig(Paper, puzzleImage, config, canvasSize, item.level, router.query.id, socket, user?.nickname);
         offLoading();
       }
     };
     setPuzzle();
-  }, [puzzleLv, router.isReady, puzzleImg, canvasSize, router.query.id, socket]);
+  }, [puzzleLv, router.isReady, puzzleImg, canvasSize, router.query.id, socket, user, offLoading]);
 
   useEffect(() => {
     if (!router.isReady) return;
-
-    socket.emit('join', router.query.id);
-
-    socket.on('groupTiles', (data) => {
-      if (data.socketId !== socket.id) {
-        moveIndex(data.groupTiles, data.indexArr, data.socketCanvasSize);
-      }
+    if (user === null) return;
+    if (router.query.id === undefined) return;
+    let subscribe = true;
+    const pusher = new Pusher(process.env.NEXT_PUBLIC_KEY ? process.env.NEXT_PUBLIC_KEY : '', {
+      cluster: 'ap3',
+      authEndpoint: `${NEXT_SERVER}/api/pusher/auth`,
+      auth: {
+        params: {
+          username: user?.nickname || '',
+        },
+      },
     });
+    if (subscribe) {
+      // subscribe to the channel.
+      const channel: any = pusher.subscribe(`presence-${router.query.id}`);
+      let socketId: string;
+      channel.bind('pusher:subscription_succeeded', (members: Members) => {
+        if (members.count > 4) {
+          alert('인원 제한(4명)이 초과 하였습니다. 메인 페이지로 돌아갑니다.');
+          window.location.href = '/';
+        }
+        setSocket(members.myID);
+        socketId = members.myID;
+        setParticipant(Object.values(members.members).map((item: any) => item.username));
+      });
 
-    // socket disconnet onUnmount if exists
+      // when a new user join the channel.
+      channel.bind('pusher:member_added', (member: Member) => {
+        toast({ nickname: `${member.info.username}`, content: `님이 입장하였습니다.`, type: 'info' });
+        setParticipant(Object.values(channel.members.members).map((item: any) => item.username));
+      });
+
+      channel.bind('pusher:member_removed', (member: Member) => {
+        toast({ nickname: `${member.info.username}`, content: `님이 퇴장하였습니다.`, type: 'info' });
+        setParticipant(Object.values(channel.members.members).map((item: any) => item.username));
+      });
+
+      // when someone send a message.
+      channel.bind('movePuzzle', (data: any) => {
+        const { groupTiles, indexArr, socketCanvasSize } = data;
+        if (data.socketId !== socketId) {
+          moveIndex(groupTiles, indexArr, socketCanvasSize);
+        }
+      });
+
+      channel.bind('invited', (data: any) => {
+        const { puzzle, nickname } = data;
+        if (puzzle) {
+          refetchInvitedUser();
+          toast({ nickname: `${nickname}`, content: `님이 퍼즐 방에 초대 되었습니다.`, type: 'info' });
+        }
+      });
+    }
+
     return () => {
-      if (socket) {
-        socket.disconnect();
-      }
+      // last unsubscribe the user from the channel.
+      pusher.unsubscribe(`presence-${router.query.id}`);
+      subscribe = false;
     };
-  }, [router.isReady, router.query.id, socket]);
+  }, [router.isReady, router.query.id, setParticipant, user]);
 
   return (
     <Wrapper>
@@ -104,7 +157,7 @@ const Canvas = styled.canvas`
 
 const Wrapper = styled.div`
   width: 100%;
-  height: calc(100% - 60px);
+  height: calc(100% - 61px);
   display: flex;
   justify-content: center;
 `;

@@ -46,7 +46,7 @@ export default class MyDocument extends Document {
           <Script src="https://t1.kakaocdn.net/kakao_js_sdk/2.0.0/kakao.min.js" strategy="beforeInteractive" />
           <Script
             type="text/javascript"
-            src="http://code.jquery.com/jquery-1.11.3.min.js"
+            src="https://code.jquery.com/jquery-1.11.3.min.js"
             strategy="beforeInteractive"
           ></Script>
           <div id="portal" />

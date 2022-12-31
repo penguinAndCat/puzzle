@@ -1,12 +1,17 @@
+import React, { FormEvent, useEffect, useRef, useState } from 'react';
 import axios from 'libs/axios';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import React, { FormEvent, useEffect, useRef, useState } from 'react';
+import { AuthComponent } from 'components/common/Auth';
+import Loading from 'components/common/Loading';
+import { useLoading } from 'libs/zustand/store';
+import LoginLoading from 'components/common/LoginLoading';
 
 const Google: NextPage = () => {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [userInfo, setUserInfo] = useState<any>(null);
+
   useEffect(() => {
     const accessCode = window.location.hash.substring(1).split('&')[0].split('=')[1];
     if (accessCode) {
@@ -20,28 +25,34 @@ const Google: NextPage = () => {
           if (res.data.user) {
             setUserInfo(res.data.user);
           } else {
-            router.replace('/');
+            window.location.replace('/');
           }
         })
         .catch((err) => console.log(err));
     }
   }, [router]);
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    const response = await axios.post('/api/auth/google', { nick: inputRef.current?.value, user: userInfo });
-    router.replace('/');
+    if (!inputRef.current) return;
+    if (inputRef.current?.value.length > 5) {
+      alert('닉네임은 5글자 이하입니다');
+      return;
+    }
+    axios.post('/api/auth/google', { nick: inputRef.current?.value, user: userInfo });
+    window.location.replace('/');
   };
 
   if (userInfo && userInfo.email) {
     return (
-      <form onSubmit={handleSubmit}>
-        <input type="text" ref={inputRef} />
-        <button>submit</button>
-      </form>
+      <AuthComponent.Form onSubmit={handleSubmit}>
+        <AuthComponent.Div>nickname</AuthComponent.Div>
+        <AuthComponent.Input type="text" ref={inputRef} maxLength={5} />
+        <AuthComponent.Button>submit</AuthComponent.Button>
+      </AuthComponent.Form>
     );
   }
-  return <div>loading</div>;
+  return <LoginLoading />;
 };
 
 export default Google;

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
 declare global {
@@ -9,6 +9,7 @@ declare global {
 }
 
 export default function NaverAuthBtn() {
+  const el = useRef<any>(null);
   const initializeNaverLogin = () => {
     const naverLogin = new window.naver.LoginWithNaverId({
       clientId: process.env.NEXT_PUBLIC_NAVER_CLIENT_ID,
@@ -16,34 +17,59 @@ export default function NaverAuthBtn() {
       // 팝업창으로 로그인을 진행할 것인지?
       isPopup: false,
       // 버튼 타입 ( 색상, 타입, 크기 변경 가능 )
-      loginButton: { color: 'green', type: 1, height: 59 },
+      loginButton: { color: 'green', type: 1, height: 24, width: 240 },
       callbackHandle: true,
     });
     naverLogin.init();
+  };
+
+  const onClick = () => {
+    el.current.children[0].click();
   };
 
   useEffect(() => {
     initializeNaverLogin();
   }, []);
 
-  return <Btn id="naverIdLogin">네</Btn>;
+  return (
+    <BtnWrapper onClick={onClick}>
+      <Btn id="naverIdLogin" ref={el} />
+      <Img src="icon-login-naver-btn.svg" alt="naver_icon" />
+      <Span>네이버로 시작</Span>
+    </BtnWrapper>
+  );
 }
 
-const Btn = styled.button`
-  z-index: 1;
-  background-color: white;
+const Btn = styled.div`
+  display: none;
+  width: 40px;
+  height: 40px;
   border: none;
-  cursor: pointer;
-  font-size: 0;
-  line-height: 0;
-  width: 60px;
-  height: 60px;
+  color: #000;
+  background-color: #03c75a;
+  z-index: 1;
+`;
+
+const BtnWrapper = styled.button`
+  width: 185px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-position: center;
+  color: #fff;
+  background-color: #03c75a;
   border: none;
-  &:hover {
-    border: none;
-  }
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0;
+`;
+
+const Img = styled.img`
+  width: 20px;
+  height: 20px;
+`;
+
+const Span = styled.span`
+  margin-left: 8px;
 `;

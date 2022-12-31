@@ -1,38 +1,26 @@
-import axios from 'axios';
 import { CloseIcon } from 'components/common/Icon';
+import axios from 'libs/axios';
 import { theme } from 'libs/theme/theme';
 import { useModal, userStore } from 'libs/zustand/store';
 import { MouseEvent, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import SearchFriend from './Search';
 
-const searchedUser = [
-  { nickname: '닉네임은최대열글자가', picture: '/cp.png' },
-  { nickname: '고양이', picture: '/cp2.png' },
-  { nickname: '펭귄2', picture: '/cp3.png' },
-  { nickname: '고양이2', picture: '/cp4.png' },
-  // { nickname: '펭귄', picture: '/cp.png' },
-  // { nickname: '고양이', picture: '/cp2.png' },
-  // { nickname: '펭귄2', picture: '/cp3.png' },
-  // { nickname: '고양이2', picture: '/cp4.png' },
-];
-
 const FriendModal = () => {
   const { removeModal } = useModal();
-  const [frineds, setFriends] = useState([]);
+  const [friends, setFriends] = useState([]);
   const { user } = userStore();
   const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     e.preventDefault();
     removeModal('friend');
   };
   useEffect(() => {
-    getAlarm();
+    getNotice();
   }, []);
 
-  const getAlarm = async () => {
+  const getNotice = async () => {
     if (!user?.id) return;
     const res = await axios.get(`/api/users/friends/${user.id}`);
-    console.log(res.data.friends);
     setFriends(res.data.friends);
   };
   return (
@@ -47,12 +35,27 @@ const FriendModal = () => {
       <SearchFriend />
       <div>친구 목록</div>
       <Ul>
-        {frineds.map((item: { nickname: string; picture: string }) => {
+        {friends.map((item: { nickname: string; picture: string }) => {
           return (
             <Li key={item.nickname}>
               <Img src={item.picture} />
               <Nickname>{item.nickname}</Nickname>
-              <DeleteButton>삭제</DeleteButton>
+              <DeleteButton
+                onClick={async () => {
+                  if (window.confirm('정말로 삭제하시겠습니까?')) {
+                    try {
+                      await axios.delete(`/api/users/friends/${user.id}`, {
+                        params: { friendNickname: item.nickname },
+                      });
+                      setFriends((prev) => prev.filter((data: any) => data.nickname !== item.nickname));
+                    } catch (err) {
+                      console.log(err);
+                    }
+                  }
+                }}
+              >
+                삭제
+              </DeleteButton>
             </Li>
           );
         })}
@@ -115,8 +118,8 @@ const Close = styled.div`
 `;
 
 const Img = styled.img`
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   object-fit: cover;
   border-radius: 50%;
 `;

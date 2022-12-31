@@ -1,42 +1,48 @@
-import { theme } from 'libs/theme/theme';
-import React from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
-import NaverAuthBtn from './AuthButton/NaverAuthBtn';
-import KakaoAuthBtn from './AuthButton/KakaoAuthBtn';
-import GoogleAuthBtn from './AuthButton/GoogleAuthBtn';
+const Form = styled.form`
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
-declare global {
-  interface Window {
-    naver: any;
-    Kakao: any;
+const AuthStyle = css`
+  background-color: ${({ theme }) => theme.modalColor};
+  color: ${({ theme }) => theme.modalTextColor};
+  border: solid 1px ${({ theme }) => theme.modalTextColor};
+  border-radius: 4px;
+  height: 24px;
+`;
+
+const Div = styled.div`
+  color: ${({ theme }) => theme.modalColor};
+  height: 24px;
+  line-height: 22px;
+  margin-right: 6px;
+`;
+
+const Input = styled.input`
+  ${AuthStyle};
+  width: 160px;
+  &:focus {
+    outline: none;
   }
-}
-export default function Auth() {
-  return (
-    <Container>
-      <GoogleAuthBtn />
-      <KakaoAuthBtn />
-      <NaverAuthBtn />
-    </Container>
-  );
-}
+  margin-right: 2px;
+`;
 
-const Container = styled.div`
-  ${theme.common.flexCenter}
-  gap: 10px;
-  border-radius: 20px;
-  background-color: lightgray;
-  padding: 15px;
-  position: relative;
-  &::before {
-    position: absolute;
-    content: '';
-    width: 15px;
-    height: 15px;
-    background-color: lightgray;
-    top: -5px;
-    z-index: 0;
-    transform: rotate(45deg);
+const Button = styled.button`
+  ${AuthStyle};
+  cursor: pointer;
+  &:hover {
+    border: solid 1px ${({ theme }) => theme.modalColor};
   }
 `;
+
+export const AuthComponent = {
+  Form,
+  Div,
+  Input,
+  Button,
+};

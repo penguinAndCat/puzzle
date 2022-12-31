@@ -61,24 +61,36 @@ type PuzzleProps = {
 };
 
 interface Toast {
-  id?: string;
+  nickname?: string;
   content: string;
-  duration?: number;
-  top?: number;
-  bottom?: number;
+  type: 'success' | 'warning' | 'info';
 }
 
 type ToastProps = {
-  toast: Toast;
-  setToast: (value: Toast) => void;
+  toast: Toast[];
+  addToast: (data: Toast) => void;
+  removeToast: () => void;
 };
+
+interface LoadingContent {
+  first: string;
+  second: string;
+}
 
 type LoadingProps = {
   loading: boolean;
+  content: LoadingContent;
   offLoading: () => void;
-  onLoading: () => void;
+  onLoading: (content: LoadingContent) => void;
 };
-type userInfo = {
+
+type RoomInfo = {
+  title: string;
+  secretRoom: boolean;
+  level: number;
+};
+
+type UserInfo = {
   id: string;
   name: string;
   email: string;
@@ -86,7 +98,15 @@ type userInfo = {
   nickname: string;
   picture: string;
 };
-type userStoreProps = {
+
+type UserStoreProps = {
   user: userInfo | null;
   setUser: (user: userInfo | null) => void;
+};
+
+type SocketProps = {
+  participants: string[];
+  setParticipant: (value: string[]) => void;
+  addParticipant: (value: string) => void;
+  removeParticipant: (value: string) => void;
 };

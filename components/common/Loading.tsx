@@ -2,7 +2,7 @@ import { useLoading } from 'libs/zustand/store';
 import styled from 'styled-components';
 
 const Loading = () => {
-  const { loading } = useLoading();
+  const { loading, content } = useLoading();
   if (loading) {
     return (
       <Wrapper>
@@ -26,8 +26,8 @@ const Loading = () => {
           </div>
         </Infinity>
         <LoadingTitle>
-          <div>퍼즐을 생성 중입니다.</div>
-          <div>잠시만 기다려주세요.</div>
+          <div>{content.first}</div>
+          <div>{content.second}</div>
         </LoadingTitle>
       </Wrapper>
     );

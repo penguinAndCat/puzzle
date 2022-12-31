@@ -1,72 +1,69 @@
-import axios from 'axios';
 import { CloseIcon } from 'components/common/Icon';
 import { useToast } from 'hooks/useToast';
+import axios from 'libs/axios';
 import { theme } from 'libs/theme/theme';
 import { useModal, userStore } from 'libs/zustand/store';
-import { MouseEvent, useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/router';
+import { MouseEvent, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-const alarm = [
-  { nickname: '닉네임은최대열글자가', requested: '펭귄' },
-  { nickname: '펭펭', requested: '펭귄' },
-  { nickname: 'lovely_cat', requested: '펭귄' },
-  { nickname: '몇글자까지되나궁금해', requested: '펭귄' },
-];
-
-const AlarmModal = () => {
+const PuzzleFriendModal = () => {
+  const router = useRouter();
+  const toast = useToast();
   const { removeModal } = useModal();
+  const [frineds, setFriends] = useState([]);
   const { user } = userStore();
-  const [alarm, setAlarm] = useState([]);
-  const { fireToast } = useToast();
-  const buttonRef = useRef<HTMLButtonElement>(null);
   const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     e.preventDefault();
-    removeModal('alarm');
+    removeModal('puzzleFriend');
   };
-
   useEffect(() => {
-    getAlarm();
+    getFriend();
   }, []);
 
-  const getAlarm = async () => {
-    if (!user?.id) return;
-    const res = await axios.get(`/api/users/alarms/${user.id}`);
-    setAlarm(res.data.alarm);
+  const getFriend = async () => {
+    const res = await axios.get(`/api/users/friends/puzzleId=${router.query.id}`);
+    setFriends(res.data.friends);
   };
 
-  const acceptFriend = async (nickname: string) => {
+  const inviteFriend = async (requestedNickname: string) => {
     if (!user?.id) return;
-    const res = await axios.post(`/api/users/friends`, {
+    const res = await axios.post(`/api/users/puzzle`, {
       data: {
-        userId: user.id,
-        friendNickname: nickname,
+        requester: user.id,
+        requestedNickname: requestedNickname,
+        puzzleId: router.query.id,
       },
     });
     if (res.data.message === 'duplicated') {
-      const top = buttonRef.current?.getBoundingClientRect().top;
-      fireToast({ content: '이미 친구입니다.', top: top });
+      toast({ content: '이미 친구 요청을 보냈습니다.', type: 'warning' });
     }
   };
-
   return (
     <Container onClick={(e) => e.stopPropagation()}>
       <TitleWrapper>
         <Close />
-        <Title>Alarm</Title>
+        <Title>Invite</Title>
         <Close onClick={(e) => closeModal(e)} style={{ cursor: 'pointer' }}>
           <CloseIcon />
         </Close>
       </TitleWrapper>
+      <div>친구 목록</div>
       <Ul>
-        {alarm.map((item: { nickname: string }, index) => {
+        {frineds.map((item: { nickname: string; picture: string; isInvited: boolean }) => {
+          if (item.isInvited)
+            return (
+              <Li key={item.nickname}>
+                <Img src={item.picture} />
+                <Nickname>{item.nickname}</Nickname>
+                <InviteDiv>초대됨</InviteDiv>
+              </Li>
+            );
           return (
-            <Li key={index}>
-              <AlarmMessage>
-                <Span>{item.nickname}</Span>님께서 당신과 친구를 하고 싶어합니다.
-              </AlarmMessage>
-              <AcceptButton onClick={() => acceptFriend(item.nickname)} ref={buttonRef}>
-                수락
-              </AcceptButton>
+            <Li key={item.nickname}>
+              <Img src={item.picture} />
+              <Nickname>{item.nickname}</Nickname>
+              <InviteButton onClick={() => inviteFriend(item.nickname)}>초대</InviteButton>
             </Li>
           );
         })}
@@ -75,7 +72,7 @@ const AlarmModal = () => {
   );
 };
 
-export default AlarmModal;
+export default PuzzleFriendModal;
 
 const Container = styled.div`
   @keyframes fadein {
@@ -118,6 +115,7 @@ const TitleWrapper = styled.div`
   justify-content: space-between;
   align-items: center;
   border-bottom: solid 2px ${({ theme }) => theme.modalTextColor};
+  margin-bottom: 12px;
 `;
 
 const Title = styled.div``;
@@ -126,6 +124,13 @@ const Close = styled.div`
   width: 30px;
   height: 30px;
   ${theme.common.flexCenter}
+`;
+
+const Img = styled.img`
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
 `;
 
 const Ul = styled.ul`
@@ -147,23 +152,29 @@ const Ul = styled.ul`
 const Li = styled.li`
   width: 300px;
   height: 50px;
-  padding: 8px 20px;
+  padding: 0 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+`;
+
+const Nickname = styled.div`
+  width: 140px;
   font-size: 12px;
 `;
 
-const AlarmMessage = styled.div`
-  width: 220px;
+const InviteDiv = styled.button`
+  width: 60px;
+  height: 20px;
+  font-size: 12px;
+  line-height: 50%;
+  background-color: ${({ theme }) => theme.modalColor};
+  color: ${({ theme }) => theme.modalTextColor};
+  border: solid 1px ${({ theme }) => theme.modalTextColor};
 `;
 
-const Span = styled.span`
-  color: red;
-`;
-
-const AcceptButton = styled.button`
-  width: 40px;
+const InviteButton = styled.button`
+  width: 60px;
   height: 20px;
   font-size: 12px;
   line-height: 50%;

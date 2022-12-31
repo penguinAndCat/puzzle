@@ -1,37 +1,34 @@
-import axios from 'axios';
 import Palette from 'components/common/Palette';
+import { useRoomInfo } from 'hooks/useRoomInfo';
+import axios from 'libs/axios';
 import { saveImage } from 'libs/common/saveImage';
 import { exportConfig } from 'libs/puzzle/createPuzzle';
-import { theme } from 'libs/theme/theme';
-import { useLoading, usePuzzle, userStore } from 'libs/zustand/store';
+import { useLoading, useModal, usePuzzle } from 'libs/zustand/store';
 import { useRouter } from 'next/router';
-import { Dispatch, MouseEvent, SetStateAction } from 'react';
-import styled from 'styled-components';
+import { Dispatch, SetStateAction } from 'react';
+import styled, { css } from 'styled-components';
+import PuzzleMenu from './PuzzleMenu';
 
 interface Props {
-  puzzleImg: img;
-  showLevel: boolean;
   setShowLevel: Dispatch<SetStateAction<boolean>>;
-  setShowLvMenu: Dispatch<SetStateAction<boolean>>;
+  setShowRoomInfo: Dispatch<SetStateAction<boolean>>;
+  user: UserInfo | null;
 }
 
-const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) => {
-  const { number, title } = usePuzzle();
-  const { onLoading, offLoading } = useLoading();
+const Header = ({ setShowLevel, setShowRoomInfo, user }: Props) => {
   const router = useRouter();
-  const handleClick = (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
-    e.stopPropagation();
-    if (!showLevel) {
-      setShowLvMenu(true);
-    } else {
-      setShowLevel(false);
-    }
-  };
-  const { user } = userStore();
+  const { addModal } = useModal();
+  const { number, title, secretRoom } = usePuzzle();
+  const { onLoading, offLoading } = useLoading();
+  const { roomInfo } = useRoomInfo(router.query.id, user);
 
-  const handleSave = async () => {
+  const createPuzzleRoom = async () => {
     try {
-      onLoading();
+      const content = {
+        first: '퍼즐을 생성 중입니다.',
+        second: '잠시만 기다려주세요.',
+      };
+      onLoading(content);
 
       const puzzleData = exportConfig();
       delete puzzleData.project;
@@ -46,13 +43,16 @@ const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) =>
         userId: user?.id,
         level: number,
         title: title,
+        secretRoom: secretRoom,
+        maximumPlayer: 4,
+        perfection: 0,
       };
 
       const response = await axios.post('/api/puzzle', {
         data: data,
       });
       const { item, message } = response.data;
-      router.push(`/puzzle/${item._id}`);
+      window.location.href = `/puzzle/${item._id}`;
     } catch (err) {
       alert('failed');
       offLoading();
@@ -60,24 +60,50 @@ const Header = ({ puzzleImg, showLevel, setShowLevel, setShowLvMenu }: Props) =>
     }
   };
 
+  const openModal = () => {
+    addModal('puzzleFriend');
+  };
+
   return (
     <Container>
       <Wrapper>
         <Left>
-          <Button onClick={(e) => handleClick(e)}>퍼즐수</Button>
-          <Button>완성본</Button>
+          {router.query.id === undefined ? (
+            <Button onClick={() => setShowLevel(true)}>퍼즐수</Button>
+          ) : (
+            <Button onClick={() => setShowRoomInfo(true)}>방 정보</Button>
+          )}
         </Left>
-        <Logo>
+        <Logo onClick={() => window.location.replace('/')}>
           <div>PENGCAT</div>
           <div>PUZZLE</div>
         </Logo>
         <Right>
-          <Palette />
           {router.query.id === undefined ? (
-            <Button onClick={handleSave}>방 만들기</Button>
+            <Button onClick={createPuzzleRoom}>방 만들기</Button>
           ) : (
-            <Button onClick={handleSave}>공유하기</Button>
+            roomInfo && roomInfo.secretRoom && <Button onClick={openModal}>초대하기</Button>
           )}
+          {router.query.id === undefined ? (
+            <PuzzleMenu
+              user={user}
+              roomInfo={roomInfo}
+              setShowLevel={setShowLevel}
+              setShowRoomInfo={setShowRoomInfo}
+              createPuzzleRoom={createPuzzleRoom}
+            />
+          ) : roomInfo && roomInfo.secretRoom ? (
+            <PuzzleMenu
+              user={user}
+              roomInfo={roomInfo}
+              setShowLevel={setShowLevel}
+              setShowRoomInfo={setShowRoomInfo}
+              createPuzzleRoom={createPuzzleRoom}
+            />
+          ) : (
+            <MobileButton onClick={() => setShowRoomInfo(true)}>방 정보</MobileButton>
+          )}
+          <Palette />
         </Right>
       </Wrapper>
     </Container>
@@ -92,6 +118,9 @@ const Container = styled.header`
   padding: 0 24px;
   background-color: ${({ theme }) => theme.headerColor};
   border-bottom: solid 3px ${({ theme }) => theme.headerTextColor};
+  @media (max-width: 600px) {
+    padding: 0 10px;
+  }
 `;
 
 const Wrapper = styled.div`
@@ -101,34 +130,37 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  @media (max-width: 600px) {
+    padding: 0;
+  }
 `;
 
 const Left = styled.div`
-  min-width: 170px;
-  display: flex;
-  justify-content: space-between;
+  min-width: 150px;
   margin-right: 80px;
   @media (max-width: 900px) {
     margin-right: 20px;
   }
   @media (max-width: 600px) {
-    margin: 0;
+    display: none;
   }
 `;
 
 const Right = styled.div`
-  min-width: 130px;
-  ${theme.common.flexCenter};
+  min-width: 150px;
+  display: flex;
+  justify-content: end;
   margin-left: 80px;
   @media (max-width: 900px) {
     margin-left: 20px;
   }
   @media (max-width: 600px) {
     margin: 0;
+    min-width: 80px;
   }
 `;
 
-const Button = styled.button`
+const ButtonStyle = css`
   width: 80px;
   height: 30px;
   border-radius: 4px;
@@ -138,6 +170,17 @@ const Button = styled.button`
   font-weight: 600;
   text-align: center;
   cursor: pointer;
+`;
+
+const Button = styled.button`
+  ${ButtonStyle};
+  @media (max-width: 600px) {
+    display: none;
+  }
+`;
+
+const MobileButton = styled.button`
+  ${ButtonStyle};
 `;
 
 const Logo = styled.div`
@@ -155,6 +198,7 @@ const Logo = styled.div`
     margin: 0 20px;
   }
   @media (max-width: 600px) {
+    width: 120px;
     margin: 0;
   }
 `;

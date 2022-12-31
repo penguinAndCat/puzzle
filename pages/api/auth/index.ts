@@ -13,7 +13,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const accessToken = getCookie('accessToken', { req, res });
       const refreshToken = getCookie('refreshToken', { req, res });
-
       if (accessToken && decodePayload(accessToken as string)) {
         const user: {
           nickname: string;
@@ -75,9 +74,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             picture: savedUser.picture,
             email: savedUser.email,
           },
+          accessToken: accessToken,
           message: 'success',
         });
-      } else {
       }
       return res.json({ message: 'failed' });
     } catch (err) {

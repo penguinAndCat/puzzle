@@ -4,7 +4,6 @@ import { useToast } from 'hooks/useToast';
 import { exportConfig, initConfig, setPuzzleRowColumn } from 'libs/puzzle/createPuzzle';
 import { theme } from 'libs/theme/theme';
 import { useLoading, useModal, usePuzzle, userStore } from 'libs/zustand/store';
-import { useRouter } from 'next/router';
 import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { saveImage } from 'libs/common/saveImage';
@@ -12,27 +11,20 @@ import { CloseIcon } from '../Icon';
 
 const PuzzleModal = () => {
   const { removeModal, addModal } = useModal();
-  const { modalImage, secretRoom, setModalImage, initialModal, setNumber, setTitle, setSecretRoom } = usePuzzle();
+  const { modalImage, secretRoom, setModalImage, setNumber, setTitle, setSecretRoom } = usePuzzle();
   const { onLoading } = useLoading();
-  const { fireToast } = useToast();
+  const toast = useToast();
   const [roomName, setRoomName] = useState('');
   const [puzzleNumber, setPuzzleNumber] = useState(0);
   const [puzzleNumbers, setPuzzleNumbers] = useState<number[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const router = useRouter();
   const { user } = userStore();
 
   const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     e.preventDefault();
     removeModal('puzzle');
   };
-
-  useEffect(() => {
-    return () => {
-      initialModal();
-    };
-  }, []);
 
   useEffect(() => {
     if (modalImage.src === '') return;
@@ -74,27 +66,27 @@ const PuzzleModal = () => {
   const playAlonePuzzle = () => {
     if (buttonRef.current?.getBoundingClientRect().top === undefined) return;
     if (modalImage.src === '') {
-      fireToast({ content: '퍼즐 이미지를 등록해주세요.', top: buttonRef.current?.getBoundingClientRect().top - 100 });
+      toast({ content: '퍼즐 이미지를 등록해주세요.', type: 'warning' });
       return;
     }
     if (roomName === '') {
-      fireToast({ content: '방 이름을 지어 주세요.', top: buttonRef.current?.getBoundingClientRect().top - 100 });
+      toast({ content: '방 이름을 지어 주세요.', type: 'warning' });
       return;
     }
     removeModal('puzzle');
     setNumber(puzzleNumber);
     setTitle(roomName);
-    router.push('/puzzle');
+    window.location.href = '/puzzle';
   };
 
   const createPuzzleRoom = async () => {
     if (buttonRef.current?.getBoundingClientRect().top === undefined) return;
     if (modalImage.src === '') {
-      fireToast({ content: '퍼즐 이미지를 등록해주세요.', top: buttonRef.current?.getBoundingClientRect().top - 100 });
+      toast({ content: '퍼즐 이미지를 등록해주세요.', type: 'warning' });
       return;
     }
     if (roomName === '') {
-      fireToast({ content: '방 이름을 지어 주세요.', top: buttonRef.current?.getBoundingClientRect().top - 100 });
+      toast({ content: '방 이름을 지어 주세요.', type: 'warning' });
       return;
     }
     if (!user?.name) {
@@ -103,7 +95,11 @@ const PuzzleModal = () => {
     }
     removeModal('puzzle');
     try {
-      onLoading();
+      const content = {
+        first: '퍼즐을 생성 중입니다.',
+        second: '잠시만 기다려주세요.',
+      };
+      onLoading(content);
       const canvasSize = { width: 1000, height: 1000 };
       const canvas = document.createElement('canvas');
       Paper.setup(canvas);
@@ -124,14 +120,15 @@ const PuzzleModal = () => {
         level: puzzleNumber,
         title: roomName,
         secretRoom: secretRoom,
+        maximumPlayer: 4,
+        perfection: 0,
       };
 
       const response = await axios.post('/api/puzzle', {
         data: data,
       });
       const { item, message } = response.data;
-      console.log(item);
-      router.push(`/puzzle/${item._id}`);
+      window.location.href = `/puzzle/${item._id}`;
     } catch (err) {
       alert('failed');
       console.log(err);

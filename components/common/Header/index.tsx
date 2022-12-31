@@ -1,45 +1,35 @@
 import styled from 'styled-components';
-import Palette from './Palette';
-import axios from '../../libs/axios';
-import { useRouter } from 'next/router';
-import { useModal, userStore } from 'libs/zustand/store';
+import { useModal } from 'libs/zustand/store';
+import { useNotice } from 'hooks/useNotice';
+import Palette from '../Palette';
+import Menu from './Menu';
 
-const Header = () => {
-  const router = useRouter();
-  const { user, setUser } = userStore();
+const Header = ({ user }: { user: UserInfo | null }) => {
   const { addModal } = useModal();
+  const { notice, refetchNotice } = useNotice(user);
+
   return (
     <Container>
       <Wrapper>
         {user?.name ? (
           <Left>
             <Button onClick={() => addModal('friend')}>친구</Button>
-            <Button onClick={() => addModal('alarm')}>알람</Button>
+            <Button onClick={() => addModal('notice')}>
+              알림
+              {notice && notice.length > 0 && <Notice />}
+            </Button>
           </Left>
         ) : (
           <Left />
         )}
         <Bar />
-        <Logo>
+        <Logo onClick={() => (window.location.href = '/')}>
           <div>PENGCAT</div>
           <div>PUZZLE</div>
         </Logo>
         <Bar />
         <Right>
-          {user?.name ? (
-            <Button
-              onClick={() =>
-                axios.delete('/api/auth').then(() => {
-                  setUser(null);
-                  router.reload();
-                })
-              }
-            >
-              {user.name}
-            </Button>
-          ) : (
-            <Button onClick={() => addModal('login')}>로그인</Button>
-          )}
+          <Menu user={user} />
           <Palette />
         </Right>
       </Wrapper>
@@ -52,23 +42,26 @@ export default Header;
 const Container = styled.div`
   display: flex;
   justify-content: center;
-  padding: 20px 60px;
+  padding: 0 60px;
   border-bottom: 3px ${({ theme }) => theme.borderColor};
   background-color: ${({ theme }) => theme.headerColor};
   @media (max-width: 720px) {
-    padding: 20px 20px;
+    padding: 0 20px;
   }
   @media (max-width: 600px) {
-    padding: 20px 10px;
+    padding: 0 10px;
   }
 `;
 
 const Wrapper = styled.div`
   width: 100%;
-  height: 70px;
+  height: 100px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  @media (max-width: 600px) {
+    height: 90px;
+  }
 `;
 
 const Left = styled.div`
@@ -80,7 +73,7 @@ const Left = styled.div`
     margin-right: 20px;
   }
   @media (max-width: 600px) {
-    margin: 0;
+    display: none;
   }
 `;
 
@@ -99,6 +92,7 @@ const Logo = styled.div`
     margin: 0 20px;
   }
   @media (max-width: 600px) {
+    width: 140px;
     margin: 0;
   }
 `;
@@ -124,11 +118,13 @@ const Right = styled.div`
     margin-left: 20px;
   }
   @media (max-width: 600px) {
+    min-width: 110px;
     margin: 0;
   }
 `;
 
 const Button = styled.button`
+  position: relative;
   width: 80px;
   height: 30px;
   border-radius: 4px;
@@ -139,10 +135,17 @@ const Button = styled.button`
   text-align: center;
   cursor: pointer;
   padding: 0;
+  @media (max-width: 600px) {
+    display: none;
+  }
 `;
 
-const AuthContainer = styled.div`
+const Notice = styled.div`
   position: absolute;
-  top: 40px;
-  right: 10%;
+  width: 10px;
+  height: 10px;
+  top: 20px;
+  left: 69px;
+  background-color: #c24641;
+  border-radius: 50%;
 `;

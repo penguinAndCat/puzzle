@@ -8,7 +8,7 @@ import styled, { css } from 'styled-components';
 const SearchFriend = () => {
   const [searched, setSearched] = useState('');
   const [searchedUser, setSearchedUser] = useState<any>([]);
-  const { fireToast } = useToast();
+  const toast = useToast();
   const { user } = userStore();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const searchUser = async () => {
@@ -17,21 +17,24 @@ const SearchFriend = () => {
   };
   const requestFriend = async (requestedNickname: string) => {
     if (!user?.id) return;
-    const res = await axios.post(`/api/users/request`, {
+    const res = await axios.post(`/api/users/friends`, {
       data: {
         requester: user.id,
         requestedNickname: requestedNickname,
       },
     });
+    const top = buttonRef.current?.getBoundingClientRect().top;
+    if (res.data.message === 'success') {
+      toast({ content: '친구 요청을 보냈습니다.', type: 'success' });
+    }
     if (res.data.message === 'duplicated') {
-      const top = buttonRef.current?.getBoundingClientRect().top;
-      fireToast({ content: '이미 친구 요청을 보냈습니다.', top: top });
+      toast({ content: '이미 친구 요청을 보냈습니다.', type: 'warning' });
     }
   };
   return (
     <Container>
       <InputWrapper>
-        <div>친구 찾기</div>
+        <div>새로운 친구 찾기</div>
         <div>
           <Input onChange={(e) => setSearched(e.target.value)} value={searched} placeholder="닉네임을 입력해주세요." />
           <SearchButton onClick={searchUser}>찾기</SearchButton>
@@ -42,7 +45,7 @@ const SearchFriend = () => {
           <Img src={searchedUser[0].picture} />
           <Nickname>{searchedUser[0].nickname}</Nickname>
           <RequestButton onClick={() => requestFriend(searchedUser[0].nickname)} ref={buttonRef}>
-            친구 하기
+            친구하기
           </RequestButton>
         </SearchUserWrapper>
       )}
@@ -110,8 +113,8 @@ const SearchUserWrapper = styled.div`
 `;
 
 const Img = styled.img`
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   object-fit: cover;
   border-radius: 50%;
 `;
