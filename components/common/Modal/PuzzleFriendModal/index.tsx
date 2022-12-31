@@ -36,11 +36,7 @@ const PuzzleFriendModal = () => {
       },
     });
     if (res.data.message === 'duplicated') {
-<<<<<<< HEAD
-      fireToast({ content: '이미 초대 요청을 보냈습니다.', top: 200 });
-=======
       toast({ content: '이미 친구 요청을 보냈습니다.', type: 'warn' });
->>>>>>> 324e80e77dbf5c02b44944a24306ddca7e384bf6
     }
   };
   return (
