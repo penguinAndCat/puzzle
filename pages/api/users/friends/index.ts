@@ -14,6 +14,19 @@ type Data = {
 export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
   const { method } = req;
   await dbConnect();
+  if (method === 'DELETE') {
+    try {
+      const { userId, friendNickname } = req.query;
+      const user: any = await User.findOne({ nickname: friendNickname });
+      await Notice.deleteOne({
+        requester: user._id,
+        requested: userId,
+      });
+      res.status(201).json({ message: 'success' });
+    } catch (err) {
+      res.status(500).json({ error: err, message: 'failed' });
+    }
+  }
   if (method === 'PUT') {
     const { userId, friendNickname } = req.body.data;
     try {

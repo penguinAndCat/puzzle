@@ -12,7 +12,6 @@ const NoticeModal = () => {
   const { user } = userStore();
   const toast = useToast();
   const { notice, refetchNotice } = useNotice(user);
-  const buttonRef = useRef<HTMLButtonElement>(null);
   const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     e.preventDefault();
     removeModal('notice');
@@ -26,7 +25,6 @@ const NoticeModal = () => {
         friendNickname: nickname,
       },
     });
-    const top = buttonRef.current?.getBoundingClientRect().top;
     if (res.data.message === 'success') {
       toast({ nickname: nickname, content: '님과 친구가 되었습니다.', type: 'success' });
     }
@@ -35,6 +33,21 @@ const NoticeModal = () => {
       return;
     }
     refetchNotice();
+  };
+  const rejectFriend = async (nickname: string) => {
+    if (!user?.id) return;
+    try {
+      await axios.delete(`/api/users/friends`, {
+        params: {
+          userId: user.id,
+          friendNickname: nickname,
+        },
+      });
+      toast({ content: '초대를 거절하였습니다.', type: 'success' });
+      refetchNotice();
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const acceptInvite = async (puzzleId: string) => {
@@ -45,7 +58,6 @@ const NoticeModal = () => {
         puzzleId: puzzleId,
       },
     });
-    const top = buttonRef.current?.getBoundingClientRect().top;
     if (res.data.message === 'success') {
       toast({ content: '초대를 수락하였습니다.', type: 'success' });
     }
@@ -54,6 +66,21 @@ const NoticeModal = () => {
       return;
     }
     refetchNotice();
+  };
+  const rejectInvite = async (puzzleId: string) => {
+    if (!user?.id) return;
+    try {
+      await axios.delete(`/api/users/puzzle`, {
+        params: {
+          userId: user.id,
+          puzzleId: puzzleId,
+        },
+      });
+      toast({ content: '초대를 거절하였습니다.', type: 'success' });
+      refetchNotice();
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -78,9 +105,8 @@ const NoticeModal = () => {
                     <NoticeMessage>
                       <Span>{item.nickname}</Span>님께서 당신과 친구를 하고 싶어합니다.
                     </NoticeMessage>
-                    <AcceptButton onClick={() => acceptFriend(item.nickname)} ref={buttonRef}>
-                      수락
-                    </AcceptButton>
+                    <AcceptButton onClick={() => acceptFriend(item.nickname)}>수락</AcceptButton>
+                    <AcceptButton onClick={() => rejectFriend(item.nickname)}>거절</AcceptButton>
                   </Li>
                 );
               if (item.type === 'puzzle')
@@ -89,9 +115,8 @@ const NoticeModal = () => {
                     <NoticeMessage>
                       <Span>{item.nickname}</Span>님께서 당신을 퍼즐 방에 초대합니다.
                     </NoticeMessage>
-                    <AcceptButton onClick={() => acceptInvite(item.puzzleId)} ref={buttonRef}>
-                      수락
-                    </AcceptButton>
+                    <AcceptButton onClick={() => acceptInvite(item.puzzleId)}>수락</AcceptButton>
+                    <AcceptButton onClick={() => rejectInvite(item.puzzleId)}>거절</AcceptButton>
                   </Li>
                 );
             }
