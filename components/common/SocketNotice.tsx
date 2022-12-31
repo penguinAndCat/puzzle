@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { NEXT_SERVER } from 'config';
 
 const SocketNotice = ({ user }: { user: UserInfo | null }) => {
-  const { fireToast } = useToast();
+  const toast = useToast();
   const { notice, refetchNotice } = useNotice(user);
 
   useEffect(() => {
@@ -28,11 +28,11 @@ const SocketNotice = ({ user }: { user: UserInfo | null }) => {
         const { friend, puzzle, nickname } = data;
         if (friend) {
           refetchNotice();
-          fireToast({ nickname: `${nickname}`, content: `님이 친구 요청 하였습니다.`, top: 100 });
+          toast({ nickname: `${nickname}`, content: `님이 친구 요청 하였습니다.`, type: 'success' });
         }
         if (puzzle) {
           refetchNotice();
-          fireToast({ nickname: `${nickname}`, content: `님이 퍼즐 방으로 초대 하였습니다.`, top: 100 });
+          toast({ nickname: `${nickname}`, content: `님이 퍼즐 방으로 초대 하였습니다.`, type: 'success' });
         }
       });
     }

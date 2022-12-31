@@ -4,7 +4,7 @@ import { useQuery } from 'react-query';
 export const useNotice = (user: UserInfo | null) => {
   const { data, refetch } = useQuery(['notice'], () => getNotice(), {
     onError: (error: Error) => {
-      alert(error.message);
+      console.log(error.message);
     },
   });
 
@@ -14,7 +14,7 @@ export const useNotice = (user: UserInfo | null) => {
       const res = await axios.get(`/api/users/notices`);
       return res.data.notice;
     } catch (error) {
-      throw new Error('error');
+      throw new Error('notice error');
     }
   };
 

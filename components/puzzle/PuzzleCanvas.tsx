@@ -94,6 +94,10 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
       const channel: any = pusher.subscribe(`presence-${router.query.id}`);
       let socketId: string;
       channel.bind('pusher:subscription_succeeded', (members: Members) => {
+        if (members.count > 4) {
+          alert('인원 제한(4명)이 초과 하였습니다. 메인 페이지로 돌아갑니다.');
+          window.location.href = '/';
+        }
         setSocket(members.myID);
         socketId = members.myID;
         setParticipant(Object.values(members.members).map((item: any) => item.username));
