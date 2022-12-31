@@ -1,9 +1,9 @@
 import dbConnect from 'libs/db/mongoose';
-import mongoose from 'mongoose';
 import Notice from 'models/Notice';
 import User from 'models/User';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import Puzzle from 'models/Puzzle';
+import { pusher } from 'libs/pusher';
 
 type Data = {
   user?: any;
@@ -17,14 +17,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   if (method === 'PUT') {
     const { userId, puzzleId } = req.body.data;
     try {
-      const puzzle = await Puzzle.find({ _id: puzzleId, invitedUser: userId });
-      if (puzzle.length > 0) {
+      const checkedPuzzle = await Puzzle.find({ _id: puzzleId, invitedUser: userId });
+      if (checkedPuzzle.length > 0) {
         return res.status(400).json({ message: 'failed' });
       }
+
       await Puzzle.updateOne({ _id: puzzleId }, { $push: { invitedUser: userId } });
+      const puzzle = await Puzzle.findOne({ _id: puzzleId });
+      const user = await User.findOne({ _id: userId });
       await Notice.deleteOne({
         requested: userId,
         puzzleId: puzzleId,
+      });
+      await pusher.trigger(`presence-${puzzle._id.toString()}`, 'invited', {
+        puzzle: true,
+        nickname: user.nickname,
       });
       res.status(201).json({ message: 'success' });
     } catch (err) {
@@ -44,6 +51,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         requested: user._id,
         puzzleId: puzzleId,
         type: 'puzzle',
+      });
+      await pusher.trigger(`presence-${user._id}`, 'onNotice', {
+        puzzle: true,
+        nickname: requestedNickname,
       });
       res.status(201).json({ message: 'success' });
     } catch (err) {

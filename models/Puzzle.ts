@@ -88,8 +88,8 @@ const PuzzleSchema = new mongoose.Schema(
     maximumPlayer: {
       type: Number,
     },
-    invitedUser: [{ type: mongoose.Schema.Types.ObjectId, ref: 'users' }],
-    player: [{ type: mongoose.Schema.Types.ObjectId, ref: 'users' }],
+    invitedUser: [{ type: String, ref: 'users' }],
+    player: [{ type: String, ref: 'users' }],
   },
   {
     timestamps: true,

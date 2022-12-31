@@ -18,12 +18,11 @@ const PuzzleFriendModal = () => {
     removeModal('puzzleFriend');
   };
   useEffect(() => {
-    getNotice();
+    getFriend();
   }, []);
 
-  const getNotice = async () => {
-    if (!user?.id) return;
-    const res = await axios.get(`/api/users/friends/${user.id}?puzzleId=${router.query.id}`);
+  const getFriend = async () => {
+    const res = await axios.get(`/api/users/friends/puzzleId=${router.query.id}`);
     setFriends(res.data.friends);
   };
 
@@ -37,7 +36,7 @@ const PuzzleFriendModal = () => {
       },
     });
     if (res.data.message === 'duplicated') {
-      fireToast({ content: '이미 친구 요청을 보냈습니다.', top: 200 });
+      fireToast({ content: '이미 초대 요청을 보냈습니다.', top: 200 });
     }
   };
   return (

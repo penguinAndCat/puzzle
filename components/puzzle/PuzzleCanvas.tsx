@@ -10,6 +10,7 @@ import { useLoading, useSocket } from 'libs/zustand/store';
 import Pusher from 'pusher-js';
 import { NEXT_SERVER } from 'config';
 import { useToast } from 'hooks/useToast';
+import { useInvitedUser } from 'hooks/useInvitedUser';
 
 interface Props {
   puzzleLv: number;
@@ -25,6 +26,7 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const [socket, setSocket] = useState();
+  const { invitedUser, refetchInvitedUser } = useInvitedUser(router.query.id, user);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -113,6 +115,14 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
         const { groupTiles, indexArr, socketCanvasSize } = data;
         if (data.socketId !== socketId) {
           moveIndex(groupTiles, indexArr, socketCanvasSize);
+        }
+      });
+
+      channel.bind('invited', (data: any) => {
+        const { puzzle, nickname } = data;
+        if (puzzle) {
+          refetchInvitedUser();
+          fireToast({ nickname: `${nickname}`, content: `님이 퍼즐 방에 초대 되었습니다.`, top: 100 });
         }
       });
     }

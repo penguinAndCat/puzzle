@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import axios from 'libs/axios';
 import { useQuery } from 'react-query';
 
@@ -19,5 +18,5 @@ export const useNotice = (user: UserInfo | null) => {
     }
   };
 
-  return { data, refetch };
+  return { notice: data, refetchNotice: refetch };
 };

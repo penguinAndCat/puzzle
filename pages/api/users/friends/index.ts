@@ -3,6 +3,7 @@ import Notice from 'models/Notice';
 import Friend from 'models/Friend';
 import User from 'models/User';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { pusher } from 'libs/pusher';
 
 type Data = {
   user?: any;
@@ -50,6 +51,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         requester: requester,
         requested: user._id,
         type: 'friend',
+      });
+      await pusher.trigger(`presence-${user._id}`, 'onNotice', {
+        friend: true,
+        nickname: requestedNickname,
       });
       res.status(201).json({ message: 'success' });
     } catch (err) {

@@ -34,7 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       // const array = notice.map((item) => item.requester);
       // notice = await User.find({ _id: { $in: array } }, { _id: 0, nickname: 1 });
       const notice = await Notice.aggregate([
-        { $match: { requested: user._id } }, // notices Collection에서 userId: id 일치하는 정보 조회
+        { $match: { requested: user._id.toString() } }, // notices Collection에서 userId: id 일치하는 정보 조회
         {
           $lookup: {
             // 다른 Collection에서 찾기

@@ -15,7 +15,8 @@ type Members = {
 type Member = {
   id: string;
   info: {
-    username: string;
+    username?: string;
+    id?: string;
   };
 };
 
