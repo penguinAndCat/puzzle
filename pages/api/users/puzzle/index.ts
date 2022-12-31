@@ -46,10 +46,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         puzzleId: puzzleId,
         type: 'puzzle',
       });
-      await pusher.trigger(`presence-notice`, 'onNotice', {
+      await pusher.trigger(`presence-${user._id}`, 'onNotice', {
         puzzle: true,
         nickname: requestedNickname,
-        requestedUserId: user._id,
       });
       res.status(201).json({ message: 'success' });
     } catch (err) {

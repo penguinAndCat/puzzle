@@ -52,10 +52,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         requested: user._id,
         type: 'friend',
       });
-      await pusher.trigger(`presence-notice`, 'onNotice', {
+      await pusher.trigger(`presence-${user._id}`, 'onNotice', {
         friend: true,
         nickname: requestedNickname,
-        requestedUserId: user._id,
       });
       res.status(201).json({ message: 'success' });
     } catch (err) {

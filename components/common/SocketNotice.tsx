@@ -21,15 +21,15 @@ const SocketNotice = ({ user }: { user: UserInfo | null }) => {
     });
     if (subscribe) {
       // subscribe to the channel.
-      const channel: any = pusher.subscribe(`presence-notice`);
+      const channel: any = pusher.subscribe(`presence-${user?.id}`);
 
       channel.bind('onNotice', (data: any) => {
-        const { friend, puzzle, nickname, requestedUserId } = data;
-        if (friend && user?.id === requestedUserId) {
+        const { friend, puzzle, nickname } = data;
+        if (friend) {
           refetch();
           fireToast({ nickname: `${nickname}`, content: `님이 친구 요청 하였습니다.`, top: 100 });
         }
-        if (puzzle && user?.id === requestedUserId) {
+        if (puzzle) {
           refetch();
           fireToast({ nickname: `${nickname}`, content: `님이 퍼즐 방에 초대 하였습니다.`, top: 100 });
         }
