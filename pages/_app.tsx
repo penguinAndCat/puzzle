@@ -2,7 +2,6 @@ import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import { ThemeProvider } from 'libs/theme/ThemeProvider';
 import { GlobalStyle } from 'libs/theme/GlobalStyle';
-import Toast from 'components/common/Toast';
 import Loading from 'components/common/Loading';
 import Modal from 'components/common/Modal';
 import { QueryClient, QueryClientProvider } from 'react-query';
@@ -11,6 +10,7 @@ import axios from 'libs/axios';
 import { NEXT_SERVER } from 'config';
 import { userStore } from 'libs/zustand/store';
 import { useEffect } from 'react';
+import ToastList from 'components/common/Toast/ToastList';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,7 +35,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <ThemeProvider pageTheme={pageProps.theme}>
         <GlobalStyle />
         <Component {...pageProps} />
-        <Toast />
+        <ToastList />
         <Loading />
         <Modal />
       </ThemeProvider>

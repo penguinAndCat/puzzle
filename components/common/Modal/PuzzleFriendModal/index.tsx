@@ -9,7 +9,7 @@ import styled from 'styled-components';
 
 const PuzzleFriendModal = () => {
   const router = useRouter();
-  const { fireToast } = useToast();
+  const toast = useToast();
   const { removeModal } = useModal();
   const [frineds, setFriends] = useState([]);
   const { user } = userStore();
@@ -37,7 +37,7 @@ const PuzzleFriendModal = () => {
       },
     });
     if (res.data.message === 'duplicated') {
-      fireToast({ content: '이미 친구 요청을 보냈습니다.', top: 200 });
+      toast({ content: '이미 친구 요청을 보냈습니다.', type: 'warn' });
     }
   };
   return (

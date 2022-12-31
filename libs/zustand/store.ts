@@ -37,14 +37,15 @@ export const usePuzzle = create<PuzzleProps>()(
 );
 
 export const useToastState = create<ToastProps>((set) => ({
-  toast: {
-    id: '',
-    content: '',
-    duration: 0,
-    top: 0,
-    bottom: 0,
-  },
-  setToast: (toast) => set({ toast: toast }),
+  toast: [],
+  addToast: (data) =>
+    set((state) => ({
+      toast: [...state.toast, data],
+    })),
+  removeToast: () =>
+    set((state) => ({
+      toast: state.toast.filter((item, index) => index !== 0),
+    })),
 }));
 
 export const useLoading = create<LoadingProps>((set) => ({

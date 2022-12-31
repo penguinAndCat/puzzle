@@ -22,7 +22,7 @@ const Main = ({ user }: { user: UserInfo | null }) => {
     initialModal();
     addModal('puzzle');
   };
-  const { fireToast } = useToast();
+  const toast = useToast();
 
   const [{ data }, flagRef] = useInfiniteScroll({
     queryKey: 'public',
@@ -76,7 +76,7 @@ const Main = ({ user }: { user: UserInfo | null }) => {
                 title={data.title}
                 onClick={() => {
                   if (!user) {
-                    fireToast({ content: '로그인이 필요합니다', top: 100 });
+                    toast({ content: '로그인이 필요합니다', type: 'warn' });
                     return;
                   }
                   window.location.href = `${NEXT_SERVER}/puzzle/${data._id}`;

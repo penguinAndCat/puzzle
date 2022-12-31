@@ -128,7 +128,7 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
                       await axios.put('/api/users', data);
                     } catch (err) {
                       if (err instanceof AxiosError) {
-                        alert(err.response?.data.message || 'error');
+                        alert(err.response?.data.message || 'Error');
                       }
                     }
                   }}

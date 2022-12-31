@@ -20,7 +20,7 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo, user }: Props) => {
   const [list, setList] = useState<number[][]>([]);
   const [display, setDisplay] = useState(false); // fadeout animaition 기다림
   const el = useRef<HTMLDivElement>(null);
-  const { fireToast } = useToast();
+  const toast = useToast();
   const { data, refetch } = useInvitedUser(router.query.id, user);
 
   useEffect(() => {
@@ -73,10 +73,10 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo, user }: Props) => {
       },
     });
     if (res.data.message === 'success') {
-      fireToast({ content: '친구 요청을 보냈습니다.', top: 100 });
+      toast({ content: '친구 요청을 보냈습니다.', type: 'success' });
     }
     if (res.data.message === 'duplicated') {
-      fireToast({ content: '이미 친구 요청을 보냈습니다.', top: 100 });
+      toast({ content: '이미 친구 요청을 보냈습니다.', type: 'warn' });
     }
   };
 
