@@ -5,21 +5,18 @@ import Seo from 'components/Seo';
 import { NEXT_SERVER } from 'config';
 import useInfiniteScroll from 'hooks/useInfiniteScroll';
 import axios from 'libs/axios';
-import { saveImage } from 'libs/common/saveImage';
 import Head from 'next/head';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 export default function MyPage({ user }: { user: UserInfo | null }) {
+  // 닉네임 5글자 제한
   const [tab, setTab] = useState<'my' | 'invited'>('my');
-  const [data, setData] = useState<any[]>([]);
-  const myRef = useRef<HTMLDivElement>(null);
-  const myPageRef = useRef(1);
   const [profileImg, setProfileImg] = useState<string>(user?.picture || '');
   const [nickname, setNickname] = useState<string>(user?.nickname || '');
   const inputFileRef = useRef<HTMLInputElement>(null);
 
-  const [{ data: myPuzzle }, myPuzzleRef] = useInfiniteScroll({
+  const [{ data: myPuzzle, refetch: refetchMyPuzzle }, myPuzzleRef] = useInfiniteScroll({
     queryKey: 'myPuzzle',
     queryFn: async ({ pageParam = 1 }) => {
       const response = await axios.get('/api/puzzle/myPuzzle', {
@@ -104,7 +101,7 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
                   이름: <span>{`${user?.name}`}</span>
                 </div>
                 <div>
-                  닉네임: <input value={nickname} onChange={(e) => setNickname(e.target.value)} />
+                  닉네임: <input value={nickname} onChange={(e) => setNickname(e.target.value)} maxLength={5} />
                 </div>
               </ProfileText>
               <div style={{ width: '100%' }}>
@@ -113,6 +110,9 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
                   type="button"
                   style={{ width: '50%' }}
                   onClick={async (e) => {
+                    if (nickname.length > 5) {
+                      alert('닉네임은 5글자 이하입니다');
+                    }
                     const data: { nickname: string; profileImage: string } = {
                       nickname: '',
                       profileImage: '',
@@ -123,6 +123,7 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
                     if (user?.picture !== profileImg) {
                       data.profileImage = profileImg;
                     }
+
                     try {
                       await axios.put('/api/users', data);
                     } catch (err) {
@@ -135,6 +136,7 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
                   수정하기
                 </button>
                 <button
+                  disabled={user?.nickname === nickname && user.picture === profileImg}
                   type="button"
                   style={{ width: '50%' }}
                   onClick={() => {
@@ -152,8 +154,6 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
           <li
             onClick={() => {
               if (tab === 'my') return;
-              myPageRef.current = 1;
-              setData([]);
               setTab('my');
             }}
           >
@@ -162,8 +162,6 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
           <li
             onClick={() => {
               if (tab === 'invited') return;
-              setData([]);
-              myPageRef.current = 1;
               setTab('invited');
             }}
           >
@@ -178,15 +176,17 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
                 <RoomCard
                   key={index}
                   src={item.config.puzzleImage.src}
-                  currentPlayer={item.player.length + 1}
-                  maxPlayer={item.maximumPlayer}
                   progress={Number((item.perfection * 100).toFixed(3))}
                   title={item.title}
                   isPrivate={item.secretRoom}
                   invitedList={item.secretRoom ? item.invitedUser : null}
-                  participantList={item.secretRoom ? item.player : null}
                   onClick={() => {
                     window.location.href = `${NEXT_SERVER}/puzzle/${item._id}`;
+                  }}
+                  onDelete={() => {
+                    axios.delete(`/api/puzzle/${item._id}`).then(() => {
+                      refetchMyPuzzle();
+                    });
                   }}
                 />
               ))}
@@ -199,13 +199,10 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
                 <RoomCard
                   key={index}
                   src={item.config.puzzleImage.src}
-                  currentPlayer={item.player.length + 1}
-                  maxPlayer={item.maximumPlayer}
                   progress={Number((item.perfection * 100).toFixed(3))}
                   title={item.title}
                   isPrivate={item.secretRoom}
                   invitedList={item.secretRoom ? item.invitedUser : null}
-                  participantList={item.secretRoom ? item.player : null}
                   onClick={() => {
                     window.location.href = `${NEXT_SERVER}/puzzle/${item._id}`;
                   }}

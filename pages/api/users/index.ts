@@ -33,6 +33,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       }>(accessToken);
       const user = await User.findOne({ nickname: userInfo.nickname });
       if (body.nickname) {
+        if (body.nickname.length > 5) {
+          return res.status(400).json({ message: '닉네임은 5글자 이하입니다.' });
+        }
         const isExist = await User.exists({ nickname: body.nickname });
         if (isExist) {
           return res.status(400).json({ message: '이미 존재하는 닉네임입니다.' });

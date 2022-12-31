@@ -1,5 +1,5 @@
-import axios from 'axios';
 import { CloseIcon } from 'components/common/Icon';
+import axios from 'libs/axios';
 import { theme } from 'libs/theme/theme';
 import { useModal, userStore } from 'libs/zustand/store';
 import { MouseEvent, useEffect, useState } from 'react';

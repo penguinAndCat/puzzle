@@ -4,28 +4,25 @@ import HoverImage from './HoverImage';
 
 export default function RoomCard({
   src,
-  currentPlayer,
-  maxPlayer,
   progress,
   title,
   isPrivate = false,
   onClick,
-  participantList,
   invitedList,
+  onDelete,
 }: {
   src: string;
-  currentPlayer: number;
-  maxPlayer: number;
   progress: number;
   title: string;
   isPrivate?: boolean;
   invitedList?: any[];
-  participantList?: any[];
   onClick: () => void;
+  onDelete?: () => void;
 }) {
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState<any[]>([]);
   const [modalTitle, setModalTitle] = useState('');
+  const [showDelete, setShowDelete] = useState(false);
   const openModal = (data: any[], title: string) => {
     setModalData(data);
     setModalTitle(title);
@@ -35,6 +32,7 @@ export default function RoomCard({
     setModalData([]);
     setShowModal(false);
   };
+
   return (
     <>
       <Container onClick={onClick}>
@@ -47,13 +45,20 @@ export default function RoomCard({
         <div onClick={(e) => e.stopPropagation()}>
           <Title>{title}</Title>
           <TextWrapper>
-            <p>{`${currentPlayer}/${maxPlayer}`}</p>
             <p>{`${progress}%`}</p>
-            <ClickableP onClick={() => openModal(participantList || [], '참가한 사람')}>참가한 사람</ClickableP>
+            {isPrivate ? '비밀방' : '공개방'}
             {isPrivate && (
-              <>
-                <ClickableP onClick={() => openModal(invitedList || [], '초대받은 사람')}>초대받은 사람</ClickableP>
-              </>
+              <ClickableP onClick={() => openModal(invitedList || [], '초대받은 사람')}>초대받은 사람</ClickableP>
+            )}
+            {onDelete && (
+              <DeleteContainer>
+                <ToggleButton onClick={() => setShowDelete((prev) => !prev)}>...</ToggleButton>
+                {showDelete && (
+                  <DeleteWrapper>
+                    <ToggleButton onClick={onDelete}>방 삭제</ToggleButton>
+                  </DeleteWrapper>
+                )}
+              </DeleteContainer>
             )}
           </TextWrapper>
         </div>
@@ -128,14 +133,6 @@ const ModalListWrapper = styled.ul`
   flex-direction: column;
 `;
 
-const ModalListItem = styled.li`
-  padding: 0.25rem;
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.1);
-  }
-  border-bottom: 1px solid lightgray;
-`;
-
 const Container = styled.div`
   width: 100%;
   height: 100%;
@@ -168,4 +165,22 @@ const ClickableP = styled.p`
   &:hover {
     font-weight: bold;
   }
+`;
+
+const ToggleButton = styled.button`
+  border: none;
+  align-self: flex-end;
+  text-align: center;
+  &:hover {
+    background-color: lightgray;
+  }
+`;
+
+const DeleteContainer = styled.div`
+  position: relative;
+`;
+
+const DeleteWrapper = styled.div`
+  position: absolute;
+  right: 0;
 `;

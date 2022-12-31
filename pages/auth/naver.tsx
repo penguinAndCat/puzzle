@@ -34,7 +34,12 @@ const Naver: NextPage = () => {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    axios.post('/api/auth/naver', { nick: inputRef.current?.value, user: userInfo });
+    if (!inputRef.current) return;
+    if (inputRef.current?.value.length > 5) {
+      alert('닉네임은 5글자 이하입니다');
+      return;
+    }
+    axios.post('/api/auth/google', { nick: inputRef.current?.value, user: userInfo });
     window.location.replace('/');
   };
 
