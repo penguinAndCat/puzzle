@@ -6,6 +6,7 @@ import Header from 'components/puzzle/Header';
 import PuzzleCanvas from 'components/puzzle/PuzzleCanvas';
 import Levels from 'components/puzzle/Levels';
 import { usePuzzle } from 'libs/zustand/store';
+import Seo from 'components/Seo';
 
 const Home: NextPage<{ user: UserInfo | null }> = ({ user = null }) => {
   const { modalImage, number } = usePuzzle();
@@ -14,6 +15,7 @@ const Home: NextPage<{ user: UserInfo | null }> = ({ user = null }) => {
 
   return (
     <Container>
+      <Seo title={`혼자하기 퍼즐 방`} description="직소 퍼즐을 맞춰보세요." />
       <Header setShowLevel={setShowLevel} setShowRoomInfo={setShowRoomInfo} user={user} />
       <Levels setShowLevel={setShowLevel} showLevel={showLevel} />
       <RoomInfo setShowRoomInfo={setShowRoomInfo} showRoomInfo={showRoomInfo} user={user} />

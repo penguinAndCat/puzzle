@@ -84,6 +84,12 @@ type LoadingProps = {
   onLoading: (content: LoadingContent) => void;
 };
 
+type RoomInfo = {
+  title: string;
+  secretRoom: boolean;
+  level: number;
+};
+
 type UserInfo = {
   id: string;
   name: string;
