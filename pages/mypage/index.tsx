@@ -4,16 +4,12 @@ import RoomCard from 'components/common/RoomCard';
 import { NEXT_SERVER } from 'config';
 import useInfiniteScroll from 'hooks/useInfiniteScroll';
 import axios from 'libs/axios';
-import { saveImage } from 'libs/common/saveImage';
 import Head from 'next/head';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 export default function MyPage({ user }: { user: UserInfo | null }) {
   const [tab, setTab] = useState<'my' | 'invited'>('my');
-  const [data, setData] = useState<any[]>([]);
-  const myRef = useRef<HTMLDivElement>(null);
-  const myPageRef = useRef(1);
   const [profileImg, setProfileImg] = useState<string>(user?.picture || '');
   const [nickname, setNickname] = useState<string>(user?.nickname || '');
   const inputFileRef = useRef<HTMLInputElement>(null);
@@ -136,6 +132,7 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
                   수정하기
                 </button>
                 <button
+                  disabled={user?.nickname === nickname && user.picture === profileImg}
                   type="button"
                   style={{ width: '50%' }}
                   onClick={() => {
@@ -153,8 +150,6 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
           <li
             onClick={() => {
               if (tab === 'my') return;
-              myPageRef.current = 1;
-              setData([]);
               setTab('my');
             }}
           >
@@ -163,8 +158,6 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
           <li
             onClick={() => {
               if (tab === 'invited') return;
-              setData([]);
-              myPageRef.current = 1;
               setTab('invited');
             }}
           >
