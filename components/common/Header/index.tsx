@@ -6,7 +6,7 @@ import Menu from './Menu';
 
 const Header = ({ user }: { user: UserInfo | null }) => {
   const { addModal } = useModal();
-  const { data, refetch } = useNotice(user);
+  const { notice, refetchNotice } = useNotice(user);
 
   return (
     <Container>
@@ -16,7 +16,7 @@ const Header = ({ user }: { user: UserInfo | null }) => {
             <Button onClick={() => addModal('friend')}>친구</Button>
             <Button onClick={() => addModal('notice')}>
               알림
-              {data && data.length > 0 && <Notice />}
+              {notice && notice.length > 0 && <Notice />}
             </Button>
           </Left>
         ) : (

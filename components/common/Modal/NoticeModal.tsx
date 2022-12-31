@@ -11,7 +11,7 @@ const NoticeModal = () => {
   const { removeModal } = useModal();
   const { user } = userStore();
   const { fireToast } = useToast();
-  const { data, refetch } = useNotice(user);
+  const { notice, refetchNotice } = useNotice(user);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     e.preventDefault();
@@ -34,7 +34,7 @@ const NoticeModal = () => {
       fireToast({ content: '이미 친구입니다.', top: top });
       return;
     }
-    refetch();
+    refetchNotice();
   };
 
   const acceptInvite = async (puzzleId: string) => {
@@ -53,7 +53,7 @@ const NoticeModal = () => {
       fireToast({ content: '초대 수락이 실패하였습니다.', top: top });
       return;
     }
-    refetch();
+    refetchNotice();
   };
 
   return (
@@ -66,8 +66,8 @@ const NoticeModal = () => {
         </Close>
       </TitleWrapper>
       <Ul>
-        {data && data.length > 0 ? (
-          data.map(
+        {notice && notice.length > 0 ? (
+          notice.map(
             (
               item: { nickname: string; type: 'friend' | 'puzzle'; puzzleId: string },
               index: Key | null | undefined

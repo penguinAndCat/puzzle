@@ -9,7 +9,7 @@ import styled, { css } from 'styled-components';
 const Menu = ({ user }: { user: UserInfo | null }) => {
   const { addModal } = useModal();
   const router = useRouter();
-  const { data, refetch } = useNotice(user);
+  const { notice, refetchNotice } = useNotice(user);
   const [dropDown, setDropDown] = useState(false);
   const el = useRef<HTMLDivElement>(null);
   const onClick = () => {
@@ -41,7 +41,7 @@ const Menu = ({ user }: { user: UserInfo | null }) => {
           <DropDownMobileButton onClick={() => addModal('friend')}>친구</DropDownMobileButton>
           <DropDownMobileButton onClick={() => addModal('notice')}>
             알림
-            {data && data.length > 0 && <Notice />}
+            {notice && notice.length > 0 && <Notice />}
           </DropDownMobileButton>
           <DropDownButton
             onClick={() =>

@@ -21,7 +21,7 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo, user }: Props) => {
   const [display, setDisplay] = useState(false); // fadeout animaition 기다림
   const el = useRef<HTMLDivElement>(null);
   const { fireToast } = useToast();
-  const { data, refetch } = useInvitedUser(router.query.id, user);
+  const { invitedUser, refetchInvitedUser } = useInvitedUser(router.query.id, user);
 
   useEffect(() => {
     if (showRoomInfo) {
@@ -43,8 +43,8 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo, user }: Props) => {
       setRoomInfo(res.data.item);
     };
     getData();
-    refetch();
-  }, [router.isReady, router.query.id]);
+    refetchInvitedUser();
+  }, [refetchInvitedUser, router.isReady, router.query.id]);
 
   useEffect(() => {
     if (list.length > 0) {
@@ -82,7 +82,7 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo, user }: Props) => {
 
   return (
     <>
-      {data && display && (
+      {invitedUser && display && (
         <Container show={showRoomInfo} ref={el}>
           <Title>{roomInfo.title}</Title>
           <Content>
@@ -98,12 +98,12 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo, user }: Props) => {
               <MiniTitle>참가자</MiniTitle>
               <div>
                 <UserWrapper>
-                  <Img src={data.host.picture} alt={data.host.nickname} />
-                  <Nickname>{data.host.nickname}</Nickname>
-                  {participants.includes(data.host.nickname) ? <OnParticipant /> : <OffParticipant />}
+                  <Img src={invitedUser.host.picture} alt={invitedUser.host.nickname} />
+                  <Nickname>{invitedUser.host.nickname}</Nickname>
+                  {participants.includes(invitedUser.host.nickname) ? <OnParticipant /> : <OffParticipant />}
                   <FriendButton>방장</FriendButton>
                 </UserWrapper>
-                {data.users.map((participant: any, index: Key | null | undefined) => {
+                {invitedUser.users.map((participant: any, index: Key | null | undefined) => {
                   return (
                     <UserWrapper key={index}>
                       <Img src={participant.picture} alt={participant.nickname} />

@@ -16,16 +16,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   await dbConnect();
   if (method === 'PUT') {
     const { userId, puzzleId } = req.body.data;
-    console.log(userId);
     try {
-      const puzzle = await Puzzle.find({ _id: puzzleId, invitedUser: userId });
-      if (puzzle.length > 0) {
+      const checkedPuzzle = await Puzzle.find({ _id: puzzleId, invitedUser: userId });
+      if (checkedPuzzle.length > 0) {
         return res.status(400).json({ message: 'failed' });
       }
+
       await Puzzle.updateOne({ _id: puzzleId }, { $push: { invitedUser: userId } });
+      const puzzle = await Puzzle.findOne({ _id: puzzleId });
+      const user = await User.findOne({ _id: userId });
       await Notice.deleteOne({
         requested: userId,
         puzzleId: puzzleId,
+      });
+      await pusher.trigger(`presence-${puzzle._id.toString()}`, 'invited', {
+        puzzle: true,
+        nickname: user.nickname,
       });
       res.status(201).json({ message: 'success' });
     } catch (err) {

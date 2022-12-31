@@ -6,7 +6,8 @@ import { NEXT_SERVER } from 'config';
 
 const SocketNotice = ({ user }: { user: UserInfo | null }) => {
   const { fireToast } = useToast();
-  const { data, refetch } = useNotice(user);
+  const { notice, refetchNotice } = useNotice(user);
+
   useEffect(() => {
     if (user === undefined) return;
     let subscribe = true;
@@ -26,19 +27,19 @@ const SocketNotice = ({ user }: { user: UserInfo | null }) => {
       channel.bind('onNotice', (data: any) => {
         const { friend, puzzle, nickname } = data;
         if (friend) {
-          refetch();
+          refetchNotice();
           fireToast({ nickname: `${nickname}`, content: `님이 친구 요청 하였습니다.`, top: 100 });
         }
         if (puzzle) {
-          refetch();
-          fireToast({ nickname: `${nickname}`, content: `님이 퍼즐 방에 초대 하였습니다.`, top: 100 });
+          refetchNotice();
+          fireToast({ nickname: `${nickname}`, content: `님이 퍼즐 방으로 초대 하였습니다.`, top: 100 });
         }
       });
     }
 
     return () => {
       // last unsubscribe the user from the channel.
-      pusher.unsubscribe(`presence-notice`);
+      pusher.unsubscribe(`presence-${user?.id}`);
       subscribe = false;
     };
   }, [user]);

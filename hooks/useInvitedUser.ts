@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import axios from 'libs/axios';
 import { useQuery } from 'react-query';
 
@@ -20,5 +19,5 @@ export const useInvitedUser = (puzzleId: string | undefined | string[], user: Us
     }
   };
 
-  return { data, refetch };
+  return { invitedUser: data, refetchInvitedUser: refetch };
 };
