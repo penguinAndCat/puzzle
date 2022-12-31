@@ -8,7 +8,7 @@ import SearchFriend from './Search';
 
 const FriendModal = () => {
   const { removeModal } = useModal();
-  const [frineds, setFriends] = useState([]);
+  const [friends, setFriends] = useState([]);
   const { user } = userStore();
   const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     e.preventDefault();
@@ -35,12 +35,27 @@ const FriendModal = () => {
       <SearchFriend />
       <div>친구 목록</div>
       <Ul>
-        {frineds.map((item: { nickname: string; picture: string }) => {
+        {friends.map((item: { nickname: string; picture: string }) => {
           return (
             <Li key={item.nickname}>
               <Img src={item.picture} />
               <Nickname>{item.nickname}</Nickname>
-              <DeleteButton>삭제</DeleteButton>
+              <DeleteButton
+                onClick={async () => {
+                  if (window.confirm('정말로 삭제하시겠습니까?')) {
+                    try {
+                      await axios.delete(`/api/users/friends/${user.id}`, {
+                        params: { friendNickname: item.nickname },
+                      });
+                      setFriends((prev) => prev.filter((data: any) => data.nickname !== item.nickname));
+                    } catch (err) {
+                      console.log(err);
+                    }
+                  }
+                }}
+              >
+                삭제
+              </DeleteButton>
             </Li>
           );
         })}
