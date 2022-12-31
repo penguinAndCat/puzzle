@@ -15,6 +15,25 @@ type Data = {
 export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
   const { method } = req;
   await dbConnect();
+  if (method === 'DELETE') {
+    try {
+      const accessToken = getCookie('accessToken', { req, res });
+      if (!accessToken) {
+        return res.status(401).json({ message: 'not authorizied' });
+      }
+
+      const { friendNickname, id } = req.query;
+      const friend = await User.findOne({ nickname: friendNickname });
+      if (!friend) {
+        res.status(500).json({ message: '존재하지 않는 유저입니다.' });
+      }
+      await Friend.deleteOne({ userId: id, friend: friend._id.toString() });
+      await Friend.deleteOne({ userId: friend._id.toString(), friend: id });
+      return res.status(201).json({ message: 'success' });
+    } catch (err) {
+      res.status(500).json({ error: err, message: 'failed' });
+    }
+  }
   if (method === 'GET') {
     try {
       const accessToken = getCookie('accessToken', { req, res });
