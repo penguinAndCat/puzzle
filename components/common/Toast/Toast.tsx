@@ -30,7 +30,7 @@ const ToastBar = styled.div<StyleProps>`
 const ToastBox = styled.div`
   zindex: 999;
   width: 240px;
-  height: 30px;
+  height: 60px;
   display: flex;
   justify-content: center;
   align-items: center;

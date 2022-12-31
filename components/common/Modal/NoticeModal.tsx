@@ -106,7 +106,7 @@ const NoticeModal = () => {
                       <Span>{item.nickname}</Span>님께서 당신과 친구를 하고 싶어합니다.
                     </NoticeMessage>
                     <AcceptButton onClick={() => acceptFriend(item.nickname)}>수락</AcceptButton>
-                    <AcceptButton onClick={() => rejectFriend(item.nickname)}>거절</AcceptButton>
+                    <RefuseButton onClick={() => rejectFriend(item.nickname)}>거절</RefuseButton>
                   </Li>
                 );
               if (item.type === 'puzzle')
@@ -116,7 +116,7 @@ const NoticeModal = () => {
                       <Span>{item.nickname}</Span>님께서 당신을 퍼즐 방에 초대합니다.
                     </NoticeMessage>
                     <AcceptButton onClick={() => acceptInvite(item.puzzleId)}>수락</AcceptButton>
-                    <AcceptButton onClick={() => rejectInvite(item.puzzleId)}>거절</AcceptButton>
+                    <RefuseButton onClick={() => rejectInvite(item.puzzleId)}>거절</RefuseButton>
                   </Li>
                 );
             }
@@ -201,7 +201,7 @@ const Ul = styled.ul`
 const Li = styled.li`
   width: 300px;
   height: 50px;
-  padding: 8px 20px;
+  padding: 8px 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -217,7 +217,18 @@ const Span = styled.span`
 `;
 
 const AcceptButton = styled.button`
-  width: 40px;
+  width: 50px;
+  height: 20px;
+  font-size: 12px;
+  line-height: 50%;
+  background-color: ${({ theme }) => theme.modalColor};
+  color: ${({ theme }) => theme.modalTextColor};
+  border: solid 1px ${({ theme }) => theme.modalTextColor};
+  cursor: pointer;
+`;
+
+const RefuseButton = styled.button`
+  width: 50px;
   height: 20px;
   font-size: 12px;
   line-height: 50%;

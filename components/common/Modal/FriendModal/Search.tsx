@@ -45,7 +45,7 @@ const SearchFriend = () => {
           <Img src={searchedUser[0].picture} />
           <Nickname>{searchedUser[0].nickname}</Nickname>
           <RequestButton onClick={() => requestFriend(searchedUser[0].nickname)} ref={buttonRef}>
-            친구 하기
+            친구하기
           </RequestButton>
         </SearchUserWrapper>
       )}
@@ -113,8 +113,8 @@ const SearchUserWrapper = styled.div`
 `;
 
 const Img = styled.img`
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   object-fit: cover;
   border-radius: 50%;
 `;
