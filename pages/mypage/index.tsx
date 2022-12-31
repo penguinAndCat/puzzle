@@ -33,10 +33,6 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
     return myPuzzle?.pages.reduce((acc, cur) => [...acc, ...cur.item], []);
   }, [myPuzzle?.pages]);
 
-  useEffect(() => {
-    console.log(puzzleData);
-  }, [puzzleData]);
-
   const [{ data: invitedPuzzle }, invitedRef] = useInfiniteScroll({
     queryKey: 'invitedPuzzle',
     queryFn: async ({ pageParam = 1 }) => {
@@ -106,7 +102,7 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
                   이름: <span>{`${user?.name}`}</span>
                 </div>
                 <div>
-                  닉네임: <input value={nickname} onChange={(e) => setNickname(e.target.value)} />
+                  닉네임: <input value={nickname} onChange={(e) => setNickname(e.target.value)} maxLength={5} />
                 </div>
               </ProfileText>
               <div style={{ width: '100%' }}>
@@ -115,6 +111,9 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
                   type="button"
                   style={{ width: '50%' }}
                   onClick={async (e) => {
+                    if (nickname.length > 5) {
+                      alert('닉네임은 5글자 이하입니다');
+                    }
                     const data: { nickname: string; profileImage: string } = {
                       nickname: '',
                       profileImage: '',
@@ -125,6 +124,7 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
                     if (user?.picture !== profileImg) {
                       data.profileImage = profileImg;
                     }
+
                     try {
                       await axios.put('/api/users', data);
                     } catch (err) {

@@ -19,6 +19,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   if (method === 'POST') {
     try {
       const nick = req.body.nick;
+      if (nick.length > 5) {
+        return res.status(500).json({ message: '닉네임은 5글자 이하입니다.' });
+      }
       const isExistNick = await User.exists({ nickname: nick });
       if (isExistNick) {
         return res.status(500).json({ message: 'already Exist Nick' });
