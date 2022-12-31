@@ -13,7 +13,7 @@ const Home: NextPage<{ user: UserInfo | null }> = ({ user = null }) => {
 
   useEffect(() => {
     if (router.query.redirect) {
-      toast({ content: '로그인이 필요합니다', type: 'warn' });
+      toast({ content: '로그인이 필요합니다', type: 'warning' });
     }
   }, []);
 

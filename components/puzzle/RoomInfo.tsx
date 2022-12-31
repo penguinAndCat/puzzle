@@ -67,7 +67,7 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo, user }: Props) => {
       toast({ content: '친구 요청을 보냈습니다.', type: 'success' });
     }
     if (res.data.message === 'duplicated') {
-      toast({ content: '이미 친구 요청을 보냈습니다.', type: 'warn' });
+      toast({ content: '이미 친구 요청을 보냈습니다.', type: 'warning' });
     }
   };
 

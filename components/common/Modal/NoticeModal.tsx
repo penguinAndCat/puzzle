@@ -29,7 +29,7 @@ const NoticeModal = () => {
       toast({ nickname: nickname, content: '님과 친구가 되었습니다.', type: 'success' });
     }
     if (res.data.message === 'duplicated') {
-      toast({ content: '이미 친구입니다.', type: 'warn' });
+      toast({ content: '이미 친구입니다.', type: 'warning' });
       return;
     }
     refetchNotice();
@@ -62,7 +62,7 @@ const NoticeModal = () => {
       toast({ content: '초대를 수락하였습니다.', type: 'success' });
     }
     if (res.data.message === 'failed') {
-      toast({ content: '초대 수락이 실패하였습니다.', type: 'warn' });
+      toast({ content: '초대 수락이 실패하였습니다.', type: 'warning' });
       return;
     }
     refetchNotice();
@@ -225,6 +225,7 @@ const AcceptButton = styled.button`
   color: ${({ theme }) => theme.modalTextColor};
   border: solid 1px ${({ theme }) => theme.modalTextColor};
   cursor: pointer;
+  margin-right: 6px;
 `;
 
 const RefuseButton = styled.button`

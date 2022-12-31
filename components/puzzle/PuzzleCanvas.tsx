@@ -105,12 +105,12 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
 
       // when a new user join the channel.
       channel.bind('pusher:member_added', (member: Member) => {
-        toast({ nickname: `${member.info.username}`, content: `님이 입장하였습니다.`, type: 'success' });
+        toast({ nickname: `${member.info.username}`, content: `님이 입장하였습니다.`, type: 'info' });
         setParticipant(Object.values(channel.members.members).map((item: any) => item.username));
       });
 
       channel.bind('pusher:member_removed', (member: Member) => {
-        toast({ nickname: `${member.info.username}`, content: `님이 퇴장하였습니다.`, type: 'success' });
+        toast({ nickname: `${member.info.username}`, content: `님이 퇴장하였습니다.`, type: 'info' });
         setParticipant(Object.values(channel.members.members).map((item: any) => item.username));
       });
 
@@ -126,7 +126,7 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
         const { puzzle, nickname } = data;
         if (puzzle) {
           refetchInvitedUser();
-          toast({ nickname: `${nickname}`, content: `님이 퍼즐 방에 초대 되었습니다.`, type: 'success' });
+          toast({ nickname: `${nickname}`, content: `님이 퍼즐 방에 초대 되었습니다.`, type: 'info' });
         }
       });
     }
