@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { NEXT_SERVER } from 'config';
 import useInfiniteScroll from 'hooks/useInfiniteScroll';
+import { useToast } from 'hooks/useToast';
 
 const images = [
   'http://res.cloudinary.com/penguinandcatpuzzle/image/upload/v1666189078/bugvpkwfmde3q21zcm4s.png',
@@ -21,6 +22,7 @@ const Main = ({ user }: { user: UserInfo | null }) => {
     initialModal();
     addModal('puzzle');
   };
+  const { fireToast } = useToast();
 
   const [{ data }, flagRef] = useInfiniteScroll({
     queryKey: 'public',
@@ -73,7 +75,10 @@ const Main = ({ user }: { user: UserInfo | null }) => {
                 progress={Number((data.perfection * 100).toFixed(3))}
                 title={data.title}
                 onClick={() => {
-                  if (!user) return;
+                  if (!user) {
+                    fireToast({ content: '로그인이 필요합니다', top: 100 });
+                    return;
+                  }
                   window.location.href = `${NEXT_SERVER}/puzzle/${data._id}`;
                 }}
               />

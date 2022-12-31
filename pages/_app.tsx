@@ -50,7 +50,7 @@ MyApp.getInitialProps = async ({ ctx, Component }: { ctx: any; Component: any })
     pageProps = await Component.getInitialProps(ctx);
   }
 
-  const cookie = ctx.req.cookies;
+  const cookie = ctx.req?.cookies;
   if (cookie) {
     const localTheme = getCookie('localTheme', ctx) as ThemeKey;
     if (themeKeys.includes(localTheme)) {
@@ -67,7 +67,7 @@ MyApp.getInitialProps = async ({ ctx, Component }: { ctx: any; Component: any })
   const { req, res } = ctx;
   const { data } = await axios.get(`${NEXT_SERVER}/api/auth`, {
     headers: {
-      Cookie: req.headers.cookie || '',
+      Cookie: req?.headers.cookie || '',
     },
   });
   if (data.accessToken) {

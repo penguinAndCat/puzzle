@@ -1,16 +1,27 @@
 import type { NextPage } from 'next';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import RoomInfo from 'components/puzzle/RoomInfo';
 import Header from 'components/puzzle/Header';
 import PuzzleCanvas from 'components/puzzle/PuzzleCanvas';
 import Levels from 'components/puzzle/Levels';
 import { usePuzzle } from 'libs/zustand/store';
+import { useToast } from 'hooks/useToast';
+import { useRouter } from 'next/router';
 
 const Home: NextPage<{ user: UserInfo | null }> = ({ user = null }) => {
   const { modalImage, number } = usePuzzle();
   const [showLevel, setShowLevel] = useState(false);
   const [showRoomInfo, setShowRoomInfo] = useState(false);
+  const { fireToast } = useToast();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!user) {
+      fireToast({ content: '로그인이 필요합니다.', top: 100 });
+      router.replace('/');
+    }
+  }, [fireToast, router, user]);
 
   return (
     <Container>
