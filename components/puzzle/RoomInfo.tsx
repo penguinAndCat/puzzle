@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useInvitedUser } from 'hooks/useInvitedUser';
 import { useToast } from 'hooks/useToast';
 import { useSocket } from 'libs/zustand/store';
+import { useRoomInfo } from 'hooks/useRoomInfo';
 
 interface Props {
   showRoomInfo: boolean;
@@ -17,9 +18,10 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo, user }: Props) => {
   const router = useRouter();
   const toast = useToast();
   const { participants } = useSocket();
-  const { invitedUser, refetchInvitedUser } = useInvitedUser(router.query.id, user);
-  const [roomInfo, setRoomInfo] = useState({ title: '', secretRoom: false, level: 1 });
+  const { invitedUser } = useInvitedUser(router.query.id, user);
+  const { roomInfo } = useRoomInfo(router.query.id, user);
   const [list, setList] = useState<number[][]>([]);
+  const [puzzleNumber, setPuzzleNumber] = useState<number>(0);
   const [display, setDisplay] = useState(false); // fadeout animaition 기다림
   const el = useRef<HTMLDivElement>(null);
 
@@ -36,19 +38,8 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo, user }: Props) => {
   }, [showRoomInfo]);
 
   useEffect(() => {
-    if (!router.isReady) return;
-    if (router.query.id === undefined) return;
-    const getData = async () => {
-      const res = await axios.get(`/api/puzzle/info/${router.query.id}`);
-      setRoomInfo(res.data.item);
-    };
-    getData();
-    refetchInvitedUser();
-  }, [refetchInvitedUser, router.isReady, router.query.id]);
-
-  useEffect(() => {
     if (list.length > 0) {
-      setRoomInfo({ ...roomInfo, level: list[roomInfo.level][0] * list[roomInfo.level][1] });
+      setPuzzleNumber(list[roomInfo.level][0] * list[roomInfo.level][1]);
     }
   }, [list]);
 
@@ -92,7 +83,7 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo, user }: Props) => {
             <PuzzleNumberWrapper>
               <div>퍼즐 수</div>
               <div>:</div>
-              <div>{roomInfo.level}개</div>
+              <div>{puzzleNumber}개</div>
             </PuzzleNumberWrapper>
             <InvitedUserWrapper>
               <MiniTitle>참가자</MiniTitle>

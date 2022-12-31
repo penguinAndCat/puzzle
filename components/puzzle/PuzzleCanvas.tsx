@@ -26,7 +26,7 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const [socket, setSocket] = useState();
-  const { invitedUser, refetchInvitedUser } = useInvitedUser(router.query.id, user);
+  const { refetchInvitedUser } = useInvitedUser(router.query.id, user);
 
   useEffect(() => {
     const canvas = canvasRef.current;

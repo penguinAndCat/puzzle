@@ -1,10 +1,11 @@
 import Palette from 'components/common/Palette';
+import { useRoomInfo } from 'hooks/useRoomInfo';
 import axios from 'libs/axios';
 import { saveImage } from 'libs/common/saveImage';
 import { exportConfig } from 'libs/puzzle/createPuzzle';
 import { useLoading, useModal, usePuzzle } from 'libs/zustand/store';
 import { useRouter } from 'next/router';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import styled, { css } from 'styled-components';
 import PuzzleMenu from './PuzzleMenu';
 
@@ -15,21 +16,11 @@ interface Props {
 }
 
 const Header = ({ setShowLevel, setShowRoomInfo, user }: Props) => {
+  const router = useRouter();
   const { addModal } = useModal();
   const { number, title, secretRoom } = usePuzzle();
   const { onLoading, offLoading } = useLoading();
-  const [roomInfo, setRoomInfo] = useState({ title: '', secretRoom: false, level: 1 });
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!router.isReady) return;
-    if (router.query.id === undefined) return;
-    const getData = async () => {
-      const res = await axios.get(`/api/puzzle/info/${router.query.id}`);
-      setRoomInfo(res.data.item);
-    };
-    getData();
-  }, [router.isReady, router.query.id]);
+  const { roomInfo } = useRoomInfo(router.query.id, user);
 
   const createPuzzleRoom = async () => {
     try {

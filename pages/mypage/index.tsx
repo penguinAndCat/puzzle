@@ -1,6 +1,7 @@
 import { AxiosError } from 'axios';
 import Header from 'components/common/Header';
 import RoomCard from 'components/common/RoomCard';
+import Seo from 'components/Seo';
 import { NEXT_SERVER } from 'config';
 import useInfiniteScroll from 'hooks/useInfiniteScroll';
 import axios from 'libs/axios';
@@ -59,9 +60,7 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
 
   return (
     <>
-      <Head>
-        <title>마이페이지</title>
-      </Head>
+      <Seo title={`${user?.nickname} 프로필`} description="프로필 보기 및 변경 페이지" />
       <Header user={user} />
       <Wrapper>
         <ProfileWrapper>
