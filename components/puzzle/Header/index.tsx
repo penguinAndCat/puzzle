@@ -1,5 +1,5 @@
-import axios from 'axios';
 import Palette from 'components/common/Palette';
+import axios from 'libs/axios';
 import { saveImage } from 'libs/common/saveImage';
 import { exportConfig } from 'libs/puzzle/createPuzzle';
 import { useLoading, useModal, usePuzzle } from 'libs/zustand/store';

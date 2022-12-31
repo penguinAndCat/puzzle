@@ -4,24 +4,20 @@ import HoverImage from './HoverImage';
 
 export default function RoomCard({
   src,
-  currentPlayer,
-  maxPlayer,
   progress,
   title,
   isPrivate = false,
   onClick,
-  participantList,
   invitedList,
+  onDelete,
 }: {
   src: string;
-  currentPlayer: number;
-  maxPlayer: number;
   progress: number;
   title: string;
   isPrivate?: boolean;
   invitedList?: any[];
-  participantList?: any[];
   onClick: () => void;
+  onDelete?: () => void;
 }) {
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState<any[]>([]);
@@ -35,6 +31,7 @@ export default function RoomCard({
     setModalData([]);
     setShowModal(false);
   };
+
   return (
     <>
       <Container onClick={onClick}>
@@ -47,13 +44,15 @@ export default function RoomCard({
         <div onClick={(e) => e.stopPropagation()}>
           <Title>{title}</Title>
           <TextWrapper>
-            <p>{`${currentPlayer}/${maxPlayer}`}</p>
             <p>{`${progress}%`}</p>
-            <ClickableP onClick={() => openModal(participantList || [], '참가한 사람')}>참가한 사람</ClickableP>
+            {isPrivate ? '비밀방' : '공개방'}
             {isPrivate && (
-              <>
-                <ClickableP onClick={() => openModal(invitedList || [], '초대받은 사람')}>초대받은 사람</ClickableP>
-              </>
+              <ClickableP onClick={() => openModal(invitedList || [], '초대받은 사람')}>초대받은 사람</ClickableP>
+            )}
+            {onDelete && (
+              <div>
+                <button onClick={onDelete}>방 삭제</button>
+              </div>
             )}
           </TextWrapper>
         </div>

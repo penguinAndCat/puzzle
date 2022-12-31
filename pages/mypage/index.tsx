@@ -9,12 +9,13 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 export default function MyPage({ user }: { user: UserInfo | null }) {
+  // 닉네임 5글자 제한
   const [tab, setTab] = useState<'my' | 'invited'>('my');
   const [profileImg, setProfileImg] = useState<string>(user?.picture || '');
   const [nickname, setNickname] = useState<string>(user?.nickname || '');
   const inputFileRef = useRef<HTMLInputElement>(null);
 
-  const [{ data: myPuzzle }, myPuzzleRef] = useInfiniteScroll({
+  const [{ data: myPuzzle, refetch: refetchMyPuzzle }, myPuzzleRef] = useInfiniteScroll({
     queryKey: 'myPuzzle',
     queryFn: async ({ pageParam = 1 }) => {
       const response = await axios.get('/api/puzzle/myPuzzle', {
@@ -31,6 +32,10 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
   const puzzleData = useMemo(() => {
     return myPuzzle?.pages.reduce((acc, cur) => [...acc, ...cur.item], []);
   }, [myPuzzle?.pages]);
+
+  useEffect(() => {
+    console.log(puzzleData);
+  }, [puzzleData]);
 
   const [{ data: invitedPuzzle }, invitedRef] = useInfiniteScroll({
     queryKey: 'invitedPuzzle',
@@ -172,15 +177,17 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
                 <RoomCard
                   key={index}
                   src={item.config.puzzleImage.src}
-                  currentPlayer={item.player.length + 1}
-                  maxPlayer={item.maximumPlayer}
                   progress={Number((item.perfection * 100).toFixed(3))}
                   title={item.title}
                   isPrivate={item.secretRoom}
                   invitedList={item.secretRoom ? item.invitedUser : null}
-                  participantList={item.secretRoom ? item.player : null}
                   onClick={() => {
                     window.location.href = `${NEXT_SERVER}/puzzle/${item._id}`;
+                  }}
+                  onDelete={() => {
+                    axios.delete(`/api/puzzle/${item._id}`).then(() => {
+                      refetchMyPuzzle();
+                    });
                   }}
                 />
               ))}
@@ -193,13 +200,10 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
                 <RoomCard
                   key={index}
                   src={item.config.puzzleImage.src}
-                  currentPlayer={item.player.length + 1}
-                  maxPlayer={item.maximumPlayer}
                   progress={Number((item.perfection * 100).toFixed(3))}
                   title={item.title}
                   isPrivate={item.secretRoom}
                   invitedList={item.secretRoom ? item.invitedUser : null}
-                  participantList={item.secretRoom ? item.player : null}
                   onClick={() => {
                     window.location.href = `${NEXT_SERVER}/puzzle/${item._id}`;
                   }}

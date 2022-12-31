@@ -7,12 +7,17 @@ const UserSchema = new mongoose.Schema(
     },
     nickname: {
       type: String,
+      required: true,
+      maxlength: 5,
+      unique: true,
     },
     name: {
       type: String,
+      required: true,
     },
     email: {
       type: String,
+      required: true,
     },
     picture: {
       type: String,

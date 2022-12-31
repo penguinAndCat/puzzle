@@ -67,4 +67,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
       res.status(500).json({ error: err, message: 'failed' });
     }
   }
+  if (method === 'DELETE') {
+    try {
+      const { id } = req.query;
+      await Puzzle.deleteOne({ _id: id });
+      res.status(201).json({ message: 'success' });
+    } catch (err) {
+      res.status(500).json({ error: err, message: 'failed' });
+    }
+  }
 }
