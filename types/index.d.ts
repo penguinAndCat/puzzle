@@ -63,7 +63,7 @@ type PuzzleProps = {
 interface Toast {
   nickname?: string;
   content: string;
-  type: 'success' | 'warn';
+  type: 'success' | 'warning' | 'info';
 }
 
 type ToastProps = {

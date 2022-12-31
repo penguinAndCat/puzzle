@@ -1,24 +1,46 @@
 import React from 'react';
 import styled from 'styled-components';
 
+const TYPE = {
+  success: {
+    color: '#0ED73F',
+  },
+  warning: {
+    color: '#E3E60E',
+  },
+  info: {
+    color: '#0E42E6',
+  },
+};
+
 export default function Toast({ option }: { option: Toast }) {
   return (
     <ToastBox>
       <ToastBar type={option.type} />
-      <Nickname>{option.nickname}</Nickname>
-      <p>{option.content}</p>
+      <div>
+        <Type>{option.type}</Type>
+        <div>
+          <Nickname>{option.nickname}</Nickname>
+          {option.content}
+        </div>
+      </div>
     </ToastBox>
   );
 }
-type StyleProps = { type: 'success' | 'warn' };
+type StyleProps = { type: 'success' | 'warning' | 'info' };
 
 const Nickname = styled.span`
   color: red;
 `;
 
+const Type = styled.div`
+  font-weight: 600;
+  margin-bottom: 4px;
+`;
+
 const ToastBar = styled.div<StyleProps>`
-  background-color: ${({ type }) => (type === 'success' ? 'green' : type === 'warn' ? 'yellow' : 'black')};
-  width: 5px;
+  background-color: ${({ type }) => TYPE[type].color};
+  width: 7px;
   height: 100%;
   position: absolute;
   border-top-left-radius: 4px;
@@ -29,8 +51,8 @@ const ToastBar = styled.div<StyleProps>`
 
 const ToastBox = styled.div`
   zindex: 999;
-  width: 240px;
-  height: 30px;
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -69,5 +91,6 @@ const ToastBox = styled.div`
   color: ${({ theme }) => theme.bgColor};
   background-color: ${({ theme }) => theme.textColor};
   border-radius: 4px;
+  padding: 6px 8px 6px 28px;
   // box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 15%);
 `;

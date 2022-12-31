@@ -75,7 +75,7 @@ const Main = ({ user }: { user: UserInfo | null }) => {
                 isMain={true}
                 onClick={() => {
                   if (!user) {
-                    toast({ content: '로그인이 필요합니다', type: 'warn' });
+                    toast({ content: '로그인이 필요합니다', type: 'warning' });
                     return;
                   }
                   window.location.href = `${NEXT_SERVER}/puzzle/${data._id}`;
