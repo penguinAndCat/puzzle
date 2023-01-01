@@ -1,3 +1,4 @@
+import axios from 'libs/axios';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import HoverImage from './HoverImage';
@@ -7,21 +8,24 @@ export default function RoomCard({
   src,
   progress,
   title,
+  puzzleId,
   isPrivate = false,
+  userId,
   onClick,
-  invitedList,
   onDelete,
   isMain = false,
 }: {
   src: string;
   progress: number;
   title: string;
+  puzzleId: string;
+  userId: string | undefined;
   isPrivate?: boolean;
-  invitedList?: any[];
   onClick: () => void;
   onDelete?: () => void;
   isMain?: boolean;
 }) {
+  const [userList, setUserList] = useState<any[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState<any[]>([]);
   const [modalTitle, setModalTitle] = useState('');
@@ -35,6 +39,10 @@ export default function RoomCard({
     setModalData([]);
     setShowModal(false);
   };
+
+  useEffect(() => {
+    axios.get(`/api/puzzle/users/${puzzleId}?userId=${userId}`).then((res) => setUserList(res.data.data.users));
+  }, [puzzleId, userId]);
 
   return (
     <>
@@ -52,9 +60,7 @@ export default function RoomCard({
               <ProgressBar percent={progress} />
             </div>
             {!isMain && <p>{isPrivate ? '비밀방' : '공개방'}</p>}
-            {isPrivate && (
-              <ClickableP onClick={() => openModal(invitedList || [], '초대받은 사람')}>초대받은 사람</ClickableP>
-            )}
+            {isPrivate && <ClickableP onClick={() => openModal(userList, '초대받은 사람')}>초대받은 사람</ClickableP>}
             {onDelete && (
               <DeleteContainer>
                 <ToggleButton onClick={() => setShowDelete((prev) => !prev)}>...</ToggleButton>
@@ -88,7 +94,12 @@ const UserListModal = ({ data, handleClose, title }: { data: any[]; handleClose:
         <OverflowWrapper>
           <ModalListWrapper>
             {data.map((item: any, index: number) => {
-              return <li key={index}>{item}</li>;
+              return (
+                <UserWrapper key={index}>
+                  <Img src={item.picture} alt={item.nickname} />
+                  <Nickname>{item.nickname}</Nickname>
+                </UserWrapper>
+              );
             })}
           </ModalListWrapper>
         </OverflowWrapper>
@@ -96,6 +107,29 @@ const UserListModal = ({ data, handleClose, title }: { data: any[]; handleClose:
     </ModalWindow>
   );
 };
+
+const UserWrapper = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+  padding: 0.25rem;
+  border-bottom: 1px solid lightgray;
+`;
+
+const Img = styled.img`
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-right: 8px;
+`;
+
+const Nickname = styled.div`
+  width: 100px;
+  margin-right: 8px;
+  font-size: 12px;
+`;
 
 const ModalWindow = styled.div`
   width: 100%;
@@ -129,7 +163,7 @@ const ModalTitle = styled.h1`
   font-size: 1.25rem;
   line-height: 1.5;
   text-align: center;
-  border-bottom: 1px solid lightgray;
+  border-bottom: 1px solid gray;
 `;
 
 const ModalListWrapper = styled.ul`

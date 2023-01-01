@@ -178,8 +178,9 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
                   src={item.config.puzzleImage.src}
                   progress={Number((item.perfection * 100).toFixed(3))}
                   title={item.title}
+                  userId={user?.id}
                   isPrivate={item.secretRoom}
-                  invitedList={item.secretRoom ? item.invitedUser : null}
+                  puzzleId={item._id}
                   onClick={() => {
                     window.location.href = `${NEXT_SERVER}/puzzle/${item._id}`;
                   }}
@@ -201,8 +202,9 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
                   src={item.config.puzzleImage.src}
                   progress={Number((item.perfection * 100).toFixed(3))}
                   title={item.title}
+                  userId={user?.id}
+                  puzzleId={item._id}
                   isPrivate={item.secretRoom}
-                  invitedList={item.secretRoom ? item.invitedUser : null}
                   onClick={() => {
                     window.location.href = `${NEXT_SERVER}/puzzle/${item._id}`;
                   }}

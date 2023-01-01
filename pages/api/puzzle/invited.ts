@@ -17,7 +17,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     const { id, page } = req.query;
     try {
       const limit = 10;
-
       const puzzle = await Puzzle.find({ invitedUser: id })
         .sort({
           createdAt: -1,
