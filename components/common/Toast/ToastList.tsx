@@ -17,7 +17,6 @@ const ToastList = () => {
 export default ToastList;
 
 const Wrapper = styled.div`
-  width: 250px;
   position: fixed;
   right: 10px;
   top: 20px;

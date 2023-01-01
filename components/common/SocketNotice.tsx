@@ -28,11 +28,11 @@ const SocketNotice = ({ user }: { user: UserInfo | null }) => {
         const { friend, puzzle, nickname } = data;
         if (friend) {
           refetchNotice();
-          toast({ nickname: `${nickname}`, content: `님이 친구 요청 하였습니다.`, type: 'success' });
+          toast({ nickname: `${nickname}`, content: `님이 친구 요청 하였습니다.`, type: 'info' });
         }
         if (puzzle) {
           refetchNotice();
-          toast({ nickname: `${nickname}`, content: `님이 퍼즐 방으로 초대 하였습니다.`, type: 'success' });
+          toast({ nickname: `${nickname}`, content: `님이 퍼즐 방으로 초대 하였습니다.`, type: 'info' });
         }
       });
     }
