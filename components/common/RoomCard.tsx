@@ -54,7 +54,9 @@ export default function RoomCard({
           style={{ objectFit: 'cover', aspectRatio: 1, cursor: 'pointer' }}
         />
         <div onClick={(e) => e.stopPropagation()}>
-          <Title>{title}</Title>
+          <Title>
+            <span>{title}</span>
+          </Title>
           <TextWrapper>
             <div style={{ height: '10px', width: '100%' }}>
               <ProgressBar percent={progress} />
@@ -193,10 +195,37 @@ const TextWrapper = styled.div`
 `;
 
 const Title = styled.h1`
+  width: 200px;
   font-weight: bold;
   text-align: left;
   font-size: 1.25rem;
   padding: 0.5rem;
+  display: flex;
+  overflow: hidden;
+  & > span {
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  @media (max-width: 1080px) {
+    width: 160px;
+  }
+  @media (max-width: 870px) {
+    width: 120px;
+  }
+  @media (max-width: 720px) {
+    width: 280px;
+  }
+  @media (max-width: 600px) {
+    width: 220px;
+  }
+  @media (max-width: 480px) {
+    width: 160px;
+  }
+  @media (max-width: 360px) {
+    width: 100px;
+  }
 `;
 
 const ClickableP = styled.p`
