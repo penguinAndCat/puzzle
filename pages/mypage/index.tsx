@@ -1,20 +1,15 @@
-import { AxiosError } from 'axios';
 import Header from 'components/common/Header';
 import RoomCard from 'components/common/RoomCard';
+import Profile from 'components/profile/Profile';
 import Seo from 'components/Seo';
 import { NEXT_SERVER } from 'config';
 import useInfiniteScroll from 'hooks/useInfiniteScroll';
 import axios from 'libs/axios';
-import Head from 'next/head';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 export default function MyPage({ user }: { user: UserInfo | null }) {
-  // 닉네임 5글자 제한
   const [tab, setTab] = useState<'my' | 'invited'>('my');
-  const [profileImg, setProfileImg] = useState<string>(user?.picture || '');
-  const [nickname, setNickname] = useState<string>(user?.nickname || '');
-  const inputFileRef = useRef<HTMLInputElement>(null);
 
   const [{ data: myPuzzle, refetch: refetchMyPuzzle }, myPuzzleRef] = useInfiniteScroll({
     queryKey: 'myPuzzle',
@@ -63,93 +58,7 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
       <Seo title={`${user?.nickname} 프로필`} description="프로필 보기 및 변경 페이지" />
       <Header user={user} />
       <Wrapper>
-        <ProfileWrapper>
-          <Title>프로필</Title>
-          <ProfileBox>
-            <Profile>
-              <ProfileImageBox>
-                <img
-                  src={profileImg}
-                  alt="profile"
-                  onClick={() => {
-                    if (!inputFileRef.current) return;
-                    inputFileRef.current.click();
-                  }}
-                />
-                <input
-                  type="file"
-                  multiple={false}
-                  ref={inputFileRef}
-                  accept="image/png, image/jpeg"
-                  onChange={(e) => {
-                    if (!e.target.files) {
-                      return;
-                    }
-                    const reader = new FileReader();
-                    reader?.readAsDataURL(e.target.files[0]);
-                    reader.onload = () => {
-                      setProfileImg(String(reader.result));
-                    };
-                  }}
-                />
-              </ProfileImageBox>
-              <ProfileText>
-                <div>
-                  이메일: <span>{`${user?.email}`}</span>
-                </div>
-                <div>
-                  이름: <span>{`${user?.name}`}</span>
-                </div>
-                <div>
-                  닉네임: <input value={nickname} onChange={(e) => setNickname(e.target.value)} maxLength={5} />
-                </div>
-              </ProfileText>
-              <div style={{ width: '100%' }}>
-                <button
-                  disabled={user?.nickname === nickname && profileImg === user.picture}
-                  type="button"
-                  style={{ width: '50%' }}
-                  onClick={async (e) => {
-                    if (nickname.length > 5) {
-                      alert('닉네임은 5글자 이하입니다');
-                    }
-                    const data: { nickname: string; profileImage: string } = {
-                      nickname: '',
-                      profileImage: '',
-                    };
-                    if (user?.nickname !== nickname) {
-                      data.nickname = nickname;
-                    }
-                    if (user?.picture !== profileImg) {
-                      data.profileImage = profileImg;
-                    }
-
-                    try {
-                      await axios.put('/api/users', data);
-                    } catch (err) {
-                      if (err instanceof AxiosError) {
-                        alert(err.response?.data.message || 'Error');
-                      }
-                    }
-                  }}
-                >
-                  수정하기
-                </button>
-                <button
-                  disabled={user?.nickname === nickname && user.picture === profileImg}
-                  type="button"
-                  style={{ width: '50%' }}
-                  onClick={() => {
-                    setProfileImg(user?.picture || '');
-                    setNickname(user?.nickname || '');
-                  }}
-                >
-                  되돌리기
-                </button>
-              </div>
-            </Profile>
-          </ProfileBox>
-        </ProfileWrapper>
+        <Profile user={user} />
         <TabBox>
           <li
             onClick={() => {
@@ -232,50 +141,6 @@ const PuzzleContainer = styled.div`
   }
   @media (max-width: 720px) {
     grid-template-columns: repeat(2, 1fr);
-  }
-`;
-
-const ProfileWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  padding: 0.5rem;
-  border-bottom: 1px solid black;
-  margin-bottom: 1rem;
-`;
-
-const ProfileBox = styled.div`
-  width: 80%;
-  line-height: 1.5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const Profile = styled.div`
-  display: flex;
-  padding: 0.25rem;
-  flex-wrap: wrap;
-  box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.5);
-`;
-
-const ProfileText = styled.div`
-  padding: 0.5rem;
-`;
-
-const ProfileImageBox = styled.div`
-  width: 150px;
-  height: 150px;
-  img {
-    width: 100%;
-    cursor: pointer;
-    object-position: 50% 50%;
-    aspect-ratio: 1;
-    object-fit: cover;
-  }
-  input[type='file'] {
-    display: none;
   }
 `;
 
