@@ -13,16 +13,21 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
   }, [user]);
 
   return (
-    <>
+    <Container>
       <Seo title={`${user?.nickname} 프로필`} description="프로필 보기 및 변경 페이지" />
       <Header user={user} />
       <Wrapper>
         <Profile user={user} />
         <RoomList user={user} />
       </Wrapper>
-    </>
+    </Container>
   );
 }
+
+const Container = styled.div`
+  width: 100%;
+  height: 100vh;
+`;
 
 const Wrapper = styled.div`
   padding: 10px;

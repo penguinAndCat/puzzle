@@ -1,4 +1,4 @@
-import RoomCard from 'components/common/RoomCard';
+import RoomCard from 'components/common/Card/RoomCard';
 import { NEXT_SERVER } from 'config';
 import useInfiniteScroll from 'hooks/useInfiniteScroll';
 import axios from 'libs/axios';
@@ -86,9 +86,11 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
                       window.location.href = `${NEXT_SERVER}/puzzle/${item._id}`;
                     }}
                     onDelete={() => {
-                      axios.delete(`/api/puzzle/${item._id}`).then(() => {
-                        refetchMyPuzzle();
-                      });
+                      if (window.confirm('정말로 삭제하시겠습니까?')) {
+                        axios.delete(`/api/puzzle/${item._id}`).then(() => {
+                          refetchMyPuzzle();
+                        });
+                      }
                     }}
                   />
                 ))

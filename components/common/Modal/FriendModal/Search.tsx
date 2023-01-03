@@ -1,5 +1,4 @@
 import axios from 'axios';
-import Portal from 'components/common/Portal';
 import { useToast } from 'hooks/useToast';
 import { userStore } from 'libs/zustand/store';
 import { useRef, useState } from 'react';
@@ -49,9 +48,6 @@ const SearchFriend = () => {
           </RequestButton>
         </SearchUserWrapper>
       )}
-      <Portal selector="div">
-        <div></div>
-      </Portal>
     </Container>
   );
 };

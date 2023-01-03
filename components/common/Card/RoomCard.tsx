@@ -1,6 +1,7 @@
 import axios from 'libs/axios';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { SeeMoreIcon } from '../Icon';
 import HoverImage from './HoverImage';
 import ProgressBar from './ProgressBar';
 
@@ -65,10 +66,12 @@ export default function RoomCard({
             {isPrivate && <ClickableP onClick={() => openModal(userList, '초대받은 사람')}>초대받은 사람</ClickableP>}
             {onDelete && (
               <DeleteContainer>
-                <ToggleButton onClick={() => setShowDelete((prev) => !prev)}>...</ToggleButton>
+                <ToggleButton onClick={() => setShowDelete((prev) => !prev)}>
+                  <SeeMoreIcon />
+                </ToggleButton>
                 {showDelete && (
                   <DeleteWrapper>
-                    <ToggleButton onClick={onDelete}>방 삭제</ToggleButton>
+                    <DeleteButton onClick={onDelete}>방 삭제</DeleteButton>
                   </DeleteWrapper>
                 )}
               </DeleteContainer>
@@ -175,6 +178,7 @@ const ModalListWrapper = styled.ul`
 `;
 
 const Container = styled.div`
+  position: relative;
   width: 100%;
   height: 100%;
   background-color: white;
@@ -236,16 +240,34 @@ const ClickableP = styled.p`
 `;
 
 const ToggleButton = styled.button`
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  outline: none;
   border: none;
-  align-self: flex-end;
-  text-align: center;
+  padding: 0px;
+  background-color: rgba(256, 256, 256, 0.3);
   &:hover {
-    background-color: lightgray;
+    background-color: rgba(256, 256, 256, 0);
   }
+  cursor: pointer;
 `;
 
 const DeleteContainer = styled.div`
-  position: relative;
+  position: absolute;
+  top: 0;
+  right: 0;
+`;
+
+const DeleteButton = styled.button`
+  width: 60px;
+  height: 30px;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  background-color: rgba(256, 256, 256, 1);
 `;
 
 const DeleteWrapper = styled.div`
