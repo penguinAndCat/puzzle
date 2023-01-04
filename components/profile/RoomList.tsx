@@ -2,11 +2,18 @@ import RoomCard from 'components/common/Card/RoomCard';
 import { NEXT_SERVER } from 'config';
 import useInfiniteScroll from 'hooks/useInfiniteScroll';
 import axios from 'libs/axios';
+import { useModal, usePuzzle } from 'libs/zustand/store';
 import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 export default function RoomList({ user }: { user: UserInfo | null }) {
   const [tab, setTab] = useState<'my' | 'invited'>('my');
+  const { addModal } = useModal();
+  const { initialModal } = usePuzzle();
+  const openModal = () => {
+    initialModal();
+    addModal('puzzle');
+  };
 
   const [{ data: myPuzzle, refetch: refetchMyPuzzle }, myPuzzleRef] = useInfiniteScroll({
     queryKey: 'myPuzzle',
@@ -69,11 +76,12 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
             초대된 방
           </Li>
         </TabBox>
-        <PuzzleWrapper>
-          {tab == 'my' && (
-            <>
-              {puzzleData && puzzleData.length > 0 ? (
-                puzzleData?.map((item: any, index: number) => (
+
+        {tab == 'my' && (
+          <>
+            {puzzleData && puzzleData.length > 0 ? (
+              <PuzzleWrapper>
+                {puzzleData?.map((item: any, index: number) => (
                   <RoomCard
                     key={index}
                     src={item.config.puzzleImage.src}
@@ -92,17 +100,23 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
                       }
                     }}
                   />
-                ))
-              ) : (
-                <div>hello</div>
-              )}
-              <div ref={myPuzzleRef} />
-            </>
-          )}
-          {tab === 'invited' && (
-            <>
-              {invitedPuzzleData && invitedPuzzleData.length > 0 ? (
-                invitedPuzzleData?.map((item: any, index: number) => (
+                ))}
+              </PuzzleWrapper>
+            ) : (
+              <CreateWrapper>
+                <CreateInfo>생성한 방이 없습니다.😥</CreateInfo>
+                <CreateInfo>방을 만들어 퍼즐을 맞춰 보세요.</CreateInfo>
+                <CreateButton onClick={openModal}>새로운 퍼즐 만들기</CreateButton>
+              </CreateWrapper>
+            )}
+            <div ref={myPuzzleRef} />
+          </>
+        )}
+        {tab === 'invited' && (
+          <>
+            {invitedPuzzleData && invitedPuzzleData.length > 0 ? (
+              <PuzzleWrapper>
+                {invitedPuzzleData?.map((item: any, index: number) => (
                   <RoomCard
                     key={index}
                     src={item.config.puzzleImage.src}
@@ -114,14 +128,14 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
                       window.location.href = `${NEXT_SERVER}/puzzle/${item._id}`;
                     }}
                   />
-                ))
-              ) : (
-                <div>hi</div>
-              )}
-              <div ref={invitedRef} />
-            </>
-          )}
-        </PuzzleWrapper>
+                ))}
+              </PuzzleWrapper>
+            ) : (
+              <div style={{ marginTop: '36px' }}>초대된 방이 없습니다.😥</div>
+            )}
+            <div ref={invitedRef} />
+          </>
+        )}
       </PuzzleContainer>
     </Wrapper>
   );
@@ -173,4 +187,29 @@ const Wrapper = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
+`;
+
+const CreateWrapper = styled.div`
+  width: 100%;
+  height: 160px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 0;
+`;
+
+const CreateInfo = styled.div`
+  margin-bottom: 12px;
+`;
+
+const CreateButton = styled.button`
+  width: 240px;
+  height: 40px;
+  background-color: ${({ theme }) => theme.bgColor};
+  color: ${({ theme }) => theme.textColor};
+  border: 3px solid ${({ theme }) => theme.textColor};
+  font-size: 19px;
+  font-weight: 600;
+  cursor: pointer;
 `;
