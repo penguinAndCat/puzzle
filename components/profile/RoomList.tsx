@@ -3,7 +3,7 @@ import { NEXT_SERVER } from 'config';
 import useInfiniteScroll from 'hooks/useInfiniteScroll';
 import axios from 'libs/axios';
 import { useModal, usePuzzle } from 'libs/zustand/store';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 export default function RoomList({ user }: { user: UserInfo | null }) {
@@ -15,7 +15,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
     addModal('puzzle');
   };
 
-  const [{ data: myPuzzle, refetch: refetchMyPuzzle }, myPuzzleRef] = useInfiniteScroll({
+  const [{ data: myPuzzle, refetch: refetchMyPuzzle, isFetching }, myPuzzleRef] = useInfiniteScroll({
     queryKey: 'myPuzzle',
     queryFn: async ({ pageParam = 1 }) => {
       const response = await axios.get('/api/puzzle/myPuzzle', {
@@ -28,6 +28,16 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
     },
     getNextPageParam: (lastPage) => (lastPage.isLast ? undefined : lastPage.page + 1),
   });
+
+  useEffect(() => {
+    if (myPuzzleRef.current) {
+      if (isFetching) {
+        myPuzzleRef.current.style.display = 'none';
+      } else {
+        myPuzzleRef.current.style.display = 'block';
+      }
+    }
+  }, [isFetching, myPuzzleRef]);
 
   const puzzleData = useMemo(() => {
     return myPuzzle?.pages.reduce((acc, cur) => [...acc, ...cur.item], []);

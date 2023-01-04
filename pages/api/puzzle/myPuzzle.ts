@@ -23,9 +23,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         })
         .skip((Number(page) - 1) * limit)
         .limit(limit);
-      const totalCount = await Puzzle.count();
+      const totalCount = await Puzzle.count({ userId: id });
       const totalPage = Math.ceil(totalCount / limit);
       const isLast = totalPage === Number(page);
+      console.log(totalCount, totalPage, limit);
       res.status(201).json({ item: puzzle, message: 'success', page: Number(page), isLast });
     } catch (err) {
       res.status(500).json({ error: err, message: 'failed' });
