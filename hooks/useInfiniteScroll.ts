@@ -19,6 +19,7 @@ const useInfiniteScroll = (option: {
     async (entries, observer) => {
       if (entries[0].isIntersecting && !infiniteQuery.isFetching) {
         observer.unobserve(entries[0].target);
+        console.log(infiniteQuery.hasNextPage);
         await infiniteQuery.fetchNextPage();
         observer.observe(entries[0].target);
       }
