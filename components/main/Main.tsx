@@ -1,5 +1,5 @@
-import Card from 'components/common/Card';
-import RoomCard from 'components/common/RoomCard';
+import Card from 'components/common/Card/Card';
+import RoomCard from 'components/common/Card/RoomCard';
 import axios from 'libs/axios';
 import { useModal, usePuzzle } from 'libs/zustand/store';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -74,7 +74,6 @@ const Main = ({ user }: { user: UserInfo | null }) => {
                 title={data.title}
                 isMain={true}
                 puzzleId={data._id}
-                userId={user?.id}
                 onClick={() => {
                   if (!user) {
                     toast({ content: '로그인이 필요합니다', type: 'warning' });

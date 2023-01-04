@@ -1,57 +1,11 @@
-import { AxiosError } from 'axios';
 import Header from 'components/common/Header';
-import RoomCard from 'components/common/RoomCard';
+import Profile from 'components/profile/Profile';
+import RoomList from 'components/profile/RoomList';
 import Seo from 'components/Seo';
-import { NEXT_SERVER } from 'config';
-import useInfiniteScroll from 'hooks/useInfiniteScroll';
-import axios from 'libs/axios';
-import Head from 'next/head';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 
 export default function MyPage({ user }: { user: UserInfo | null }) {
-  // 닉네임 5글자 제한
-  const [tab, setTab] = useState<'my' | 'invited'>('my');
-  const [profileImg, setProfileImg] = useState<string>(user?.picture || '');
-  const [nickname, setNickname] = useState<string>(user?.nickname || '');
-  const inputFileRef = useRef<HTMLInputElement>(null);
-
-  const [{ data: myPuzzle, refetch: refetchMyPuzzle }, myPuzzleRef] = useInfiniteScroll({
-    queryKey: 'myPuzzle',
-    queryFn: async ({ pageParam = 1 }) => {
-      const response = await axios.get('/api/puzzle/myPuzzle', {
-        params: {
-          id: user?.id,
-          page: pageParam,
-        },
-      });
-      return response.data;
-    },
-    getNextPageParam: (lastPage) => (lastPage.isLast ? undefined : lastPage.page + 1),
-  });
-
-  const puzzleData = useMemo(() => {
-    return myPuzzle?.pages.reduce((acc, cur) => [...acc, ...cur.item], []);
-  }, [myPuzzle?.pages]);
-
-  const [{ data: invitedPuzzle }, invitedRef] = useInfiniteScroll({
-    queryKey: 'invitedPuzzle',
-    queryFn: async ({ pageParam = 1 }) => {
-      const response = await axios.get('/api/puzzle/invited', {
-        params: {
-          id: user?.id,
-          page: pageParam,
-        },
-      });
-      return response.data;
-    },
-    getNextPageParam: (lastPage) => (lastPage.isLast ? undefined : lastPage.page + 1),
-  });
-
-  const invitedPuzzleData = useMemo(() => {
-    return invitedPuzzle?.pages.reduce((acc, cur) => [...acc, ...cur.item], []);
-  }, [invitedPuzzle?.pages]);
-
   useEffect(() => {
     if (!user) {
       window.location.href = '/';
@@ -59,248 +13,20 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
   }, [user]);
 
   return (
-    <>
+    <Container>
       <Seo title={`${user?.nickname} 프로필`} description="프로필 보기 및 변경 페이지" />
       <Header user={user} />
       <Wrapper>
-        <ProfileWrapper>
-          <Title>프로필</Title>
-          <ProfileBox>
-            <Profile>
-              <ProfileImageBox>
-                <img
-                  src={profileImg}
-                  alt="profile"
-                  onClick={() => {
-                    if (!inputFileRef.current) return;
-                    inputFileRef.current.click();
-                  }}
-                />
-                <input
-                  type="file"
-                  multiple={false}
-                  ref={inputFileRef}
-                  accept="image/png, image/jpeg"
-                  onChange={(e) => {
-                    if (!e.target.files) {
-                      return;
-                    }
-                    const reader = new FileReader();
-                    reader?.readAsDataURL(e.target.files[0]);
-                    reader.onload = () => {
-                      setProfileImg(String(reader.result));
-                    };
-                  }}
-                />
-              </ProfileImageBox>
-              <ProfileText>
-                <div>
-                  이메일: <span>{`${user?.email}`}</span>
-                </div>
-                <div>
-                  이름: <span>{`${user?.name}`}</span>
-                </div>
-                <div>
-                  닉네임: <input value={nickname} onChange={(e) => setNickname(e.target.value)} maxLength={5} />
-                </div>
-              </ProfileText>
-              <div style={{ width: '100%' }}>
-                <button
-                  disabled={user?.nickname === nickname && profileImg === user.picture}
-                  type="button"
-                  style={{ width: '50%' }}
-                  onClick={async (e) => {
-                    if (nickname.length > 5) {
-                      alert('닉네임은 5글자 이하입니다');
-                    }
-                    const data: { nickname: string; profileImage: string } = {
-                      nickname: '',
-                      profileImage: '',
-                    };
-                    if (user?.nickname !== nickname) {
-                      data.nickname = nickname;
-                    }
-                    if (user?.picture !== profileImg) {
-                      data.profileImage = profileImg;
-                    }
-
-                    try {
-                      await axios.put('/api/users', data);
-                    } catch (err) {
-                      if (err instanceof AxiosError) {
-                        alert(err.response?.data.message || 'Error');
-                      }
-                    }
-                  }}
-                >
-                  수정하기
-                </button>
-                <button
-                  disabled={user?.nickname === nickname && user.picture === profileImg}
-                  type="button"
-                  style={{ width: '50%' }}
-                  onClick={() => {
-                    setProfileImg(user?.picture || '');
-                    setNickname(user?.nickname || '');
-                  }}
-                >
-                  되돌리기
-                </button>
-              </div>
-            </Profile>
-          </ProfileBox>
-        </ProfileWrapper>
-        <TabBox>
-          <li
-            onClick={() => {
-              if (tab === 'my') return;
-              setTab('my');
-            }}
-          >
-            나의 방
-          </li>
-          <li
-            onClick={() => {
-              if (tab === 'invited') return;
-              setTab('invited');
-            }}
-          >
-            초대된 방
-          </li>
-        </TabBox>
-        <Title>{tab === 'my' ? '나의 방' : '초대된 방'}</Title>
-        <PuzzleContainer>
-          {tab == 'my' && (
-            <>
-              {puzzleData?.map((item: any, index: number) => (
-                <RoomCard
-                  key={index}
-                  src={item.config.puzzleImage.src}
-                  progress={Number((item.perfection * 100).toFixed(3))}
-                  title={item.title}
-                  userId={user?.id}
-                  isPrivate={item.secretRoom}
-                  puzzleId={item._id}
-                  onClick={() => {
-                    window.location.href = `${NEXT_SERVER}/puzzle/${item._id}`;
-                  }}
-                  onDelete={() => {
-                    axios.delete(`/api/puzzle/${item._id}`).then(() => {
-                      refetchMyPuzzle();
-                    });
-                  }}
-                />
-              ))}
-              <div ref={myPuzzleRef} />
-            </>
-          )}
-          {tab === 'invited' && (
-            <>
-              {invitedPuzzleData?.map((item: any, index: number) => (
-                <RoomCard
-                  key={index}
-                  src={item.config.puzzleImage.src}
-                  progress={Number((item.perfection * 100).toFixed(3))}
-                  title={item.title}
-                  userId={user?.id}
-                  puzzleId={item._id}
-                  isPrivate={item.secretRoom}
-                  onClick={() => {
-                    window.location.href = `${NEXT_SERVER}/puzzle/${item._id}`;
-                  }}
-                />
-              ))}
-              <div ref={invitedRef} />
-            </>
-          )}
-        </PuzzleContainer>
+        <Profile user={user} />
+        <RoomList user={user} />
       </Wrapper>
-    </>
+    </Container>
   );
 }
 
-const PuzzleContainer = styled.div`
-  display: grid;
-  padding: 1rem;
-  grid-template-columns: repeat(8, 1fr);
-  gap: 0.5rem;
-  @media (max-width: 1440px) {
-    grid-template-columns: repeat(6, 1fr);
-  }
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
-  @media (max-width: 720px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-`;
-
-const ProfileWrapper = styled.div`
+const Container = styled.div`
   width: 100%;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  padding: 0.5rem;
-  border-bottom: 1px solid black;
-  margin-bottom: 1rem;
-`;
-
-const ProfileBox = styled.div`
-  width: 80%;
-  line-height: 1.5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const Profile = styled.div`
-  display: flex;
-  padding: 0.25rem;
-  flex-wrap: wrap;
-  box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.5);
-`;
-
-const ProfileText = styled.div`
-  padding: 0.5rem;
-`;
-
-const ProfileImageBox = styled.div`
-  width: 150px;
-  height: 150px;
-  img {
-    width: 100%;
-    cursor: pointer;
-    object-position: 50% 50%;
-    aspect-ratio: 1;
-    object-fit: cover;
-  }
-  input[type='file'] {
-    display: none;
-  }
-`;
-
-const Title = styled.h1`
-  font-size: 1.5rem;
-  line-height: 1.5;
-  text-align: center;
-  width: 100%;
-`;
-
-const TabBox = styled.ul`
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  padding: 0 10px;
-  width: 100%;
-  & > li {
-    padding: 10px;
-    background-color: white;
-    color: black;
-    cursor: pointer;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-  }
-  border-bottom: 1px solid black;
+  height: 100vh;
 `;
 
 const Wrapper = styled.div`
