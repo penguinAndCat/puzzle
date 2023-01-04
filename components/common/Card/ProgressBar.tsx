@@ -12,7 +12,7 @@ export default function ProgressBar({ percent }: { percent: number }) {
 
 const Container = styled.div`
   width: 100%;
-  height: 100%;
+  height: 8px;
   position: relative;
   border-radius: 4px;
   padding: 1px;
@@ -20,10 +20,9 @@ const Container = styled.div`
 
 const Progress = styled.div`
   width: 100%;
-  height: 100%;
+  height: 8px;
   border-radius: 4px;
-  background: ${({ theme }) =>
-    `linear-gradient(to right, ${theme.loadingColor3}, ${theme.loadingColor2}, ${theme.loadingColor1});`};
+  background: ${({ theme }) => `linear-gradient(to right, ${theme.loadingColor3}, ${theme.loadingColor1});`};
 `;
 
 const BlockBar = styled.div<{ percent: number }>`
@@ -31,9 +30,9 @@ const BlockBar = styled.div<{ percent: number }>`
   position: absolute;
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
-  top: 0;
+  top: 1px;
   right: 1px;
   width: ${({ percent }) => `${percent}%;`}
-  height: 100%;
+  height: 8px;
   z-index: 2;
 `;

@@ -49,7 +49,7 @@ export default class MyDocument extends Document {
             src="https://code.jquery.com/jquery-1.11.3.min.js"
             strategy="beforeInteractive"
           ></Script>
-          <div id="portal" />
+          <div id="modal-root" />
         </body>
       </Html>
     );
