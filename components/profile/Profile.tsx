@@ -1,12 +1,19 @@
 import { AxiosError } from 'axios';
+import CropImageModal from 'components/common/Modal/CropImageModal';
+import ModalLayout from 'components/common/Modal/ModalLayout';
+import { useToast } from 'hooks/useToast';
 import axios from 'libs/axios';
-import React, { useEffect, useRef, useState } from 'react';
+import { saveImage } from 'libs/common/saveImage';
+import router from 'next/router';
+import React, { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 
 export default function Profile({ user }: { user: UserInfo | null }) {
+  const toast = useToast();
+  const [showModal, setShowModal] = useState(false);
   const [profileImg, setProfileImg] = useState<string>(user?.picture || '');
+  const [croppedImg, setCroppedImg] = useState<string>(user?.picture || '');
   const [nickname, setNickname] = useState<string>(user?.nickname || '');
-  const inputFileRef = useRef<HTMLInputElement>(null);
 
   const onClickInputButton = async () => {
     if (nickname.length > 5) {
@@ -19,30 +26,22 @@ export default function Profile({ user }: { user: UserInfo | null }) {
     if (user?.nickname !== nickname) {
       data.nickname = nickname;
     }
-    if (user?.picture !== profileImg) {
-      data.profileImage = profileImg;
+    if (user?.picture !== croppedImg) {
+      data.profileImage = croppedImg;
     }
-
     try {
-      await axios.put('/api/users', data);
+      data.profileImage = await saveImage(croppedImg);
+      const res = await axios.put('/api/users', data);
+      if (res.data.message === 'success') {
+        router.replace(router.asPath);
+        toast({ content: '프로필을 수정하였습니다.', type: 'success' });
+      }
     } catch (err) {
       if (err instanceof AxiosError) {
         alert(err.response?.data.message || 'Error');
       }
     }
   };
-
-  const onChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) {
-      return;
-    }
-    const reader = new FileReader();
-    reader?.readAsDataURL(e.target.files[0]);
-    reader.onload = () => {
-      setProfileImg(String(reader.result));
-    };
-  };
-
   useEffect(() => {
     if (!user) {
       window.location.href = '/';
@@ -52,21 +51,24 @@ export default function Profile({ user }: { user: UserInfo | null }) {
   return (
     <Container>
       <ProfileWrapper>
+        {showModal && (
+          <ModalLayout content={'cropImage'} setCloseModal={() => setShowModal(false)}>
+            <CropImageModal
+              setCloseModal={() => setShowModal(false)}
+              profileImg={profileImg}
+              croppedImg={croppedImg}
+              setProfileImg={setProfileImg}
+              setCroppedImg={setCroppedImg}
+            />
+          </ModalLayout>
+        )}
         <ProfileImageBox>
           <Img
             src={profileImg}
             alt="profile"
             onClick={() => {
-              if (!inputFileRef.current) return;
-              inputFileRef.current.click();
+              setShowModal(true);
             }}
-          />
-          <input
-            type="file"
-            multiple={false}
-            ref={inputFileRef}
-            accept="image/png, image/jpeg"
-            onChange={(e) => onChangeInput(e)}
           />
         </ProfileImageBox>
         <Content>

@@ -1,17 +1,15 @@
 import { CloseIcon } from 'components/common/Icon';
 import { useInvitedUser } from 'hooks/useInvitedUser';
 import { theme } from 'libs/theme/theme';
-import { useModal, userStore } from 'libs/zustand/store';
+import { userStore } from 'libs/zustand/store';
 import { Key, MouseEvent } from 'react';
 import styled from 'styled-components';
 
 const InvitedUserModal = ({ puzzleId, setCloseModal }: { puzzleId: string; setCloseModal: () => void }) => {
-  const { removeModal } = useModal();
   const { user } = userStore();
   const { invitedUser } = useInvitedUser(puzzleId, user);
   const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     e.preventDefault();
-    removeModal('notice');
     setCloseModal();
   };
 

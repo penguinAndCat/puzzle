@@ -79,7 +79,6 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
                     src={item.config.puzzleImage.src}
                     progress={Number((item.perfection * 100).toFixed(3))}
                     title={item.title}
-                    userId={user?.id}
                     isPrivate={item.secretRoom}
                     puzzleId={item._id}
                     onClick={() => {
@@ -109,7 +108,6 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
                     src={item.config.puzzleImage.src}
                     progress={Number((item.perfection * 100).toFixed(3))}
                     title={item.title}
-                    userId={user?.id}
                     puzzleId={item._id}
                     isPrivate={item.secretRoom}
                     onClick={() => {

@@ -74,7 +74,6 @@ const Main = ({ user }: { user: UserInfo | null }) => {
                 title={data.title}
                 isMain={true}
                 puzzleId={data._id}
-                userId={user?.id}
                 onClick={() => {
                   if (!user) {
                     toast({ content: '로그인이 필요합니다', type: 'warning' });

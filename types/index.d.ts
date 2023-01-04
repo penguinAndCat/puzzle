@@ -110,3 +110,10 @@ type SocketProps = {
   addParticipant: (value: string) => void;
   removeParticipant: (value: string) => void;
 };
+
+type Area = {
+  width: number;
+  height: number;
+  x: number;
+  y: number;
+};

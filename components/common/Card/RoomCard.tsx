@@ -14,7 +14,6 @@ export default function RoomCard({
   title,
   puzzleId,
   isPrivate = false,
-  userId,
   onClick,
   onDelete,
   isMain = false,
@@ -23,7 +22,6 @@ export default function RoomCard({
   progress: number;
   title: string;
   puzzleId: string;
-  userId: string | undefined;
   isPrivate?: boolean;
   onClick: () => void;
   onDelete?: () => void;
@@ -125,22 +123,22 @@ const Title = styled.h1`
     width: 120px;
   }
   @media (max-width: 720px) {
-    width: 280px;
+    width: 240px;
   }
   @media (max-width: 600px) {
-    width: 220px;
+    width: 180px;
   }
   @media (max-width: 480px) {
-    width: 160px;
+    width: 120px;
   }
   @media (max-width: 360px) {
-    width: 100px;
+    width: 60px;
   }
 `;
 
 const PrivateP = styled.p`
   font-size: 12px;
-  margin: 0 2px 2px 0;
+  margin: 0 8px 2px 0;
   color: #969696;
 `;
 

@@ -43,13 +43,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         user.nickname = body.nickname;
       }
       if (body.profileImage) {
-        const imageUrl = await saveImage(body.profileImage);
-        user.picture = imageUrl;
+        user.picture = body.profileImage;
       }
       await user.save();
       login({ name: user.name, nickname: user.nickname }, user.provider, req, res);
       res.status(200).json({ user: user, message: 'success' });
     } catch (err) {
+      console.log(err);
       res.status(500).json({ error: err, message: 'failed' });
     }
   }
