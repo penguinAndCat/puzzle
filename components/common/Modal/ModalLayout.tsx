@@ -1,21 +1,27 @@
 import { useModal } from 'libs/zustand/store';
-import { MouseEvent, useEffect } from 'react';
+import { MouseEvent, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 
 interface Props {
   children: React.ReactNode;
   content: string;
+  setCloseModal?: () => void;
 }
 
-const ModalLayout = ({ content, children }: Props) => {
+const ModalLayout = ({ content, children, setCloseModal }: Props) => {
   const { modal, removeModal } = useModal();
+  const [isBrowser, setIsBrowser] = useState(false);
 
   const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     e.preventDefault();
     removeModal(content);
+    if (setCloseModal === undefined) return;
+    setCloseModal();
   };
 
   useEffect(() => {
+    setIsBrowser(true);
     document.body.style.overflow = 'hidden';
     return () => {
       if (modal.length === 1) {
@@ -24,7 +30,14 @@ const ModalLayout = ({ content, children }: Props) => {
     };
   }, []);
 
-  return <OuterContainer onClick={(e) => closeModal(e)}>{children}</OuterContainer>;
+  const modalRootElement = document.getElementById('modal-root');
+  const modalContent = <OuterContainer onClick={(e) => closeModal(e)}>{children}</OuterContainer>;
+  if (isBrowser) {
+    if (modalRootElement) {
+      return createPortal(modalContent, modalRootElement);
+    }
+  }
+  return null;
 };
 
 export default ModalLayout;
