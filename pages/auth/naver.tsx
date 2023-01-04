@@ -39,7 +39,7 @@ const Naver: NextPage = () => {
       alert('닉네임은 5글자 이하입니다');
       return;
     }
-    axios.post('/api/auth/google', { nick: inputRef.current?.value, user: userInfo });
+    axios.post('/api/auth/naver', { nick: inputRef.current?.value, user: userInfo });
     window.location.replace('/');
   };
 
