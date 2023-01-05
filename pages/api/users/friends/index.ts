@@ -3,10 +3,12 @@ import Notice from 'models/Notice';
 import Friend from 'models/Friend';
 import User from 'models/User';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { getCookie } from 'cookies-next';
+import { decodePayload } from 'libs/jwt';
 import { pusher } from 'libs/pusher';
 
 type Data = {
-  user?: any;
+  friends?: any;
   message: string;
   error?: any;
 };
@@ -14,6 +16,46 @@ type Data = {
 export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
   const { method } = req;
   await dbConnect();
+  if (method === 'GET') {
+    try {
+      const accessToken = getCookie('accessToken', { req, res });
+      if (!accessToken) {
+        return res.status(401).json({ message: 'not authorizied' });
+      }
+      const userInfo = decodePayload<{
+        name: string;
+        nickname: string;
+        provider: string;
+        iat: number;
+        exp: number;
+        iss: string;
+      }>(accessToken);
+
+      const user = await User.findOne({ nickname: userInfo.nickname });
+      const friends = await Friend.aggregate([
+        { $match: { userId: user._id.toString() } },
+        {
+          $lookup: {
+            from: 'users',
+            let: { userObjId: { $toObjectId: '$friend' } },
+            pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$userObjId'] } } }],
+            as: 'user',
+          },
+        },
+        { $unwind: '$user' },
+        {
+          $project: {
+            _id: 0,
+            nickname: '$user.nickname',
+            picture: '$user.picture',
+          },
+        },
+      ]);
+      return res.status(201).json({ friends: friends, message: 'success' });
+    } catch (err) {
+      res.status(500).json({ error: err, message: 'failed' });
+    }
+  }
   if (method === 'DELETE') {
     try {
       const { userId, friendNickname } = req.query;

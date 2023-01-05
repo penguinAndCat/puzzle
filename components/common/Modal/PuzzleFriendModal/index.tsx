@@ -1,29 +1,23 @@
 import { CloseIcon } from 'components/common/Icon';
+import { usePuzzleFriend } from 'hooks/usePuzzleFriend';
 import { useToast } from 'hooks/useToast';
 import axios from 'libs/axios';
 import { theme } from 'libs/theme/theme';
 import { useModal, userStore } from 'libs/zustand/store';
 import { useRouter } from 'next/router';
-import { MouseEvent, useEffect, useState } from 'react';
+import { MouseEvent } from 'react';
 import styled from 'styled-components';
 
 const PuzzleFriendModal = () => {
   const router = useRouter();
   const toast = useToast();
   const { removeModal } = useModal();
-  const [frineds, setFriends] = useState([]);
+  const { puzzleFriend } = usePuzzleFriend(router.query.id);
   const { user } = userStore();
+
   const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     e.preventDefault();
     removeModal('puzzleFriend');
-  };
-  useEffect(() => {
-    getFriend();
-  }, []);
-
-  const getFriend = async () => {
-    const res = await axios.get(`/api/users/friends/puzzleId=${router.query.id}`);
-    setFriends(res.data.friends);
   };
 
   const inviteFriend = async (requestedNickname: string) => {
@@ -35,10 +29,14 @@ const PuzzleFriendModal = () => {
         puzzleId: router.query.id,
       },
     });
+    if (res.data.message === 'success') {
+      toast({ content: '초대 요청을 보냈습니다.', type: 'info' });
+    }
     if (res.data.message === 'duplicated') {
-      toast({ content: '이미 친구 요청을 보냈습니다.', type: 'warning' });
+      toast({ content: '이미 초대 요청을 보냈습니다.', type: 'warning' });
     }
   };
+
   return (
     <Container onClick={(e) => e.stopPropagation()}>
       <TitleWrapper>
@@ -50,23 +48,22 @@ const PuzzleFriendModal = () => {
       </TitleWrapper>
       <div>친구 목록</div>
       <Ul>
-        {frineds.map((item: { nickname: string; picture: string; isInvited: boolean }) => {
-          if (item.isInvited)
+        {puzzleFriend &&
+          puzzleFriend.map((item: { nickname: string; picture: string; isInvited: boolean; isHost: boolean }) => {
             return (
               <Li key={item.nickname}>
                 <Img src={item.picture} />
                 <Nickname>{item.nickname}</Nickname>
-                <InviteDiv>초대됨</InviteDiv>
+                {item.isHost ? (
+                  <InviteDiv>방장</InviteDiv>
+                ) : item.isInvited ? (
+                  <InviteDiv>초대됨</InviteDiv>
+                ) : (
+                  <InviteButton onClick={() => inviteFriend(item.nickname)}>초대</InviteButton>
+                )}
               </Li>
             );
-          return (
-            <Li key={item.nickname}>
-              <Img src={item.picture} />
-              <Nickname>{item.nickname}</Nickname>
-              <InviteButton onClick={() => inviteFriend(item.nickname)}>초대</InviteButton>
-            </Li>
-          );
-        })}
+          })}
       </Ul>
     </Container>
   );
@@ -167,7 +164,7 @@ const InviteDiv = styled.button`
   width: 60px;
   height: 20px;
   font-size: 12px;
-  line-height: 50%;
+  line-height: 16px;
   background-color: ${({ theme }) => theme.modalColor};
   color: ${({ theme }) => theme.modalTextColor};
   border: solid 1px ${({ theme }) => theme.modalTextColor};
@@ -177,7 +174,7 @@ const InviteButton = styled.button`
   width: 60px;
   height: 20px;
   font-size: 12px;
-  line-height: 50%;
+  line-height: 16px;
   background-color: ${({ theme }) => theme.modalColor};
   color: ${({ theme }) => theme.modalTextColor};
   border: solid 1px ${({ theme }) => theme.modalTextColor};

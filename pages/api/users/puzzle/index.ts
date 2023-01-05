@@ -36,7 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
       await Puzzle.updateOne({ _id: puzzleId }, { $push: { invitedUser: userId } });
       const puzzle = await Puzzle.findOne({ _id: puzzleId });
-      const user = await User.findOne({ _id: userId });
+      const user = await User.findOne({ _id: puzzle.userId });
       await Notice.deleteOne({
         requested: userId,
         puzzleId: puzzleId,
