@@ -60,6 +60,9 @@ const NoticeModal = () => {
     });
     if (res.data.message === 'success') {
       toast({ content: '초대를 수락하였습니다.', type: 'success' });
+      if (confirm('초대받은 퍼즐로 이동하겠습니까?')) {
+        window.location.href = `/puzzle/${puzzleId}`;
+      }
     }
     if (res.data.message === 'failed') {
       toast({ content: '초대 수락이 실패하였습니다.', type: 'warning' });
