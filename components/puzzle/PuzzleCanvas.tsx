@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { exportConfig, initConfig, restartConfig } from 'libs/puzzle/createPuzzle';
 import { useRouter } from 'next/router';
 
-import { moveIndex } from 'libs/puzzle/socketMove';
+import { movableIndex, moveIndex } from 'libs/puzzle/socketMove';
 import { useLoading, useSocket } from 'libs/zustand/store';
 import Pusher from 'pusher-js';
 import { NEXT_SERVER } from 'config';
@@ -114,11 +114,17 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
         setParticipant(Object.values(channel.members.members).map((item: any) => item.username));
       });
 
-      // when someone send a message.
       channel.bind('movePuzzle', (data: any) => {
         const { groupTiles, indexArr, socketCanvasSize } = data;
         if (data.socketId !== socketId) {
           moveIndex(groupTiles, indexArr, socketCanvasSize);
+        }
+      });
+
+      channel.bind('movablePuzzle', (data: any) => {
+        const { groupTiles, indexArr, socketCanvasSize } = data;
+        if (data.socketId !== socketId) {
+          movableIndex(groupTiles, indexArr, socketCanvasSize);
         }
       });
 

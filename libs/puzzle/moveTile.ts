@@ -51,7 +51,7 @@ const moveTile = (config: Config, query?: string | string[], socket?: any, userN
           indexArr,
           userNickName,
         };
-        axios.put(`/api/puzzle/${query}`, {
+        axios.post(`/api/puzzle/${query}`, {
           data,
         });
       }
@@ -191,13 +191,12 @@ const moveTile = (config: Config, query?: string | string[], socket?: any, userN
 
 const fitTile = (config: Config, currentTile: any, groupIndex: index) => {
   const index = config.groupTiles.findIndex((item) => item.tile === currentTile);
-  const leftTile = index % config.tilesPerRow !== 0 ? config.groupTiles[index - 1].tile : undefined;
-  const rightTile =
-    index % config.tilesPerRow !== config.tilesPerRow - 1 ? config.groupTiles[index + 1].tile : undefined;
-  const topTile = index >= config.tilesPerRow ? config.groupTiles[index - config.tilesPerRow].tile : undefined;
+  const leftTile = index % config.tilesPerRow !== 0 ? config.groupTiles[index - 1] : undefined;
+  const rightTile = index % config.tilesPerRow !== config.tilesPerRow - 1 ? config.groupTiles[index + 1] : undefined;
+  const topTile = index >= config.tilesPerRow ? config.groupTiles[index - config.tilesPerRow] : undefined;
   const bottomTile =
     index < config.tilesPerRow * config.tilesPerColumn - config.tilesPerRow
-      ? config.groupTiles[index + config.tilesPerRow].tile
+      ? config.groupTiles[index + config.tilesPerRow]
       : undefined;
 
   // 동작 설명!!
@@ -205,17 +204,33 @@ const fitTile = (config: Config, currentTile: any, groupIndex: index) => {
   // 이미 그룹화 된 조각은 다시 그룹화 하지 않는다.
   // 그룹화 가능한 조각이 두 개 이상 있을 경우, 하나의 조각만 그룹화한다.
   config.groupCheck = false;
-  if (calculatePosition(currentTile, leftTile, config.tileWidth, 0) === true && config.groupCheck === false) {
-    setPosition(config, currentTile, leftTile, groupIndex, 'left');
+  if (
+    calculatePosition(currentTile, leftTile?.tile, config.tileWidth, 0) === true &&
+    config.groupCheck === false &&
+    leftTile?.movable
+  ) {
+    setPosition(config, currentTile, leftTile?.tile, groupIndex, 'left');
   }
-  if (calculatePosition(currentTile, rightTile, config.tileWidth, 0) === true && config.groupCheck === false) {
-    setPosition(config, currentTile, rightTile, groupIndex, 'right');
+  if (
+    calculatePosition(currentTile, rightTile?.tile, config.tileWidth, 0) === true &&
+    config.groupCheck === false &&
+    rightTile?.movable
+  ) {
+    setPosition(config, currentTile, rightTile?.tile, groupIndex, 'right');
   }
-  if (calculatePosition(currentTile, topTile, config.tileHeight, 1) === true && config.groupCheck === false) {
-    setPosition(config, currentTile, topTile, groupIndex, 'top');
+  if (
+    calculatePosition(currentTile, topTile?.tile, config.tileHeight, 1) === true &&
+    config.groupCheck === false &&
+    topTile?.movable
+  ) {
+    setPosition(config, currentTile, topTile?.tile, groupIndex, 'top');
   }
-  if (calculatePosition(currentTile, bottomTile, config.tileHeight, 1) === true && config.groupCheck === false) {
-    setPosition(config, currentTile, bottomTile, groupIndex, 'bottom');
+  if (
+    calculatePosition(currentTile, bottomTile?.tile, config.tileHeight, 1) === true &&
+    config.groupCheck === false &&
+    bottomTile?.movable
+  ) {
+    setPosition(config, currentTile, bottomTile?.tile, groupIndex, 'bottom');
   }
 };
 
