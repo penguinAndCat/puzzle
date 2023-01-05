@@ -20,7 +20,7 @@ const FriendModal = () => {
 
   const getNotice = async () => {
     if (!user?.id) return;
-    const res = await axios.get(`/api/users/friends/${user.id}`);
+    const res = await axios.get(`/api/users/friends`);
     setFriends(res.data.friends);
   };
   return (

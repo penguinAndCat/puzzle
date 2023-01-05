@@ -11,6 +11,7 @@ import { NEXT_SERVER } from 'config';
 import { useToast } from 'hooks/useToast';
 import { useInvitedUser } from 'hooks/useInvitedUser';
 import axios from 'libs/axios';
+import { usePuzzleFriend } from 'hooks/usePuzzleFriend';
 
 interface Props {
   puzzleLv: number;
@@ -27,6 +28,7 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const [socket, setSocket] = useState();
   const { refetchInvitedUser } = useInvitedUser(router.query.id, user);
+  const { refetchPuzzleFriend } = usePuzzleFriend(router.query.id);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -132,6 +134,7 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
         const { puzzle, nickname } = data;
         if (puzzle) {
           refetchInvitedUser();
+          refetchPuzzleFriend();
           toast({ nickname: `${nickname}`, content: `님이 퍼즐 방에 초대 되었습니다.`, type: 'info' });
         }
       });

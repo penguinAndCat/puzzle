@@ -1,5 +1,4 @@
 import dbConnect from 'libs/db/mongoose';
-import mongoose from 'mongoose';
 import Friend from 'models/Friend';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getCookie } from 'cookies-next';
@@ -51,29 +50,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
       const user = await User.findOne({ nickname: userInfo.nickname });
       const { puzzleId } = req.query;
-
-      if (puzzleId === undefined) {
-        const friends = await Friend.aggregate([
-          { $match: { userId: user._id.toString() } },
-          {
-            $lookup: {
-              from: 'users',
-              let: { userObjId: { $toObjectId: '$friend' } },
-              pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$userObjId'] } } }],
-              as: 'user',
-            },
-          },
-          { $unwind: '$user' },
-          {
-            $project: {
-              _id: 0,
-              nickname: '$user.nickname',
-              picture: '$user.picture',
-            },
-          },
-        ]);
-        return res.status(201).json({ friends: friends, message: 'success' });
-      }
       const friends = await Friend.aggregate([
         { $match: { userId: user._id.toString() } },
         {
@@ -107,11 +83,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           },
         },
         {
+          $addFields: {
+            isHost: {
+              $eq: ['$user._id', '$puzzle.userId'],
+            },
+          },
+        },
+        {
           $project: {
             _id: 0,
             nickname: '$user.nickname',
             picture: '$user.picture',
             isInvited: '$isInvited',
+            isHost: '$isHost',
           },
         },
       ]);

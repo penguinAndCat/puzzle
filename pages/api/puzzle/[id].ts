@@ -87,7 +87,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
       const puzzle = await Puzzle.findById(id);
       res.status(201).json({ item: puzzle, message: 'success' });
     } catch (err) {
-      res.status(500).json({ error: err, message: 'failed' });
+      res.status(404).json({ error: err, message: 'failed' });
     }
   }
   if (method === 'DELETE') {
