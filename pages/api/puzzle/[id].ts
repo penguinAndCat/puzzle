@@ -1,14 +1,8 @@
 import dbConnect from 'libs/db/mongoose';
 import { pusher } from 'libs/pusher';
 import Puzzle from 'models/Puzzle';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest } from 'next';
 import { NextApiResponseServerIO } from 'types/next';
-
-type Data = {
-  item?: any;
-  message: string;
-  error?: any;
-};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponseServerIO) {
   const { method } = req;
@@ -58,13 +52,42 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
       res.status(500).json({ message: 'failed', error: err });
     }
   }
+  if (method === 'POST') {
+    try {
+      await Puzzle.updateOne(
+        { _id: id },
+        {
+          $set: {
+            config: req.body.data.config,
+          },
+        }
+      );
+      const groupTiles = req.body.data.config.groupTiles;
+      const indexArr = req.body.data.indexArr;
+      const socketCanvasSize = req.body.data.config.canvasSize;
+      const userNickName = req.body.data.userNickName;
+      const socketId = req.body.data.socketId;
+      if (id !== undefined) {
+        await pusher.trigger(`presence-${id}`, 'movablePuzzle', {
+          groupTiles: groupTiles,
+          indexArr: indexArr,
+          socketCanvasSize: socketCanvasSize,
+          userNickName: userNickName,
+          socketId: socketId,
+        });
+      }
+      res.status(201).json({ message: 'success' });
+    } catch (err) {
+      res.status(500).json({ message: 'failed', error: err });
+    }
+  }
   if (method === 'GET') {
     const { id } = req.query;
     try {
       const puzzle = await Puzzle.findById(id);
       res.status(201).json({ item: puzzle, message: 'success' });
     } catch (err) {
-      res.status(500).json({ error: err, message: 'failed' });
+      res.status(404).json({ error: err, message: 'failed' });
     }
   }
   if (method === 'DELETE') {

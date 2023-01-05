@@ -1,70 +1,56 @@
 import { CloseIcon } from 'components/common/Icon';
-import axios from 'libs/axios';
+import { useInvitedUser } from 'hooks/useInvitedUser';
 import { theme } from 'libs/theme/theme';
-import { useModal, userStore } from 'libs/zustand/store';
-import { MouseEvent, useEffect, useState } from 'react';
+import { userStore } from 'libs/zustand/store';
+import { Key, MouseEvent } from 'react';
 import styled from 'styled-components';
-import SearchFriend from './Search';
 
-const FriendModal = () => {
-  const { removeModal } = useModal();
-  const [friends, setFriends] = useState([]);
+const InvitedUserModal = ({ puzzleId, setCloseModal }: { puzzleId: string; setCloseModal: () => void }) => {
   const { user } = userStore();
+  const { invitedUser } = useInvitedUser(puzzleId, user);
   const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     e.preventDefault();
-    removeModal('friend');
+    setCloseModal();
   };
-  useEffect(() => {
-    getNotice();
-  }, []);
 
-  const getNotice = async () => {
-    if (!user?.id) return;
-    const res = await axios.get(`/api/users/friends`);
-    setFriends(res.data.friends);
-  };
   return (
     <Container onClick={(e) => e.stopPropagation()}>
       <TitleWrapper>
         <Close />
-        <Title>Friend</Title>
+        <Title>Participants</Title>
         <Close onClick={(e) => closeModal(e)} style={{ cursor: 'pointer' }}>
           <CloseIcon />
         </Close>
       </TitleWrapper>
-      <SearchFriend />
-      <div>친구 목록</div>
       <Ul>
-        {friends.map((item: { nickname: string; picture: string }) => {
-          return (
-            <Li key={item.nickname}>
-              <Img src={item.picture} />
-              <Nickname>{item.nickname}</Nickname>
-              <DeleteButton
-                onClick={async () => {
-                  if (window.confirm('정말로 삭제하시겠습니까?')) {
-                    try {
-                      await axios.delete(`/api/users/friends/${user.id}`, {
-                        params: { friendNickname: item.nickname },
-                      });
-                      setFriends((prev) => prev.filter((data: any) => data.nickname !== item.nickname));
-                    } catch (err) {
-                      console.log(err);
-                    }
-                  }
-                }}
-              >
-                삭제
-              </DeleteButton>
-            </Li>
-          );
-        })}
+        {invitedUser && (
+          <div>
+            <UserWrapper>
+              <Img src={invitedUser.host.picture} alt={invitedUser.host.nickname} />
+              <Nickname>{invitedUser.host.nickname}</Nickname>
+              <FriendButton>방장</FriendButton>
+            </UserWrapper>
+            {invitedUser.users.map((participant: any, index: Key | null | undefined) => {
+              return (
+                <UserWrapper key={index}>
+                  <Img src={participant.picture} alt={participant.nickname} />
+                  <Nickname>{participant.nickname}</Nickname>
+                  {user?.nickname === participant.nickname ? (
+                    <FriendButton>나</FriendButton>
+                  ) : participant.isFriend > 0 ? (
+                    <FriendButton>친구</FriendButton>
+                  ) : null}
+                </UserWrapper>
+              );
+            })}
+          </div>
+        )}
       </Ul>
     </Container>
   );
 };
 
-export default FriendModal;
+export default InvitedUserModal;
 
 const Container = styled.div`
   @keyframes fadein {
@@ -90,7 +76,7 @@ const Container = styled.div`
   top: 50%;
   left: 50%;
   transform: translate3d(-50%, -50%, 0);
-  min-width: 300px;
+  min-width: 250px;
   min-height: 400px;
   display: flex;
   flex-direction: column;
@@ -117,19 +103,13 @@ const Close = styled.div`
   ${theme.common.flexCenter}
 `;
 
-const Img = styled.img`
-  width: 40px;
-  height: 40px;
-  object-fit: cover;
-  border-radius: 50%;
-`;
-
 const Ul = styled.ul`
   height: 240px;
   display: flex;
   flex-direction: column;
   align-items: center;
   overflow: auto;
+  padding: 8px;
   &::-webkit-scrollbar {
     width: 5px;
     height: 8px;
@@ -140,27 +120,33 @@ const Ul = styled.ul`
   }
 `;
 
-const Li = styled.li`
-  width: 300px;
-  height: 50px;
-  padding: 0 20px;
+const UserWrapper = styled.div`
+  position: relative;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  margin-bottom: 4px;
+`;
+
+const Img = styled.img`
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-right: 8px;
 `;
 
 const Nickname = styled.div`
-  width: 140px;
+  width: 100px;
+  margin-right: 8px;
   font-size: 12px;
 `;
 
-const DeleteButton = styled.button`
-  width: 40px;
+const FriendButton = styled.div`
+  width: 80px;
   height: 20px;
   font-size: 12px;
-  line-height: 50%;
-  background-color: ${({ theme }) => theme.modalColor};
-  color: ${({ theme }) => theme.modalTextColor};
-  border: solid 1px ${({ theme }) => theme.modalTextColor};
-  cursor: pointer;
+  border: 1px ${({ theme }) => theme.borderColor};
+  text-align: center;
+  line-height: 20px;
+  border-radius: 2px;
 `;

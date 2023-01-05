@@ -4,13 +4,14 @@ import styled from 'styled-components';
 import { exportConfig, initConfig, restartConfig } from 'libs/puzzle/createPuzzle';
 import { useRouter } from 'next/router';
 
-import { moveIndex } from 'libs/puzzle/socketMove';
+import { movableIndex, moveIndex } from 'libs/puzzle/socketMove';
 import { useLoading, useSocket } from 'libs/zustand/store';
 import Pusher from 'pusher-js';
 import { NEXT_SERVER } from 'config';
 import { useToast } from 'hooks/useToast';
 import { useInvitedUser } from 'hooks/useInvitedUser';
 import axios from 'libs/axios';
+import { usePuzzleFriend } from 'hooks/usePuzzleFriend';
 
 interface Props {
   puzzleLv: number;
@@ -27,6 +28,7 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const [socket, setSocket] = useState();
   const { refetchInvitedUser } = useInvitedUser(router.query.id, user);
+  const { refetchPuzzleFriend } = usePuzzleFriend(router.query.id);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -114,7 +116,6 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
         setParticipant(Object.values(channel.members.members).map((item: any) => item.username));
       });
 
-      // when someone send a message.
       channel.bind('movePuzzle', (data: any) => {
         const { groupTiles, indexArr, socketCanvasSize } = data;
         if (data.socketId !== socketId) {
@@ -122,10 +123,18 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
         }
       });
 
+      channel.bind('movablePuzzle', (data: any) => {
+        const { groupTiles, indexArr, socketCanvasSize } = data;
+        if (data.socketId !== socketId) {
+          movableIndex(groupTiles, indexArr, socketCanvasSize);
+        }
+      });
+
       channel.bind('invited', (data: any) => {
         const { puzzle, nickname } = data;
         if (puzzle) {
           refetchInvitedUser();
+          refetchPuzzleFriend();
           toast({ nickname: `${nickname}`, content: `님이 퍼즐 방에 초대 되었습니다.`, type: 'info' });
         }
       });
