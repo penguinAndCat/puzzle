@@ -2,7 +2,7 @@ import { openConfetti } from 'hooks/useConfetti';
 import axios from 'libs/axios';
 import { getMargin } from './createPuzzle';
 
-const moveTile = (config: Config, query?: string | string[], socket?: any, userNickName?: string) => {
+const moveTile = (config: Config, query?: string | string[], socket?: any) => {
   config.groupTiles.forEach((item, index) => {
     item.tile.onMouseDown = (event: any) => {
       if (!item.movable) {
@@ -13,7 +13,7 @@ const moveTile = (config: Config, query?: string | string[], socket?: any, userN
       const gIndex = item.groupIndex;
       // local movable setting && zindex setting
       if (gIndex !== null) {
-        config.groupTiles.forEach(({ tile, groupIndex, movable }) => {
+        config.groupTiles.forEach(({ tile, groupIndex }) => {
           if (groupIndex && groupIndex === gIndex) {
             config.project.project.activeLayer.addChild(tile);
           }
@@ -23,7 +23,7 @@ const moveTile = (config: Config, query?: string | string[], socket?: any, userN
       }
 
       // target index array
-      let indexArr = [];
+      let indexArr: any[] = [];
       if (gIndex === null) {
         indexArr.push(index);
       } else {
@@ -40,7 +40,7 @@ const moveTile = (config: Config, query?: string | string[], socket?: any, userN
           config: {
             ...config,
             groupTiles: config.groupTiles.map((item, groupIndex) => {
-              if (item.groupIndex === gIndex || index == groupIndex) {
+              if (indexArr.includes(groupIndex)) {
                 return [item.tile.position.x, item.tile.position.y, item.groupIndex, false];
               } else {
                 return [item.tile.position.x, item.tile.position.y, item.groupIndex, true];
@@ -48,8 +48,6 @@ const moveTile = (config: Config, query?: string | string[], socket?: any, userN
             }),
           },
           socketId: socket,
-          indexArr,
-          userNickName,
         };
         axios.post(`/api/puzzle/${query}`, {
           data,
@@ -135,7 +133,6 @@ const moveTile = (config: Config, query?: string | string[], socket?: any, userN
           },
           indexArr: indexArr,
           socketId: socket,
-          userNickName: userNickName,
           perfection: perfection,
         };
         axios.put(`/api/puzzle/${query}`, {

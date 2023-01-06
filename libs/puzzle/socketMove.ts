@@ -64,7 +64,7 @@ export const moveIndex = (groupTiles: any, indexArr: number[], socketCanvasSize:
   }
 };
 
-export const movableIndex = (groupTiles: any, indexArr: number[], socketCanvasSize: size) => {
+export const movableIndex = (groupTiles: any) => {
   const config = exportConfig();
   config.groupTiles.forEach((item, tilesIndex) => {
     item.groupIndex = groupTiles[tilesIndex][2];
