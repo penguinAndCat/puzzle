@@ -1,4 +1,4 @@
-import { useNotice } from 'hooks/useNotice';
+import { useNotice } from 'hooks/useReactQuery';
 import axios from 'libs/axios';
 import { theme } from 'libs/theme/theme';
 import { useModal } from 'libs/zustand/store';

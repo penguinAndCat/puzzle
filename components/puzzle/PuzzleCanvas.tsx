@@ -9,9 +9,8 @@ import { useLoading, useSocket } from 'libs/zustand/store';
 import Pusher from 'pusher-js';
 import { NEXT_SERVER } from 'config';
 import { useToast } from 'hooks/useToast';
-import { useInvitedUser } from 'hooks/useInvitedUser';
+import { useInvitedUser, usePuzzleFriend } from 'hooks/useReactQuery';
 import axios from 'libs/axios';
-import { usePuzzleFriend } from 'hooks/usePuzzleFriend';
 
 interface Props {
   puzzleLv: number;
