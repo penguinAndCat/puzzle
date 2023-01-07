@@ -135,9 +135,13 @@ const moveTile = (config: Config, query?: string | string[], socket?: any) => {
           socketId: socket,
           perfection: perfection,
         };
-        axios.put(`/api/puzzle/${query}`, {
-          data,
-        });
+        axios
+          .put(`/api/puzzle/${query}`, {
+            data,
+          })
+          .then((res) => {
+            if (res.data.message === 'failed') alert('통신이 불안정합니다. 다시 시도해주세요.');
+          });
       }
 
       if (newGroupIndex !== null) {
