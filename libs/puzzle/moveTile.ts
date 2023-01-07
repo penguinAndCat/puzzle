@@ -1,4 +1,7 @@
+import saveAs from 'file-saver';
 import { openConfetti } from 'hooks/useConfetti';
+import { toBlob, toJpeg } from 'html-to-image';
+import html2canvas from 'html2canvas';
 import axios from 'libs/axios';
 import { getMargin } from './createPuzzle';
 
@@ -153,6 +156,80 @@ const moveTile = (config: Config, query?: string | string[], socket?: any) => {
         });
         if (fitCount === config.groupTiles.length && config.complete === false) {
           config.complete = true;
+
+          // 모달 배경
+          const puzzleDiv = window.document.querySelector('#modal-root');
+
+          // 모달
+          const modalDiv = window.document.createElement('div');
+          modalDiv.classList.add('complete-modal');
+          modalDiv.style.cssText = `width: 100%; height: 100vh; position: absolute; top: 0; left: 0; background-color: rgba(0,0,0,0.2); z-index: 999; display: flex; align-items: center; justify-content: center;`;
+
+          // 모달 내용물
+          const modalContent = document.createElement('div');
+          modalContent.style.cssText = 'width: 20rem; background-color: white; padding: 10px; border-radius: 10px';
+
+          const modalText = document.createElement('p');
+          modalText.style.cssText =
+            'width: 100%; font-size: 1.25rem; line-height: 1.5; text-align: center; margin-bottom: 1rem;';
+          modalText.textContent = '퍼즐을 저장하시겠습니까?';
+          modalContent.appendChild(modalText);
+
+          const btnWrapper = document.createElement('div');
+          btnWrapper.style.cssText =
+            'width: 100%; height: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 1rem;';
+          const saveBtn = document.createElement('button');
+          const cancelBtn = document.createElement('button');
+          saveBtn.style.cssText =
+            'width: 100px; height: 100%; padding: 0; margin: 0; font-size: 1rem; line-height: 1.25;';
+          cancelBtn.style.cssText =
+            'width: 100px; height: 100%; padding: 0; margin: 0; font-size: 1rem; line-height: 1.25;';
+
+          saveBtn.setAttribute('type', 'button');
+          cancelBtn.setAttribute('type', 'button');
+          saveBtn.textContent = '저장하기';
+          cancelBtn.textContent = '닫기';
+
+          saveBtn.addEventListener('click', (event: MouseEvent) => {
+            event.stopPropagation();
+            const canvas: HTMLCanvasElement | null = window.document.querySelector('#canvas');
+            const body = window.document.querySelector('#wrp') as HTMLDivElement;
+            if (!canvas) return;
+            // html2canvas(body!, {
+            //   allowTaint: true,
+            //   foreignObjectRendering: true,
+            // }).then((res) => {
+            //   const link = document.createElement('a');
+            //   link.download = 'puzzle.jpg';
+            //   link.href = res.toDataURL('image/jpeg');
+            //   link.click();
+            // });
+            html2canvas(canvas, {
+              allowTaint: true,
+              foreignObjectRendering: true,
+            }).then((res) => {
+              const link = document.createElement('a');
+              link.download = 'puzzle.jpg';
+              link.href = res.toDataURL('image/jpeg');
+              link.click();
+            });
+            toBlob(canvas, {}).then(function (blob) {
+              if (!blob) return;
+              saveAs(blob, 'my-node.png');
+            });
+          });
+
+          cancelBtn.addEventListener('click', (event: MouseEvent) => {
+            event.stopPropagation();
+            if (!puzzleDiv) return;
+            puzzleDiv.removeChild(modalDiv);
+          });
+          btnWrapper.appendChild(saveBtn);
+          btnWrapper.appendChild(cancelBtn);
+          modalContent.appendChild(btnWrapper);
+          modalDiv.appendChild(modalContent);
+          modalDiv.appendChild(modalContent);
+          puzzleDiv?.appendChild(modalDiv);
           openConfetti();
         }
       }
