@@ -59,6 +59,9 @@ const PuzzleModal = () => {
       }
     };
     if (event.target.files[0]) {
+      if (event.target.files[0].type !== 'image/jpeg' && event.target.files[0].type !== 'image/jpg') {
+        return toast({ content: 'jpg, jpeg 이미지만 가능합니다.', type: 'warning' });
+      }
       reader.readAsDataURL(event.target.files[0]); // 1. 파일을 읽어 버퍼에 저장합니다.
     }
   };
@@ -158,7 +161,7 @@ const PuzzleModal = () => {
         ) : (
           <Img onClick={inputImage} src={modalImage.src} />
         )}
-        <Input ref={inputRef} type="file" accept="image/*" onChange={handleChangeFile} />
+        <Input ref={inputRef} type="file" accept="image/jpg, image/jpeg" onChange={handleChangeFile} />
       </ImgWrapper>
       <RoomNameWrapper>
         <SubTitle>방 이름</SubTitle>
