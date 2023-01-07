@@ -44,13 +44,12 @@ export const restartConfig = (
   canvasSize: size,
   level: number,
   query: string | string[],
-  socket: any,
-  userNickName: string
+  socket: any
 ) => {
   config = config2;
   setPuzzleRowColumn(puzzleImage);
   setConfig(Paper, puzzleImage, canvasSize, level);
-  serverCreateTiles(query, socket, userNickName);
+  serverCreateTiles(query, socket);
 };
 
 export const exportConfig = () => config;
@@ -61,7 +60,7 @@ export const setPuzzleRowColumn = (puzzleImage: img) => {
   levels = [];
   for (let i = 2; i < width; i++) {
     for (let j = 2; j < height; j++) {
-      if (i * j >= 600) continue;
+      if (i * j > 200) continue;
       let ratio = width / i / (height / j);
       if (ratio < 0.9 || ratio > 1.1) continue;
       levels.push([i, j]);
@@ -238,7 +237,7 @@ const recreateTiles = () => {
   }
   puzzle.moveTile(config);
 };
-const serverCreateTiles = (query: string | string[], socket: any, userNickName: string) => {
+const serverCreateTiles = (query: string | string[], socket: any) => {
   const tileRatio = config.tileWidth / 100;
   const tileRatio2 = config.tileHeight / 100;
   const groupTiles = config.groupTiles;
@@ -288,7 +287,7 @@ const serverCreateTiles = (query: string | string[], socket: any, userNickName: 
       });
     }
   }
-  puzzle.moveTile(config, query, socket, userNickName);
+  puzzle.moveTile(config, query, socket);
 };
 export const getMargin = (shape: shape) => {
   const margin = { x: 0, y: 0 };

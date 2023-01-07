@@ -63,13 +63,12 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
         initConfig(Paper, puzzleImg, config, canvasSize, puzzleLv);
         offLoading();
       } else {
-        if (user === null) return;
         if (socket === undefined) return;
         const response = await axios.get(`/api/puzzle/${router.query.id}`);
         const item = response.data.item;
         const config = { ...item.config };
         const puzzleImage = { ...config.puzzleImage };
-        restartConfig(Paper, puzzleImage, config, canvasSize, item.level, router.query.id, socket, user?.nickname);
+        restartConfig(Paper, puzzleImage, config, canvasSize, item.level, router.query.id, socket);
         offLoading();
       }
     };
@@ -123,9 +122,9 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
       });
 
       channel.bind('movablePuzzle', (data: any) => {
-        const { groupTiles, indexArr, socketCanvasSize } = data;
+        const { groupTiles } = data;
         if (data.socketId !== socketId) {
-          movableIndex(groupTiles, indexArr, socketCanvasSize);
+          movableIndex(groupTiles);
         }
       });
 
