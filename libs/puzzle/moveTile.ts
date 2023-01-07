@@ -202,28 +202,28 @@ const fitTile = (config: Config, currentTile: any, groupIndex: index) => {
   // 그룹화 가능한 조각이 두 개 이상 있을 경우, 하나의 조각만 그룹화한다.
   config.groupCheck = false;
   if (
-    calculatePosition(currentTile, leftTile?.tile, config.tileWidth, 0) === true &&
+    calculatePosition(config, currentTile, leftTile?.tile, config.tileWidth, 0) === true &&
     config.groupCheck === false &&
     leftTile?.movable
   ) {
     setPosition(config, currentTile, leftTile?.tile, groupIndex, 'left');
   }
   if (
-    calculatePosition(currentTile, rightTile?.tile, config.tileWidth, 0) === true &&
+    calculatePosition(config, currentTile, rightTile?.tile, config.tileWidth, 0) === true &&
     config.groupCheck === false &&
     rightTile?.movable
   ) {
     setPosition(config, currentTile, rightTile?.tile, groupIndex, 'right');
   }
   if (
-    calculatePosition(currentTile, topTile?.tile, config.tileHeight, 1) === true &&
+    calculatePosition(config, currentTile, topTile?.tile, config.tileHeight, 1) === true &&
     config.groupCheck === false &&
     topTile?.movable
   ) {
     setPosition(config, currentTile, topTile?.tile, groupIndex, 'top');
   }
   if (
-    calculatePosition(currentTile, bottomTile?.tile, config.tileHeight, 1) === true &&
+    calculatePosition(config, currentTile, bottomTile?.tile, config.tileHeight, 1) === true &&
     config.groupCheck === false &&
     bottomTile?.movable
   ) {
@@ -231,30 +231,7 @@ const fitTile = (config: Config, currentTile: any, groupIndex: index) => {
   }
 };
 
-const calculatePosition = (currentTile: any, joinTile: any, tileSize: number, type: number) => {
-  const diffMargin = 0.2;
-  if (joinTile === undefined) return false;
-  if (type === 0) {
-    if (
-      Math.abs(currentTile.position.x - joinTile.position.x) < tileSize * (1 + diffMargin) &&
-      Math.abs(currentTile.position.x - joinTile.position.x) > tileSize * (1 - diffMargin) &&
-      Math.abs(currentTile.position.y - joinTile.position.y) < tileSize * diffMargin
-    ) {
-      return true;
-    }
-  } else {
-    if (
-      Math.abs(currentTile.position.x - joinTile.position.x) < tileSize * diffMargin &&
-      Math.abs(currentTile.position.y - joinTile.position.y) < tileSize * (1 + diffMargin) &&
-      Math.abs(currentTile.position.y - joinTile.position.y) > tileSize * (1 - diffMargin)
-    ) {
-      return true;
-    }
-  }
-  return false;
-};
-
-const setPosition = (config: Config, currentTile: any, joinTile: any, groupIndex: index, type: string) => {
+const getMarginDifference = (config: Config, currentTile: any, joinTile: any) => {
   const index = config.groupTiles.findIndex((item) => item.tile === currentTile);
   const joinIndex = config.groupTiles.findIndex((item) => item.tile === joinTile);
   const shape = config.shapes[index];
@@ -265,6 +242,35 @@ const setPosition = (config: Config, currentTile: any, joinTile: any, groupIndex
     x: joinTile.position.x - currentTile.position.x + currentMargin.x - joinMargin.x,
     y: joinTile.position.y - currentTile.position.y + currentMargin.y - joinMargin.y,
   };
+  return margin;
+};
+
+const calculatePosition = (config: Config, currentTile: any, joinTile: any, tileSize: number, type: number) => {
+  if (joinTile === undefined) return false;
+  const diffMargin = 0.2;
+  const margin = getMarginDifference(config, currentTile, joinTile);
+  if (type === 0) {
+    if (
+      Math.abs(margin.x) < tileSize * (1 + diffMargin) &&
+      Math.abs(margin.x) > tileSize * (1 - diffMargin) &&
+      Math.abs(margin.y) < tileSize * diffMargin
+    ) {
+      return true;
+    }
+  } else {
+    if (
+      Math.abs(margin.x) < tileSize * diffMargin &&
+      Math.abs(margin.y) < tileSize * (1 + diffMargin) &&
+      Math.abs(margin.y) > tileSize * (1 - diffMargin)
+    ) {
+      return true;
+    }
+  }
+  return false;
+};
+
+const setPosition = (config: Config, currentTile: any, joinTile: any, groupIndex: index, type: string) => {
+  const margin = getMarginDifference(config, currentTile, joinTile);
   if (type === 'left') {
     margin.x += config.tileWidth;
   } else if (type === 'right') {
