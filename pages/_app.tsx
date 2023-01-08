@@ -1,4 +1,5 @@
 import '../styles/globals.css';
+import '../styles/completeModal.css';
 import type { AppProps } from 'next/app';
 import { ThemeProvider } from 'libs/theme/ThemeProvider';
 import { GlobalStyle } from 'libs/theme/GlobalStyle';

@@ -83,7 +83,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
               <PuzzleWrapper>
                 {puzzleData?.map((item: any, index: number) => (
                   <RoomCard
-                    key={index}
+                    key={item._id}
                     src={item.config.puzzleImage.src}
                     progress={Number((item.perfection * 100).toFixed(3))}
                     title={item.title}
@@ -118,7 +118,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
               <PuzzleWrapper>
                 {invitedPuzzleData?.map((item: any, index: number) => (
                   <RoomCard
-                    key={index}
+                    key={item._id}
                     src={item.config.puzzleImage.src}
                     progress={Number((item.perfection * 100).toFixed(3))}
                     title={item.title}

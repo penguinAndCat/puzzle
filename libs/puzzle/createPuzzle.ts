@@ -323,6 +323,7 @@ export const getMargin = (shape: shape) => {
 };
 const getTileRaster = (puzzleImage: string | Blob, offset: paper.Point, scaleValue: number, Paper: any) => {
   const targetRaster = new Paper.Raster(puzzleImage);
+  targetRaster.crossOrigin = 'Anonymous';
   targetRaster.scale(scaleValue);
   targetRaster.position = new Point(-offset.x, -offset.y);
 

@@ -19,9 +19,7 @@ const useInfiniteScroll = (option: {
     async (entries, observer) => {
       if (entries[0].isIntersecting && !infiniteQuery.isFetching) {
         observer.unobserve(entries[0].target);
-        console.log(infiniteQuery.hasNextPage);
         await infiniteQuery.fetchNextPage();
-        observer.observe(entries[0].target);
       }
     },
     [infiniteQuery]
@@ -32,11 +30,13 @@ const useInfiniteScroll = (option: {
     observerRef.current = new IntersectionObserver(onIntersection, {
       rootMargin: '10px',
     });
-    observerRef.current.observe(flagRef.current);
+    if (infiniteQuery.hasNextPage) {
+      observerRef.current.observe(flagRef.current);
+    }
     return () => {
       observerRef.current && observerRef.current.disconnect();
     };
-  }, [onIntersection]);
+  }, [infiniteQuery.hasNextPage, onIntersection]);
 
   return [infiniteQuery, flagRef];
 };

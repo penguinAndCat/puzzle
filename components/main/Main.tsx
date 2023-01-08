@@ -68,7 +68,7 @@ const Main = ({ user }: { user: UserInfo | null }) => {
           {puzzleData?.map((data: any, index: number) => {
             return (
               <RoomCard
-                key={index}
+                key={data._id}
                 src={data.config.puzzleImage.src}
                 progress={Number((data.perfection * 100).toFixed(3))}
                 title={data.title}
