@@ -1,5 +1,5 @@
 import { CloseIcon } from 'components/common/Icon';
-import { usePuzzleFriend } from 'hooks/usePuzzleFriend';
+import { usePuzzleFriend } from 'hooks/useReactQuery';
 import { useToast } from 'hooks/useToast';
 import axios from 'libs/axios';
 import { theme } from 'libs/theme/theme';

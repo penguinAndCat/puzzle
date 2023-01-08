@@ -47,6 +47,8 @@ export const silverTheme: Theme = {
   loadingColor1: colors.similarSilver[0],
   loadingColor2: colors.similarSilver[1],
   loadingColor3: colors.similarSilver[2],
+  paletteColor: colors.dark,
+  paletteBgColor: colors.silver,
 };
 
 export const darkTheme: Theme = {
@@ -62,6 +64,8 @@ export const darkTheme: Theme = {
   loadingColor1: colors.similarDark[0],
   loadingColor2: colors.similarDark[1],
   loadingColor3: colors.similarDark[2],
+  paletteColor: colors.dark,
+  paletteBgColor: colors.white,
 };
 
 export const pinkTheme: Theme = {
@@ -77,6 +81,8 @@ export const pinkTheme: Theme = {
   loadingColor1: colors.similarPink[0],
   loadingColor2: colors.similarPink[1],
   loadingColor3: colors.similarPink[2],
+  paletteColor: colors.pink,
+  paletteBgColor: colors.white,
 };
 
 export const mintTheme: Theme = {
@@ -92,6 +98,8 @@ export const mintTheme: Theme = {
   loadingColor1: colors.similarMint[0],
   loadingColor2: colors.similarMint[1],
   loadingColor3: colors.similarMint[2],
+  paletteColor: colors.mint,
+  paletteBgColor: colors.white,
 };
 
 export const theme = {

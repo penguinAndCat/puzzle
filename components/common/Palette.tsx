@@ -1,7 +1,8 @@
 import useTheme from 'hooks/useTheme';
 import { theme } from 'libs/theme/theme';
 import { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+import { PaletteIcon } from './Icon';
 
 const Palette = () => {
   const [_, setTheme] = useTheme();
@@ -29,7 +30,9 @@ const Palette = () => {
 
   return (
     <ColorsWrapper ref={el}>
-      <Colors onClick={onClick}>P</Colors>
+      <Colors onClick={onClick}>
+        <PaletteIcon />
+      </Colors>
       {palette && (
         <PaletteWrapper>
           <Pink onClick={() => setTheme('pink')}></Pink>
@@ -45,17 +48,17 @@ const Palette = () => {
 export default Palette;
 
 const Colors = styled.button`
-  border: 1px solid #ffffff;
-  ${theme.common.flexCenter}
+  border: 3px solid ${({ theme }) => theme.paletteColor};
+  border-radius: 4px;
   width: 30px;
   height: 30px;
-  background-color: ${({ theme }) => theme.bgColor};
-  text-align: center;
-  line-height: 30px;
-  color: #ffffff;
-  font-size: 20px;
-  font-weight: 600;
+  background-color: ${({ theme }) => theme.paletteBgColor};
   cursor: pointer;
+  color: #ffffff;
+  padding: 0px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const ColorsWrapper = styled.div`
@@ -72,8 +75,9 @@ const PaletteWrapper = styled.div`
   ${theme.common.flexCenterColumn}
 `;
 
-const paletteButton = `
-  border: 1px solid #FFFFFF;
+const paletteButton = css`
+  border: 1px solid #efefef;
+  border-radius: 4px;
   width: 30px;
   height: 30px;
   margin: 2px 0;

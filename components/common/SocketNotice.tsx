@@ -1,12 +1,12 @@
 import { useToast } from 'hooks/useToast';
 import Pusher from 'pusher-js';
-import { useNotice } from 'hooks/useNotice';
+import { useNotice } from 'hooks/useReactQuery';
 import { useEffect } from 'react';
 import { NEXT_SERVER } from 'config';
 
 const SocketNotice = ({ user }: { user: UserInfo | null }) => {
   const toast = useToast();
-  const { notice, refetchNotice } = useNotice(user);
+  const { refetchNotice } = useNotice(user);
 
   useEffect(() => {
     if (user === undefined) return;

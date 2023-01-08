@@ -2,7 +2,7 @@ import { openConfetti } from 'hooks/useConfetti';
 import axios from 'libs/axios';
 import { getMargin } from './createPuzzle';
 
-const moveTile = (config: Config, query?: string | string[], socket?: any, userNickName?: string) => {
+const moveTile = (config: Config, query?: string | string[], socket?: any) => {
   config.groupTiles.forEach((item, index) => {
     item.tile.onMouseDown = (event: any) => {
       if (!item.movable) {
@@ -13,7 +13,7 @@ const moveTile = (config: Config, query?: string | string[], socket?: any, userN
       const gIndex = item.groupIndex;
       // local movable setting && zindex setting
       if (gIndex !== null) {
-        config.groupTiles.forEach(({ tile, groupIndex, movable }) => {
+        config.groupTiles.forEach(({ tile, groupIndex }) => {
           if (groupIndex && groupIndex === gIndex) {
             config.project.project.activeLayer.addChild(tile);
           }
@@ -23,7 +23,7 @@ const moveTile = (config: Config, query?: string | string[], socket?: any, userN
       }
 
       // target index array
-      let indexArr = [];
+      let indexArr: any[] = [];
       if (gIndex === null) {
         indexArr.push(index);
       } else {
@@ -40,7 +40,7 @@ const moveTile = (config: Config, query?: string | string[], socket?: any, userN
           config: {
             ...config,
             groupTiles: config.groupTiles.map((item, groupIndex) => {
-              if (item.groupIndex === gIndex || index == groupIndex) {
+              if (indexArr.includes(groupIndex)) {
                 return [item.tile.position.x, item.tile.position.y, item.groupIndex, false];
               } else {
                 return [item.tile.position.x, item.tile.position.y, item.groupIndex, true];
@@ -48,8 +48,6 @@ const moveTile = (config: Config, query?: string | string[], socket?: any, userN
             }),
           },
           socketId: socket,
-          indexArr,
-          userNickName,
         };
         axios.post(`/api/puzzle/${query}`, {
           data,
@@ -135,12 +133,15 @@ const moveTile = (config: Config, query?: string | string[], socket?: any, userN
           },
           indexArr: indexArr,
           socketId: socket,
-          userNickName: userNickName,
           perfection: perfection,
         };
-        axios.put(`/api/puzzle/${query}`, {
-          data,
-        });
+        axios
+          .put(`/api/puzzle/${query}`, {
+            data,
+          })
+          .then((res) => {
+            if (res.data.message === 'failed') alert('통신이 불안정합니다. 다시 시도해주세요.');
+          });
       }
 
       if (newGroupIndex !== null) {
@@ -205,28 +206,28 @@ const fitTile = (config: Config, currentTile: any, groupIndex: index) => {
   // 그룹화 가능한 조각이 두 개 이상 있을 경우, 하나의 조각만 그룹화한다.
   config.groupCheck = false;
   if (
-    calculatePosition(currentTile, leftTile?.tile, config.tileWidth, 0) === true &&
+    calculatePosition(config, currentTile, leftTile?.tile, config.tileWidth, 0) === true &&
     config.groupCheck === false &&
     leftTile?.movable
   ) {
     setPosition(config, currentTile, leftTile?.tile, groupIndex, 'left');
   }
   if (
-    calculatePosition(currentTile, rightTile?.tile, config.tileWidth, 0) === true &&
+    calculatePosition(config, currentTile, rightTile?.tile, config.tileWidth, 0) === true &&
     config.groupCheck === false &&
     rightTile?.movable
   ) {
     setPosition(config, currentTile, rightTile?.tile, groupIndex, 'right');
   }
   if (
-    calculatePosition(currentTile, topTile?.tile, config.tileHeight, 1) === true &&
+    calculatePosition(config, currentTile, topTile?.tile, config.tileHeight, 1) === true &&
     config.groupCheck === false &&
     topTile?.movable
   ) {
     setPosition(config, currentTile, topTile?.tile, groupIndex, 'top');
   }
   if (
-    calculatePosition(currentTile, bottomTile?.tile, config.tileHeight, 1) === true &&
+    calculatePosition(config, currentTile, bottomTile?.tile, config.tileHeight, 1) === true &&
     config.groupCheck === false &&
     bottomTile?.movable
   ) {
@@ -234,30 +235,7 @@ const fitTile = (config: Config, currentTile: any, groupIndex: index) => {
   }
 };
 
-const calculatePosition = (currentTile: any, joinTile: any, tileSize: number, type: number) => {
-  const diffMargin = 0.2;
-  if (joinTile === undefined) return false;
-  if (type === 0) {
-    if (
-      Math.abs(currentTile.position.x - joinTile.position.x) < tileSize * (1 + diffMargin) &&
-      Math.abs(currentTile.position.x - joinTile.position.x) > tileSize * (1 - diffMargin) &&
-      Math.abs(currentTile.position.y - joinTile.position.y) < tileSize * diffMargin
-    ) {
-      return true;
-    }
-  } else {
-    if (
-      Math.abs(currentTile.position.x - joinTile.position.x) < tileSize * diffMargin &&
-      Math.abs(currentTile.position.y - joinTile.position.y) < tileSize * (1 + diffMargin) &&
-      Math.abs(currentTile.position.y - joinTile.position.y) > tileSize * (1 - diffMargin)
-    ) {
-      return true;
-    }
-  }
-  return false;
-};
-
-const setPosition = (config: Config, currentTile: any, joinTile: any, groupIndex: index, type: string) => {
+const getMarginDifference = (config: Config, currentTile: any, joinTile: any) => {
   const index = config.groupTiles.findIndex((item) => item.tile === currentTile);
   const joinIndex = config.groupTiles.findIndex((item) => item.tile === joinTile);
   const shape = config.shapes[index];
@@ -268,6 +246,35 @@ const setPosition = (config: Config, currentTile: any, joinTile: any, groupIndex
     x: joinTile.position.x - currentTile.position.x + currentMargin.x - joinMargin.x,
     y: joinTile.position.y - currentTile.position.y + currentMargin.y - joinMargin.y,
   };
+  return margin;
+};
+
+const calculatePosition = (config: Config, currentTile: any, joinTile: any, tileSize: number, type: number) => {
+  if (joinTile === undefined) return false;
+  const diffMargin = 0.2;
+  const margin = getMarginDifference(config, currentTile, joinTile);
+  if (type === 0) {
+    if (
+      Math.abs(margin.x) < tileSize * (1 + diffMargin) &&
+      Math.abs(margin.x) > tileSize * (1 - diffMargin) &&
+      Math.abs(margin.y) < tileSize * diffMargin
+    ) {
+      return true;
+    }
+  } else {
+    if (
+      Math.abs(margin.x) < tileSize * diffMargin &&
+      Math.abs(margin.y) < tileSize * (1 + diffMargin) &&
+      Math.abs(margin.y) > tileSize * (1 - diffMargin)
+    ) {
+      return true;
+    }
+  }
+  return false;
+};
+
+const setPosition = (config: Config, currentTile: any, joinTile: any, groupIndex: index, type: string) => {
+  const margin = getMarginDifference(config, currentTile, joinTile);
   if (type === 'left') {
     margin.x += config.tileWidth;
   } else if (type === 'right') {

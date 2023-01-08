@@ -3,10 +3,9 @@ import styled from 'styled-components';
 import { exportLevels } from '../../libs/puzzle/createPuzzle';
 import { useRouter } from 'next/router';
 import axios from 'axios';
-import { useInvitedUser } from 'hooks/useInvitedUser';
+import { useInvitedUser, useRoomInfo } from 'hooks/useReactQuery';
 import { useToast } from 'hooks/useToast';
 import { useSocket } from 'libs/zustand/store';
-import { useRoomInfo } from 'hooks/useRoomInfo';
 
 interface Props {
   showRoomInfo: boolean;

@@ -13,4 +13,6 @@ interface Theme {
   loadingColor1: string;
   loadingColor2: string;
   loadingColor3: string;
+  paletteColor: string;
+  paletteBgColor: string;
 }
