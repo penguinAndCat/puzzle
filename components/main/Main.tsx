@@ -81,6 +81,7 @@ const Main = ({ user }: { user: UserInfo | null }) => {
                   }
                   window.location.href = `${NEXT_SERVER}/puzzle/${data._id}`;
                 }}
+                puzzleNumber={data.config.tilesPerColumn * data.config.tilesPerRow}
               />
             );
           })}
@@ -95,6 +96,9 @@ export default Main;
 
 const Wrapper = styled.div`
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const CreateWrapper = styled.div`
@@ -140,7 +144,7 @@ const Title = styled.div`
 `;
 
 const PuzzleContainer = styled.div`
-  width: 80%;
+  max-width: 1024px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 0.5rem;

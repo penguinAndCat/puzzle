@@ -99,6 +99,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
                         });
                       }
                     }}
+                    puzzleNumber={item.config.tilesPerColumn * item.config.tilesPerRow}
                   />
                 ))}
               </PuzzleWrapper>
@@ -127,6 +128,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
                     onClick={() => {
                       window.location.href = `${NEXT_SERVER}/puzzle/${item._id}`;
                     }}
+                    puzzleNumber={item.config.tilesPerColumn * item.config.tilesPerRow}
                   />
                 ))}
               </PuzzleWrapper>
