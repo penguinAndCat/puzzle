@@ -1,6 +1,7 @@
 import { openConfetti } from 'hooks/useConfetti';
 import axios from 'libs/axios';
 import { getMargin } from './createPuzzle';
+import { createSavePuzzleModal } from './createSavePuzzleModal';
 
 const moveTile = (config: Config, query?: string | string[], socket?: any) => {
   config.groupTiles.forEach((item, index) => {
@@ -123,6 +124,13 @@ const moveTile = (config: Config, query?: string | string[], socket?: any) => {
       }
       const perfection = matchedTiles / (totalTiles - 1);
 
+      if (perfection === 1) {
+        config.complete = true;
+
+        createSavePuzzleModal();
+        openConfetti();
+      }
+
       if (query !== undefined) {
         const data = {
           config: {
@@ -142,84 +150,6 @@ const moveTile = (config: Config, query?: string | string[], socket?: any) => {
           .then((res) => {
             if (res.data.message === 'failed') alert('통신이 불안정합니다. 다시 시도해주세요.');
           });
-      }
-      console.log(config);
-
-      if (newGroupIndex !== null) {
-        let fitCount = 0;
-        config.groupTiles.forEach((item) => {
-          if (item.groupIndex === newGroupIndex) {
-            fitCount++;
-          }
-        });
-        if (fitCount === config.groupTiles.length && config.complete === false) {
-          config.complete = true;
-
-          // 모달 배경
-          const puzzleDiv = window.document.querySelector('#modal-root');
-
-          // 모달
-          const modalDiv = window.document.createElement('div');
-          modalDiv.classList.add('complete-modal');
-
-          // 모달 내용물
-          const modalContent = document.createElement('div');
-          modalContent.classList.add('modal-content');
-
-          const modalText = document.createElement('p');
-          modalText.classList.add('modal-text');
-          modalText.textContent = '퍼즐을 저장하시겠습니까?';
-          modalContent.appendChild(modalText);
-
-          const btnWrapper = document.createElement('div');
-          btnWrapper.classList.add('button-wrapper');
-          const saveBtn = document.createElement('button');
-          const cancelBtn = document.createElement('button');
-
-          saveBtn.classList.add('modal-btn');
-          saveBtn.classList.add('save');
-
-          cancelBtn.classList.add('modal-btn');
-          cancelBtn.classList.add('cancel');
-
-          saveBtn.setAttribute('type', 'button');
-          cancelBtn.setAttribute('type', 'button');
-          saveBtn.textContent = '저장하기';
-          cancelBtn.textContent = '닫기';
-          let w = config.imgWidth;
-          let h = config.imgHeight;
-          let x = config.groupTiles[0].tile.bounds.x;
-          let y = config.groupTiles[0].tile.bounds.y;
-          saveBtn.addEventListener('click', (event: MouseEvent) => {
-            event.stopPropagation();
-            const canvas: HTMLCanvasElement | null = window.document.querySelector('#canvas');
-            if (!canvas) return;
-            let ctx = canvas.getContext('2d');
-            const image = ctx?.getImageData(x, y, w, h);
-            const target = window.document.createElement('canvas');
-            if (!image) return;
-            target.width = w;
-            target.height = h;
-            target.getContext('2d')?.putImageData(image, 0, 0);
-            const link = document.createElement('a');
-            link.download = 'puzzle.jpg';
-            link.href = target?.toDataURL('image/jpeg');
-            link.click();
-          });
-
-          cancelBtn.addEventListener('click', (event: MouseEvent) => {
-            event.stopPropagation();
-            if (!puzzleDiv) return;
-            puzzleDiv.removeChild(modalDiv);
-          });
-          btnWrapper.appendChild(saveBtn);
-          btnWrapper.appendChild(cancelBtn);
-          modalContent.appendChild(btnWrapper);
-          modalDiv.appendChild(modalContent);
-          modalDiv.appendChild(modalContent);
-          puzzleDiv?.appendChild(modalDiv);
-          openConfetti();
-        }
       }
 
       const copy = [...config.groupTiles];

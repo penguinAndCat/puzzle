@@ -1,3 +1,5 @@
+import { getCookie } from 'cookies-next';
+
 const pixelToRem = (size: number) => `${size / 16}rem`;
 
 const fontSizes = {
@@ -110,4 +112,41 @@ export const theme = {
   pinkTheme,
   mintTheme,
   colors,
+};
+
+const THEME: {
+  [key in string]: {
+    backgroundColor: string;
+    color: string;
+    hover: string;
+  };
+} = {
+  pink: {
+    backgroundColor: 'rgb(255, 192, 203)',
+    color: 'rgb(255, 255, 255)',
+    hover: 'rgb(245, 182, 193)',
+  },
+  dark: {
+    backgroundColor: 'rgb(43, 42, 43)',
+    color: 'rgb(255, 255, 255)',
+    hover: 'rgb(33, 32, 33)',
+  },
+  silver: {
+    backgroundColor: 'rgb(233, 230, 228)',
+    color: 'rgb(43, 42, 43)',
+    hover: 'rgb(223, 220, 218)',
+  },
+  mint: {
+    backgroundColor: 'rgb(3, 219, 164)',
+    color: 'rgb(255, 255, 255)',
+    hover: 'rgb(0, 209, 154)',
+  },
+};
+
+const THEME_ARRAY = ['pink', 'dark', 'mint', 'silver'];
+
+export const getTheme = () => {
+  let localTheme: any = getCookie('localTheme');
+  if (!THEME_ARRAY.includes(localTheme)) localTheme = 'pink';
+  return THEME[localTheme];
 };

@@ -1,13 +1,14 @@
-import { openConfetti } from 'hooks/useConfetti';
+import axios from 'libs/axios';
 import paper from 'paper';
-import { Group, Point } from 'paper/dist/paper-core';
-import puzzle from './moveTile';
+import { Point } from 'paper/dist/paper-core';
+import { exportConfig, exportLevel, exportPuzzleName } from './createPuzzle';
 
 const constant = {
   borderStrokeWidth: 2,
   tileOpacity: 1,
   maskOpacity: 0.2,
 };
+
 let config: Config = {
   shapes: [],
   project: '',
@@ -28,50 +29,78 @@ let config: Config = {
 
 let levels: number[][] = [];
 let positionArr: position[] = [];
-let puzzleLevel = 0;
-let puzzleName = '';
 
-export const initConfig = (
-  Paper: typeof paper,
-  puzzleImage: img,
-  config: Config,
-  canvasSize: size,
-  level: number,
-  title: string
-) => {
-  config.firstClient = false;
-  puzzleLevel = level;
-  puzzleName = title;
+export const savePuzzle = () => {
+  const saveConfig = exportConfig();
+  const level = exportLevel();
+  const puzzleName = exportPuzzleName();
+  const width = saveConfig.puzzleImage.width;
+  const height = saveConfig.puzzleImage.height;
+  const canvasSize = { width: width, height: height };
+
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  paper.setup(canvas);
+  initConfig(paper, saveConfig.puzzleImage, saveConfig, canvasSize, level);
+
+  setTimeout(() => {
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio;
+    const image = ctx?.getImageData(0, 0, width * dpr, height * dpr);
+    const target = window.document.createElement('canvas');
+    if (!image) return;
+    target.width = width * dpr;
+    target.height = height * dpr;
+    target.getContext('2d')?.putImageData(image, 0, 0);
+    const link = document.createElement('a');
+    link.download = `${puzzleName}.jpg`;
+    link.href = target?.toDataURL('image/jpeg');
+    link.click();
+  }, 1000);
+};
+
+export const saveServerPuzzle = async (puzzleId: string | string[] | undefined) => {
+  const response = await axios.get(`/api/puzzle/${puzzleId}`);
+  const item = response.data.item;
+  const serverConfig = { ...item.config };
+  const puzzleImage = { ...serverConfig.puzzleImage };
+  const canvasSize = { width: puzzleImage.width, height: puzzleImage.height };
+  const level = item.level;
+  const title = item.title;
+  const width = puzzleImage.width;
+  const height = puzzleImage.height;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  paper.setup(canvas);
+  initConfig(paper, puzzleImage, serverConfig, canvasSize, level);
+
+  setTimeout(() => {
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio;
+    const image = ctx?.getImageData(0, 0, width * dpr, height * dpr);
+    const target = window.document.createElement('canvas');
+    if (!image) return;
+    target.width = width * dpr;
+    target.height = height * dpr;
+    target.getContext('2d')?.putImageData(image, 0, 0);
+    const link = document.createElement('a');
+    link.download = `${title}.jpg`;
+    link.href = target?.toDataURL('image/jpeg');
+    link.click();
+  }, 500);
+};
+
+const initConfig = (Paper: typeof paper, puzzleImage: img, saveConfig: Config, canvasSize: size, level: number) => {
+  config = saveConfig;
   setPuzzleRowColumn(puzzleImage);
-  setConfig(Paper, puzzleImage, canvasSize);
-  getRandomShapes();
+  setConfig(Paper, puzzleImage, canvasSize, level);
   createTiles();
 };
 
-export const restartConfig = (
-  Paper: typeof paper,
-  puzzleImage: img,
-  config2: Config,
-  canvasSize: size,
-  level: number,
-  query: string | string[],
-  socket: any,
-  title: string
-) => {
-  config = config2;
-  puzzleLevel = level;
-  puzzleName = title;
-  setPuzzleRowColumn(puzzleImage);
-  setConfig(Paper, puzzleImage, canvasSize);
-  serverCreateTiles(query, socket);
-};
-
-export const exportConfig = () => config;
-export const exportLevels = () => levels;
-export const exportLevel = () => puzzleLevel;
-export const exportPuzzleName = () => puzzleName;
-
-export const setPuzzleRowColumn = (puzzleImage: img) => {
+const setPuzzleRowColumn = (puzzleImage: img) => {
   const { width, height } = puzzleImage;
   levels = [];
   for (let i = 2; i < width; i++) {
@@ -85,22 +114,22 @@ export const setPuzzleRowColumn = (puzzleImage: img) => {
   return levels;
 };
 
-const setPuzzleLevel = () => {
-  if (puzzleLevel > levels.length - 1) puzzleLevel = levels.length - 1;
-  config.tilesPerRow = levels[puzzleLevel][0];
-  config.tilesPerColumn = levels[puzzleLevel][1];
+const setPuzzleLevel = (level: number) => {
+  if (level > levels.length - 1) level = levels.length - 1;
+  config.tilesPerRow = levels[level][0];
+  config.tilesPerColumn = levels[level][1];
 };
 
-const setConfig = (Paper: typeof paper, puzzleImage: img, canvasSize: size) => {
+const setConfig = (Paper: typeof paper, puzzleImage: img, canvasSize: size, level: number) => {
   config.project = Paper;
   config.puzzleImage = puzzleImage;
   config.canvasPreSize = config.canvasSize;
   config.canvasSize = canvasSize;
-  setPuzzleLevel();
+  setPuzzleLevel(level);
   const positionMargin = 1.1;
   const batchStandard = Math.ceil(Math.sqrt(config.tilesPerRow * config.tilesPerColumn));
   const batchTiles = Math.ceil(batchStandard * 1.5);
-  config.imgWidth = (canvasSize.width * (config.tilesPerRow / batchTiles)) / positionMargin;
+  config.imgWidth = canvasSize.width;
   config.imgHeight = (config.imgWidth / puzzleImage.width) * puzzleImage.height;
   config.tileWidth = config.imgWidth / config.tilesPerRow;
   config.tileHeight = config.imgHeight / config.tilesPerColumn;
@@ -145,12 +174,6 @@ const setConfig = (Paper: typeof paper, puzzleImage: img, canvasSize: size) => {
   Paper.project.activeLayer.removeChildren();
 };
 
-const popRandom = (array: position[]) => {
-  const random = Math.floor(Math.random() * array.length);
-  const el = array.splice(random, 1)[0];
-  return el;
-};
-
 const createTiles = () => {
   const tileRatio = config.tileWidth / 100;
   const tileRatio2 = config.tileHeight / 100;
@@ -189,123 +212,18 @@ const createTiles = () => {
       tile.clipped = true;
       tile.opacity = constant.tileOpacity;
       const margin = getMargin(shape);
-      // tile.position = new Point(
-      //   config.project.view.center.x + (x - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.x,
-      //   config.project.view.center.y + (y - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.y
-      // );
-      const position = popRandom(positionArr);
-      tile.position = new Point(position.x + margin.x, position.y + margin.y);
+      tile.position = new Point(
+        config.project.view.center.x + (x - (config.tilesPerRow - 1) / 2) * config.tileWidth + margin.x,
+        config.project.view.center.y + (y - (config.tilesPerColumn - 1) / 2) * config.tileHeight + margin.y
+      );
+      // const position = popRandom(positionArr);
+      // tile.position = new Point(position.x + margin.x, position.y + margin.y);
       config.groupTiles.push({ tile: tile, groupIndex: null, movable: true });
     }
   }
-  puzzle.moveTile(config);
 };
-const recreateTiles = () => {
-  const tileRatio = config.tileWidth / 100;
-  const tileRatio2 = config.tileHeight / 100;
-  const groupTiles = config.groupTiles;
-  config.groupTiles = [];
-  for (let y = 0; y < config.tilesPerColumn; y++) {
-    for (let x = 0; x < config.tilesPerRow; x++) {
-      const shape = config.shapes[y * config.tilesPerRow + x];
-      const mask = getMask(
-        tileRatio,
-        tileRatio2,
-        shape.topTab,
-        shape.rightTab,
-        shape.bottomTab,
-        shape.leftTab,
-        config.tileWidth,
-        config.tileHeight,
-        config.project,
-        config.imgWidth,
-        config.imgHeight
-      );
-      if (mask === undefined) continue;
-      mask.opacity = constant.maskOpacity;
-      mask.strokeColor = new config.project.Color('#ff0000');
 
-      const img = getTileRaster(
-        config.puzzleImage.src,
-        new Point(config.tileWidth * x, config.tileHeight * y),
-        Math.max(config.imgWidth / config.puzzleImage.width, config.imgHeight / config.puzzleImage.height),
-        config.project
-      );
-
-      const border = mask.clone();
-      border.strokeColor = new config.project.Color('#333333');
-      border.strokeWidth = constant.borderStrokeWidth;
-      const tile = new config.project.Group([mask, img]);
-      tile.clipped = true;
-      tile.opacity = constant.tileOpacity;
-
-      tile.position = new Point(
-        (groupTiles[y * config.tilesPerRow + x].tile.position.x * config.canvasSize.width) / config.canvasPreSize.width,
-        (groupTiles[y * config.tilesPerRow + x].tile.position.y * config.canvasSize.height) /
-          config.canvasPreSize.height
-      );
-      config.groupTiles.push({
-        tile: tile,
-        groupIndex: groupTiles[y * config.tilesPerRow + x].groupIndex,
-        movable: groupTiles[y * config.tilesPerRow + x].movable,
-      });
-    }
-  }
-  puzzle.moveTile(config);
-};
-const serverCreateTiles = (query: string | string[], socket: any) => {
-  const tileRatio = config.tileWidth / 100;
-  const tileRatio2 = config.tileHeight / 100;
-  const groupTiles = config.groupTiles;
-  config.groupTiles = [];
-  for (let y = 0; y < config.tilesPerColumn; y++) {
-    for (let x = 0; x < config.tilesPerRow; x++) {
-      const shape = config.shapes[y * config.tilesPerRow + x];
-      const mask = getMask(
-        tileRatio,
-        tileRatio2,
-        shape.topTab,
-        shape.rightTab,
-        shape.bottomTab,
-        shape.leftTab,
-        config.tileWidth,
-        config.tileHeight,
-        config.project,
-        config.imgWidth,
-        config.imgHeight
-      );
-      if (mask === undefined) continue;
-      mask.opacity = constant.maskOpacity;
-      mask.strokeColor = new config.project.Color('#ff0000');
-
-      const img = getTileRaster(
-        config.puzzleImage.src,
-        new Point(config.tileWidth * x, config.tileHeight * y),
-        Math.max(config.imgWidth / config.puzzleImage.width, config.imgHeight / config.puzzleImage.height),
-        config.project
-      );
-
-      const border = mask.clone();
-      border.strokeColor = new config.project.Color('#333333');
-      border.strokeWidth = constant.borderStrokeWidth;
-      const tile = new config.project.Group([mask, img]);
-      tile.clipped = true;
-      tile.opacity = constant.tileOpacity;
-
-      tile.position = new Point(
-        (groupTiles[y * config.tilesPerRow + x][0] * config.canvasSize.width) / config.canvasPreSize.width,
-        (groupTiles[y * config.tilesPerRow + x][1] * config.canvasSize.height) / config.canvasPreSize.height
-      );
-      config.groupTiles.push({
-        tile: tile,
-        groupIndex: groupTiles[y * config.tilesPerRow + x][2],
-        movable: true,
-      });
-    }
-  }
-  puzzle.moveTile(config, query, socket);
-};
-export const getMargin = (shape: shape) => {
+const getMargin = (shape: shape) => {
   const margin = { x: 0, y: 0 };
   const marginP = {
     x: (15 * config.tileHeight) / 100,
@@ -337,6 +255,7 @@ export const getMargin = (shape: shape) => {
   }
   return margin;
 };
+
 const getTileRaster = (puzzleImage: string | Blob, offset: paper.Point, scaleValue: number, Paper: any) => {
   const targetRaster = new Paper.Raster(puzzleImage);
   targetRaster.crossOrigin = 'Anonymous';
@@ -510,49 +429,4 @@ const getMask = (
   }
 
   return mask;
-};
-
-const getRandomShapes = () => {
-  config.shapes = [];
-  for (let y = 0; y < config.tilesPerColumn; y++) {
-    for (let x = 0; x < config.tilesPerRow; x++) {
-      let topTab: undefined | number;
-      let rightTab: undefined | number;
-      let bottomTab: undefined | number;
-      let leftTab: undefined | number;
-
-      if (y === 0) topTab = 0;
-      if (y === config.tilesPerColumn - 1) bottomTab = 0;
-      if (x === 0) leftTab = 0;
-      if (x === config.tilesPerRow - 1) rightTab = 0;
-
-      config.shapes.push({
-        topTab: topTab,
-        rightTab: rightTab,
-        bottomTab: bottomTab,
-        leftTab: leftTab,
-      });
-    }
-  }
-
-  for (let y = 0; y < config.tilesPerColumn; y++) {
-    for (let x = 0; x < config.tilesPerRow; x++) {
-      const shape = config.shapes[y * config.tilesPerRow + x];
-
-      const shapeRight = x < config.tilesPerRow - 1 ? config.shapes[y * config.tilesPerRow + (x + 1)] : undefined;
-
-      const shapeBottom = y < config.tilesPerColumn - 1 ? config.shapes[(y + 1) * config.tilesPerRow + x] : undefined;
-
-      shape.rightTab = x < config.tilesPerRow - 1 ? getRandomTabValue() : shape.rightTab;
-
-      if (shapeRight && shape.rightTab !== undefined) shapeRight.leftTab = -shape.rightTab;
-
-      shape.bottomTab = y < config.tilesPerColumn - 1 ? getRandomTabValue() : shape.bottomTab;
-
-      if (shapeBottom && shape.bottomTab !== undefined) shapeBottom.topTab = -shape.bottomTab;
-    }
-  }
-};
-const getRandomTabValue = () => {
-  return Math.pow(-1, Math.floor(Math.random() * 2));
 };
