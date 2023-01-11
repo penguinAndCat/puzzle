@@ -18,6 +18,7 @@ const images = [
 const Main = ({ user }: { user: UserInfo | null }) => {
   const { addModal } = useModal();
   const { initialModal } = usePuzzle();
+  const [popularPuzzle, setPopularPuzzle] = useState([]);
   const openModal = () => {
     initialModal();
     addModal('puzzle');
@@ -41,6 +42,15 @@ const Main = ({ user }: { user: UserInfo | null }) => {
     return data?.pages.reduce((acc, cur) => [...acc, ...cur.item], []);
   }, [data?.pages]);
 
+  const getPopularPuzzle = async () => {
+    const res = await axios.get('/api/puzzle/popular');
+    setPopularPuzzle(res.data.puzzle);
+  };
+
+  useEffect(() => {
+    getPopularPuzzle();
+  }, []);
+
   return (
     <Wrapper>
       <CreateWrapper>
@@ -57,18 +67,10 @@ const Main = ({ user }: { user: UserInfo | null }) => {
       <FavoriteWrapper>
         <Title>인기 있는 퍼즐</Title>
         <PuzzleContainer>
-          {images.map((img, index) => {
-            return <Card key={index} image={img} />;
-          })}
-        </PuzzleContainer>
-      </FavoriteWrapper>
-      <FavoriteWrapper>
-        <Title>공개방</Title>
-        <PuzzleContainer>
-          {puzzleData?.map((data: any, index: number) => {
+          {popularPuzzle?.map((data: any, index: number) => {
             return (
               <RoomCard
-                key={index}
+                key={data._id}
                 src={data.config.puzzleImage.src}
                 progress={Number((data.perfection * 100).toFixed(3))}
                 title={data.title}
@@ -81,6 +83,32 @@ const Main = ({ user }: { user: UserInfo | null }) => {
                   }
                   window.location.href = `${NEXT_SERVER}/puzzle/${data._id}`;
                 }}
+                puzzleNumber={data.config.tilesPerColumn * data.config.tilesPerRow}
+              />
+            );
+          })}
+        </PuzzleContainer>
+      </FavoriteWrapper>
+      <FavoriteWrapper>
+        <Title>공개방</Title>
+        <PuzzleContainer>
+          {puzzleData?.map((data: any, index: number) => {
+            return (
+              <RoomCard
+                key={data._id}
+                src={data.config.puzzleImage.src}
+                progress={Number((data.perfection * 100).toFixed(3))}
+                title={data.title}
+                isMain={true}
+                puzzleId={data._id}
+                onClick={() => {
+                  if (!user) {
+                    toast({ content: '로그인이 필요합니다', type: 'warning' });
+                    return;
+                  }
+                  window.location.href = `${NEXT_SERVER}/puzzle/${data._id}`;
+                }}
+                puzzleNumber={data.config.tilesPerColumn * data.config.tilesPerRow}
               />
             );
           })}
@@ -95,6 +123,9 @@ export default Main;
 
 const Wrapper = styled.div`
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const CreateWrapper = styled.div`
@@ -140,7 +171,7 @@ const Title = styled.div`
 `;
 
 const PuzzleContainer = styled.div`
-  width: 80%;
+  max-width: 1024px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 0.5rem;

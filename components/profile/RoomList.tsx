@@ -83,7 +83,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
               <PuzzleWrapper>
                 {puzzleData?.map((item: any, index: number) => (
                   <RoomCard
-                    key={index}
+                    key={item._id}
                     src={item.config.puzzleImage.src}
                     progress={Number((item.perfection * 100).toFixed(3))}
                     title={item.title}
@@ -99,6 +99,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
                         });
                       }
                     }}
+                    puzzleNumber={item.config.tilesPerColumn * item.config.tilesPerRow}
                   />
                 ))}
               </PuzzleWrapper>
@@ -118,7 +119,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
               <PuzzleWrapper>
                 {invitedPuzzleData?.map((item: any, index: number) => (
                   <RoomCard
-                    key={index}
+                    key={item._id}
                     src={item.config.puzzleImage.src}
                     progress={Number((item.perfection * 100).toFixed(3))}
                     title={item.title}
@@ -127,6 +128,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
                     onClick={() => {
                       window.location.href = `${NEXT_SERVER}/puzzle/${item._id}`;
                     }}
+                    puzzleNumber={item.config.tilesPerColumn * item.config.tilesPerRow}
                   />
                 ))}
               </PuzzleWrapper>

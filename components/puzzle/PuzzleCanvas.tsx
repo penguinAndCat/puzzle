@@ -5,7 +5,7 @@ import { exportConfig, initConfig, restartConfig } from 'libs/puzzle/createPuzzl
 import { useRouter } from 'next/router';
 
 import { movableIndex, moveIndex } from 'libs/puzzle/socketMove';
-import { useLoading, useSocket } from 'libs/zustand/store';
+import { useLoading, usePuzzle, useSocket } from 'libs/zustand/store';
 import Pusher from 'pusher-js';
 import { NEXT_SERVER } from 'config';
 import { useToast } from 'hooks/useToast';
@@ -21,6 +21,7 @@ interface Props {
 const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
   const { offLoading } = useLoading();
   const { setParticipant } = useSocket();
+  const { title } = usePuzzle();
   const toast = useToast();
   const router = useRouter();
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -60,7 +61,7 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
       Paper.setup(canvas);
       if (router.query.id === undefined) {
         const config = exportConfig();
-        initConfig(Paper, puzzleImg, config, canvasSize, puzzleLv);
+        initConfig(Paper, puzzleImg, config, canvasSize, puzzleLv, title);
         offLoading();
       } else {
         if (socket === undefined) return;
@@ -68,12 +69,13 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
         const item = response.data.item;
         const config = { ...item.config };
         const puzzleImage = { ...config.puzzleImage };
-        restartConfig(Paper, puzzleImage, config, canvasSize, item.level, router.query.id, socket);
+        const puzzleTitle = item.title;
+        restartConfig(Paper, puzzleImage, config, canvasSize, item.level, router.query.id, socket, puzzleTitle);
         offLoading();
       }
     };
     setPuzzle();
-  }, [puzzleLv, router.isReady, puzzleImg, canvasSize, router.query.id, socket, user, offLoading]);
+  }, [puzzleLv, router.isReady, puzzleImg, canvasSize, router.query.id, socket, user, offLoading, title]);
 
   useEffect(() => {
     if (!router.isReady) return;

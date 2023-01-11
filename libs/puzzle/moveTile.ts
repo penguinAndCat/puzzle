@@ -1,6 +1,7 @@
 import { openConfetti } from 'hooks/useConfetti';
 import axios from 'libs/axios';
 import { getMargin } from './createPuzzle';
+import { createSavePuzzleModal } from './createSavePuzzleModal';
 
 const moveTile = (config: Config, query?: string | string[], socket?: any) => {
   config.groupTiles.forEach((item, index) => {
@@ -123,6 +124,13 @@ const moveTile = (config: Config, query?: string | string[], socket?: any) => {
       }
       const perfection = matchedTiles / (totalTiles - 1);
 
+      if (perfection === 1) {
+        config.complete = true;
+
+        createSavePuzzleModal();
+        openConfetti();
+      }
+
       if (query !== undefined) {
         const data = {
           config: {
@@ -135,25 +143,17 @@ const moveTile = (config: Config, query?: string | string[], socket?: any) => {
           socketId: socket,
           perfection: perfection,
         };
-        axios
-          .put(`/api/puzzle/${query}`, {
-            data,
-          })
-          .then((res) => {
-            if (res.data.message === 'failed') alert('통신이 불안정합니다. 다시 시도해주세요.');
-          });
-      }
-
-      if (newGroupIndex !== null) {
-        let fitCount = 0;
-        config.groupTiles.forEach((item) => {
-          if (item.groupIndex === newGroupIndex) {
-            fitCount++;
-          }
-        });
-        if (fitCount === config.groupTiles.length && config.complete === false) {
-          config.complete = true;
-          openConfetti();
+        try {
+          axios
+            .put(`/api/puzzle/${query}`, {
+              data,
+            })
+            .then((res) => {
+              if (res.data.message === 'failed') alert('통신이 불안정합니다. 다시 시도해주세요.');
+            });
+        } catch (err) {
+          console.log(err);
+          alert('통신이 불안정합니다. 다시 시도해주세요.');
         }
       }
 
