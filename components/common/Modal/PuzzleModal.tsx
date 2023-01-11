@@ -107,7 +107,7 @@ const PuzzleModal = () => {
       const canvas = document.createElement('canvas');
       Paper.setup(canvas);
       const config = exportConfig();
-      initConfig(Paper, modalImage, config, canvasSize, puzzleNumber);
+      initConfig(Paper, modalImage, config, canvasSize, puzzleNumber, roomName);
 
       const puzzleData = exportConfig();
       delete puzzleData.project;

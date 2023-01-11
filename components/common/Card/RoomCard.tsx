@@ -17,6 +17,7 @@ export default function RoomCard({
   onClick,
   onDelete,
   isMain = false,
+  puzzleNumber,
 }: {
   src: string;
   progress: number;
@@ -26,6 +27,7 @@ export default function RoomCard({
   onClick: () => void;
   onDelete?: () => void;
   isMain?: boolean;
+  puzzleNumber?: number;
 }) {
   const [showModal, setShowModal] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
@@ -63,6 +65,9 @@ export default function RoomCard({
                 )}
               </DeleteContainer>
             )}
+            <div>
+              <Info>{puzzleNumber}조각</Info>
+            </div>
           </TextWrapper>
         </div>
       </Container>
@@ -143,6 +148,7 @@ const PrivateP = styled.p`
 `;
 
 const ClickableP = styled.p`
+  font-size: 12px;
   cursor: pointer;
   &:hover {
     font-weight: bold;
@@ -183,4 +189,8 @@ const DeleteButton = styled.button`
 const DeleteWrapper = styled.div`
   position: absolute;
   right: 0;
+`;
+
+const Info = styled.div`
+  font-size: 12px;
 `;
