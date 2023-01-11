@@ -25,7 +25,7 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
       Paper.setup(canvas);
       if (router.query.id === undefined) {
         const config = exportConfig();
-        initConfig(Paper, puzzleImg, config, canvasSize, puzzleLv);
+        initConfig(Paper, puzzleImg, config, canvasSize, puzzleLv, '404');
       }
     };
     setPuzzle();
