@@ -1,5 +1,6 @@
 import { openConfetti } from 'hooks/useConfetti';
 import { exportConfig } from './createPuzzle';
+import { savePuzzle } from './savePuzzle';
 
 export const moveIndex = (groupTiles: any, indexArr: number[], socketCanvasSize: size) => {
   const config = exportConfig();
@@ -59,6 +60,7 @@ export const moveIndex = (groupTiles: any, indexArr: number[], socketCanvasSize:
     });
     if (fitCount === config.groupTiles.length && config.complete === false) {
       config.complete = true;
+      savePuzzle();
       openConfetti();
     }
   }

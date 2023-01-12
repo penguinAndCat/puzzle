@@ -35,7 +35,6 @@ type Config = {
   project: any;
   puzzleImage: img;
   groupCheck: boolean;
-  firstClient: boolean;
   canvasSize: size;
   canvasPreSize: size;
   complete: boolean;

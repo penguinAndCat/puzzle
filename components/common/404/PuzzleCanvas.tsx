@@ -1,8 +1,7 @@
 import { useRef, useEffect, useMemo } from 'react';
 import Paper from 'paper';
 import styled from 'styled-components';
-import { exportConfig, initConfig, restartConfig } from 'libs/puzzle/createPuzzle';
-import { useRouter } from 'next/router';
+import { initConfig } from 'libs/puzzle/createPuzzle';
 
 interface Props {
   puzzleLv: number;
@@ -10,26 +9,21 @@ interface Props {
 }
 
 const PuzzleCanvas = ({ puzzleLv, puzzleImg }: Props) => {
-  const router = useRouter();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasSize = useMemo(() => ({ width: 240, height: 240 }), []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas === null) return;
-    if (!router.isReady) return;
 
     const setPuzzle = async () => {
       canvas.width = canvasSize.width;
       canvas.height = canvasSize.height;
       Paper.setup(canvas);
-      if (router.query.id === undefined) {
-        const config = exportConfig();
-        initConfig(Paper, puzzleImg, config, canvasSize, puzzleLv, '404');
-      }
+      initConfig(Paper, puzzleImg, canvasSize, puzzleLv, '404');
     };
     setPuzzle();
-  }, [puzzleLv, router.isReady, puzzleImg, router.query.id, canvasSize]);
+  }, [puzzleLv, puzzleImg, canvasSize]);
 
   return (
     <Wrapper>

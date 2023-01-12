@@ -1,12 +1,13 @@
-import axios from 'axios';
+import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 import Paper from 'paper';
-import { useToast } from 'hooks/useToast';
-import { exportConfig, initConfig, setPuzzleRowColumn } from 'libs/puzzle/createPuzzle';
+import styled, { css } from 'styled-components';
+
+import axios from 'libs/axios';
 import { theme } from 'libs/theme/theme';
 import { useLoading, useModal, usePuzzle, userStore } from 'libs/zustand/store';
-import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
-import styled, { css } from 'styled-components';
+import { exportConfig, initConfig, setPuzzleRowColumn } from 'libs/puzzle/createPuzzle';
 import { saveImage } from 'libs/common/saveImage';
+import { useToast } from 'hooks/useToast';
 import { CloseIcon } from '../Icon';
 
 const PuzzleModal = () => {
@@ -106,8 +107,7 @@ const PuzzleModal = () => {
       const canvasSize = { width: 1000, height: 1000 };
       const canvas = document.createElement('canvas');
       Paper.setup(canvas);
-      const config = exportConfig();
-      initConfig(Paper, modalImage, config, canvasSize, puzzleNumber, roomName);
+      initConfig(Paper, modalImage, canvasSize, puzzleNumber, roomName);
 
       const puzzleData = exportConfig();
       delete puzzleData.project;
