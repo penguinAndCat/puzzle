@@ -181,6 +181,9 @@ const Button = styled.button`
 
 const MobileButton = styled.button`
   ${ButtonStyle};
+  @media (min-width: 600px) {
+    display: none;
+  }
 `;
 
 const Logo = styled.div`
