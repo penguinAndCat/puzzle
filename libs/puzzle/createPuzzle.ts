@@ -1,6 +1,5 @@
-import { openConfetti } from 'hooks/useConfetti';
 import paper from 'paper';
-import { Group, Point } from 'paper/dist/paper-core';
+import { Point } from 'paper/dist/paper-core';
 import puzzle from './moveTile';
 
 const constant = {
@@ -20,7 +19,6 @@ let config: Config = {
   puzzleImage: { src: '', width: 0, height: 0 },
   groupTiles: [],
   groupCheck: false,
-  firstClient: true,
   canvasSize: { width: 0, height: 0 },
   canvasPreSize: { width: 0, height: 0 },
   complete: false,
@@ -34,31 +32,35 @@ let puzzleName = '';
 export const initConfig = (
   Paper: typeof paper,
   puzzleImage: img,
-  config: Config,
   canvasSize: size,
   level: number,
-  title: string
+  title: string,
+  firstResize: boolean = true
 ) => {
-  config.firstClient = false;
+  console.log(firstResize);
   puzzleLevel = level;
   puzzleName = title;
   setPuzzleRowColumn(puzzleImage);
   setConfig(Paper, puzzleImage, canvasSize);
-  getRandomShapes();
-  createTiles();
+  if (firstResize) {
+    getRandomShapes();
+    createTiles();
+  } else {
+    recreateTiles();
+  }
 };
 
 export const restartConfig = (
   Paper: typeof paper,
   puzzleImage: img,
-  config2: Config,
+  serverConfig: Config,
   canvasSize: size,
   level: number,
   query: string | string[],
   socket: any,
   title: string
 ) => {
-  config = config2;
+  config = serverConfig;
   puzzleLevel = level;
   puzzleName = title;
   setPuzzleRowColumn(puzzleImage);

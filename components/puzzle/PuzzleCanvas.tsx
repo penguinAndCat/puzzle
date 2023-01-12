@@ -1,16 +1,16 @@
+import { useRouter } from 'next/router';
 import { useRef, useState, useEffect } from 'react';
 import Paper from 'paper';
 import styled from 'styled-components';
-import { exportConfig, initConfig, restartConfig } from 'libs/puzzle/createPuzzle';
-import { useRouter } from 'next/router';
+import Pusher from 'pusher-js';
 
+import { NEXT_SERVER } from 'config';
+import axios from 'libs/axios';
+import { initConfig, restartConfig } from 'libs/puzzle/createPuzzle';
 import { movableIndex, moveIndex } from 'libs/puzzle/socketMove';
 import { useLoading, usePuzzle, useSocket } from 'libs/zustand/store';
-import Pusher from 'pusher-js';
-import { NEXT_SERVER } from 'config';
 import { useToast } from 'hooks/useToast';
 import { useInvitedUser, usePuzzleFriend } from 'hooks/useReactQuery';
-import axios from 'libs/axios';
 import { useCanvasSize } from 'hooks/useResize';
 
 interface Props {
@@ -28,6 +28,7 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
   const router = useRouter();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [socket, setSocket] = useState();
+  const [firstResize, setFirstResize] = useState(true);
   const { refetchInvitedUser } = useInvitedUser(router.query.id, user);
   const { refetchPuzzleFriend } = usePuzzleFriend(router.query.id);
 
@@ -41,8 +42,8 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
       canvas.height = canvasSize.height;
       Paper.setup(canvas);
       if (router.query.id === undefined) {
-        const config = exportConfig();
-        initConfig(Paper, puzzleImg, config, canvasSize, puzzleLv, title);
+        initConfig(Paper, puzzleImg, canvasSize, puzzleLv, title, firstResize);
+        setFirstResize(false);
         offLoading();
       } else {
         if (socket === undefined) return;
@@ -56,7 +57,7 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
       }
     };
     setPuzzle();
-  }, [puzzleLv, puzzleImg, canvasSize, router.query.id, socket, user, offLoading, title]);
+  }, [puzzleLv, puzzleImg, canvasSize, router.query.id, socket, user, offLoading, title, firstResize]);
 
   useEffect(() => {
     if (!router.isReady) return;

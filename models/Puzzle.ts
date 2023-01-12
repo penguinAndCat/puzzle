@@ -25,9 +25,6 @@ const PuzzleSchema = new mongoose.Schema(
       complete: {
         type: Boolean,
       },
-      firstClient: {
-        type: Boolean,
-      },
       groupCheck: {
         type: Boolean,
       },

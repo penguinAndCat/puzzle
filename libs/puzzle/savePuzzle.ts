@@ -21,7 +21,6 @@ let config: Config = {
   puzzleImage: { src: '', width: 0, height: 0 },
   groupTiles: [],
   groupCheck: false,
-  firstClient: true,
   canvasSize: { width: 0, height: 0 },
   canvasPreSize: { width: 0, height: 0 },
   complete: false,

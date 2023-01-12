@@ -71,6 +71,7 @@ export const useRoomInfo = (puzzleId: string | undefined | string[], user: UserI
 
   const getRoomInfo = async () => {
     try {
+      if (puzzleId === undefined) return {};
       if (user === null) return { title: '', secretRoom: false, level: 1 };
       const res = await axios.get(`/api/puzzle/info/${puzzleId}`);
       return res.data.item;
