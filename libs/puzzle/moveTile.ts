@@ -124,7 +124,7 @@ const moveTile = (config: Config, query?: string | string[], socket?: any) => {
       }
       const perfection = matchedTiles / (totalTiles - 1);
 
-      if (perfection === 1) {
+      if (perfection === 1 && config.complete !== true) {
         config.complete = true;
 
         createSavePuzzleModal();

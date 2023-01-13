@@ -37,7 +37,6 @@ export const initConfig = (
   title: string,
   firstResize: boolean = true
 ) => {
-  console.log(firstResize);
   puzzleLevel = level;
   puzzleName = title;
   setPuzzleRowColumn(puzzleImage);
@@ -78,7 +77,7 @@ export const setPuzzleRowColumn = (puzzleImage: img) => {
   levels = [];
   for (let i = 2; i < width; i++) {
     for (let j = 2; j < height; j++) {
-      if (i * j > 200) continue;
+      if (i * j > 180) continue;
       let ratio = width / i / (height / j);
       if (ratio < 0.9 || ratio > 1.1) continue;
       levels.push([i, j]);
@@ -369,16 +368,16 @@ const getMask = (
     y1 = 3;
   const cx2 = 46,
     cy2 = 3,
-    x2 = 44,
-    y2 = -7;
-  const cx3 = 30,
-    cy3 = -30,
+    x2 = 44 - 0.1,
+    y2 = -7 + 0.1;
+  const cx3 = 30 + 0.1,
+    cy3 = -30 + 0.8,
     x3 = 50,
     y3 = -30;
-  const cx4 = 70,
-    cy4 = -30,
-    x4 = 100 - x2,
-    y4 = y2;
+  const cx4 = 70 - 0.3,
+    cy4 = -30 - 0.7,
+    x4 = 100 - x2 - 0.1,
+    y4 = y2 + 0.3;
   const cx5 = 100 - cx2,
     cy5 = cy2,
     x5 = 100 - x1,
