@@ -77,7 +77,7 @@ export const setPuzzleRowColumn = (puzzleImage: img) => {
   levels = [];
   for (let i = 2; i < width; i++) {
     for (let j = 2; j < height; j++) {
-      if (i * j > 180) continue;
+      if (i * j > 200) continue;
       let ratio = width / i / (height / j);
       if (ratio < 0.9 || ratio > 1.1) continue;
       levels.push([i, j]);

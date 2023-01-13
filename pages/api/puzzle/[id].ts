@@ -14,7 +14,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
         { _id: id },
         {
           $set: {
-            config: req.body.data.config,
+            'config.groupTiles': req.body.data.groupTiles,
+            'config.canvasSize': req.body.data.canvasSize,
           },
         }
       );
@@ -26,9 +27,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
           },
         }
       );
-      const groupTiles = req.body.data.config.groupTiles;
+      const groupTiles = req.body.data.groupTiles;
       const indexArr = req.body.data.indexArr;
-      const socketCanvasSize = req.body.data.config.canvasSize;
+      const socketCanvasSize = req.body.data.canvasSize;
       const socketId = req.body.data.socketId;
       // if (id !== undefined)
       //   res?.socket?.server?.io?.to(id).emit('groupTiles', {
@@ -56,11 +57,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseS
         { _id: id },
         {
           $set: {
-            config: req.body.data.config,
+            'config.groupTiles': req.body.data.groupTiles,
+            'config.canvasSize': req.body.data.canvasSize,
           },
         }
       );
-      const groupTiles = req.body.data.config.groupTiles;
+      const groupTiles = req.body.data.groupTiles;
       const socketId = req.body.data.socketId;
       if (id !== undefined) {
         await pusher.trigger(`presence-${id}`, 'movablePuzzle', {
