@@ -32,6 +32,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     try {
       const limit = 8;
       const puzzle = await Puzzle.find({ secretRoom: false })
+        .where('perfection')
+        .ne(1)
         .sort({
           createdAt: -1,
         })
