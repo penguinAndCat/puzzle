@@ -2,7 +2,7 @@ import Card from 'components/common/Card/Card';
 import RoomCard from 'components/common/Card/RoomCard';
 import axios from 'libs/axios';
 import { useModal, usePuzzle } from 'libs/zustand/store';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { NEXT_SERVER } from 'config';
 import useInfiniteScroll from 'hooks/useInfiniteScroll';
@@ -25,26 +25,28 @@ const Main = ({ user }: { user: UserInfo | null }) => {
   };
   const toast = useToast();
   const [sortType, setSortType] = useState<'desc' | 'asc'>('desc');
-  const [sortField, setSortField] = useState<'createdAt' | 'perfection'>('createdAt');
-  const [{ data }, flagRef] = useInfiniteScroll({
-    queryKey: ['public', sortField, sortType],
+  const [sortField, setSortField] = useState<'createdAt' | 'perfection'>('perfection');
+  const [showPerfect, setShowPerfect] = useState(false);
+  const [{ data, refetch }, flagRef] = useInfiniteScroll({
+    queryKey: ['public', sortField, sortType, showPerfect.toString()],
     queryFn: async ({ pageParam = 1 }) => {
       const { data } = await axios.get('/api/puzzle', {
         params: {
           page: pageParam,
           sortField: sortField,
           sortType: sortType,
+          searchKeyword: `false`,
+          searchField: 'secretRoom',
+          showPerfect: showPerfect,
         },
       });
       return data;
     },
     getNextPageParam: (lastPage) => (lastPage.isLast ? undefined : lastPage.page + 1),
   });
-
   const puzzleData = useMemo(() => {
     return data?.pages.reduce((acc, cur) => [...acc, ...cur.item], []);
   }, [data?.pages]);
-
   const getPopularPuzzle = async () => {
     const res = await axios.get('/api/puzzle/popular');
     setPopularPuzzle(res.data.puzzle);
@@ -119,13 +121,20 @@ const Main = ({ user }: { user: UserInfo | null }) => {
           >
             완성도
           </button>
+          <button
+            onClick={() => {
+              setShowPerfect((prev) => !prev);
+            }}
+          >
+            100%
+          </button>
         </div>
         <PuzzleContainer>
           {puzzleData?.map((data: any, index: number) => {
             return (
               <RoomCard
                 key={data._id}
-                src={data.config.puzzleImage.src}
+                src={data.config.puzzleImage?.src}
                 progress={Number((data.perfection * 100).toFixed(3))}
                 title={data.title}
                 isMain={true}
