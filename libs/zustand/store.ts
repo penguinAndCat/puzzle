@@ -23,12 +23,14 @@ export const usePuzzle = create<PuzzleProps>()(
       number: 1,
       title: '',
       secretRoom: false,
+      firstRender: true,
       setModalImage: (image) => set({ modalImage: image }),
       initialModal: () =>
         set({ number: 1, title: '', secretRoom: false, modalImage: { src: '', width: 0, height: 0 } }),
       setNumber: (number) => set({ number: number }),
       setSecretRoom: (value) => set({ secretRoom: value }),
       setTitle: (title) => set({ title: title }),
+      setFirstRender: (value) => set({ firstRender: value }),
     }),
     {
       name: 'puzzle',

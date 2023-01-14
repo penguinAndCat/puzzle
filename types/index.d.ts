@@ -52,11 +52,13 @@ type PuzzleProps = {
   number: number;
   title: string;
   secretRoom: boolean;
+  firstRender: boolean;
   setModalImage: (value: img) => void;
   initialModal: () => void;
   setNumber: (value: number) => void;
   setSecretRoom: (value: boolean) => void;
   setTitle: (value: string) => void;
+  setFirstRender: (value: boolean) => void;
 };
 
 interface Toast {
