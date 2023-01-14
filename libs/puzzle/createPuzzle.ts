@@ -35,13 +35,13 @@ export const initConfig = (
   canvasSize: size,
   level: number,
   title: string,
-  firstResize: boolean = true
+  firstRender: boolean = true
 ) => {
   puzzleLevel = level;
   puzzleName = title;
   setPuzzleRowColumn(puzzleImage);
   setConfig(Paper, puzzleImage, canvasSize);
-  if (firstResize) {
+  if (firstRender) {
     getRandomShapes();
     createTiles();
   } else {

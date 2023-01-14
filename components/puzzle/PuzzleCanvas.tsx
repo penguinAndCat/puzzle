@@ -22,15 +22,18 @@ interface Props {
 const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
   const { offLoading } = useLoading();
   const { setParticipant } = useSocket();
-  const { title } = usePuzzle();
+  const { title, firstRender, setFirstRender } = usePuzzle();
   const canvasSize = useCanvasSize();
   const toast = useToast();
   const router = useRouter();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [socket, setSocket] = useState();
-  const [firstResize, setFirstResize] = useState(true);
   const { refetchInvitedUser } = useInvitedUser(router.query.id, user);
   const { refetchPuzzleFriend } = usePuzzleFriend(router.query.id);
+
+  useEffect(() => {
+    setFirstRender(true);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -42,8 +45,8 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
       canvas.height = canvasSize.height;
       Paper.setup(canvas);
       if (router.query.id === undefined) {
-        initConfig(Paper, puzzleImg, canvasSize, puzzleLv, title, firstResize);
-        setFirstResize(false);
+        initConfig(Paper, puzzleImg, canvasSize, puzzleLv, title, firstRender);
+        setFirstRender(false);
         offLoading();
       } else {
         if (socket === undefined) return;
@@ -57,7 +60,7 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
       }
     };
     setPuzzle();
-  }, [puzzleLv, puzzleImg, canvasSize, router.query.id, socket, user, offLoading, title, firstResize]);
+  }, [puzzleLv, puzzleImg, canvasSize, router.query.id, socket, user, offLoading, title, firstRender, setFirstRender]);
 
   useEffect(() => {
     if (!router.isReady) return;

@@ -9,7 +9,7 @@ interface Props {
 }
 
 const Levels = ({ showLevel, setShowLevel }: Props) => {
-  const { number, setNumber } = usePuzzle();
+  const { number, setNumber, setFirstRender } = usePuzzle();
   const [list, setList] = useState<number[][]>([]);
   const [display, setDisplay] = useState(false); // fadeout animaition 기다림
   const el = useRef<HTMLDivElement>(null);
@@ -53,6 +53,7 @@ const Levels = ({ showLevel, setShowLevel }: Props) => {
                     onClick={() => {
                       setNumber(index);
                       setShowLevel(false);
+                      setFirstRender(true);
                     }}
                   >
                     {row * col}
