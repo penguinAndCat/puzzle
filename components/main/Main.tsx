@@ -24,13 +24,16 @@ const Main = ({ user }: { user: UserInfo | null }) => {
     addModal('puzzle');
   };
   const toast = useToast();
-
+  const [sortType, setSortType] = useState<'desc' | 'asc'>('desc');
+  const [sortField, setSortField] = useState<'createdAt' | 'perfection'>('createdAt');
   const [{ data }, flagRef] = useInfiniteScroll({
-    queryKey: 'public',
+    queryKey: ['public', sortField, sortType],
     queryFn: async ({ pageParam = 1 }) => {
       const { data } = await axios.get('/api/puzzle', {
         params: {
           page: pageParam,
+          sortField: sortField,
+          sortType: sortType,
         },
       });
       return data;
@@ -91,6 +94,32 @@ const Main = ({ user }: { user: UserInfo | null }) => {
       </FavoriteWrapper>
       <FavoriteWrapper>
         <Title>공개방</Title>
+        <div>
+          <button
+            onClick={() => {
+              if (sortField === 'createdAt') {
+                setSortType((prev) => (prev === 'desc' ? 'asc' : 'desc'));
+                return;
+              }
+              setSortField('createdAt');
+              setSortType('desc');
+            }}
+          >
+            날짜
+          </button>
+          <button
+            onClick={() => {
+              if (sortField === 'perfection') {
+                setSortType((prev) => (prev === 'desc' ? 'asc' : 'desc'));
+                return;
+              }
+              setSortField('perfection');
+              setSortType('desc');
+            }}
+          >
+            완성도
+          </button>
+        </div>
         <PuzzleContainer>
           {puzzleData?.map((data: any, index: number) => {
             return (
