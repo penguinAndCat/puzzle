@@ -7,6 +7,8 @@ import styled from 'styled-components';
 import { NEXT_SERVER } from 'config';
 import useInfiniteScroll from 'hooks/useInfiniteScroll';
 import { useToast } from 'hooks/useToast';
+import dropicon from 'public/dropdown.png';
+import Image from 'next/image';
 
 const images = [
   'http://res.cloudinary.com/penguinandcatpuzzle/image/upload/v1666189078/bugvpkwfmde3q21zcm4s.png',
@@ -27,6 +29,8 @@ const Main = ({ user }: { user: UserInfo | null }) => {
   const [sortType, setSortType] = useState<'desc' | 'asc'>('desc');
   const [sortField, setSortField] = useState<'createdAt' | 'perfection'>('perfection');
   const [showPerfect, setShowPerfect] = useState(false);
+  const [showDrop, setShowDrop] = useState(false);
+  const [dropV, setDropV] = useState('최신순');
   const [{ data, refetch }, flagRef] = useInfiniteScroll({
     queryKey: ['public', sortField, sortType, showPerfect.toString()],
     queryFn: async ({ pageParam = 1 }) => {
@@ -95,40 +99,69 @@ const Main = ({ user }: { user: UserInfo | null }) => {
         </PuzzleContainer>
       </FavoriteWrapper>
       <FavoriteWrapper>
-        <Title>공개방</Title>
-        <div>
-          <button
-            onClick={() => {
-              if (sortField === 'createdAt') {
-                setSortType((prev) => (prev === 'desc' ? 'asc' : 'desc'));
-                return;
-              }
-              setSortField('createdAt');
-              setSortType('desc');
-            }}
-          >
-            날짜
-          </button>
-          <button
-            onClick={() => {
-              if (sortField === 'perfection') {
-                setSortType((prev) => (prev === 'desc' ? 'asc' : 'desc'));
-                return;
-              }
-              setSortField('perfection');
-              setSortType('desc');
-            }}
-          >
-            완성도
-          </button>
-          <button
-            onClick={() => {
-              setShowPerfect((prev) => !prev);
-            }}
-          >
-            100%
-          </button>
-        </div>
+        <ButtonWrapper>
+          <MainTitle>공개방</MainTitle>
+          <DropBox onClick={(e) => setShowDrop((prev) => !prev)}>
+            <DropText>
+              {dropV}
+              <Image src={dropicon} alt={'menu'} width={7} height={7} />
+            </DropText>
+            <DropUl>
+              {showDrop && (
+                <>
+                  <li>
+                    <button
+                      onClick={(e) => {
+                        setSortField('createdAt');
+                        setSortType('desc');
+                        setDropV(e.currentTarget.textContent || '최신');
+                      }}
+                    >
+                      최신순
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={(e) => {
+                        setSortField('createdAt');
+                        setSortType('asc');
+                        setDropV(e.currentTarget.textContent || '신최');
+                      }}
+                    >
+                      신최순
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={(e) => {
+                        setSortField('perfection');
+                        setSortType('desc');
+                        setDropV(e.currentTarget.textContent || '완성');
+                      }}
+                    >
+                      완성순
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={(e) => {
+                        setSortField('perfection');
+                        setSortType('asc');
+                        setDropV(e.currentTarget.textContent || '실패');
+                      }}
+                    >
+                      실패순
+                    </button>
+                  </li>
+                </>
+              )}
+            </DropUl>
+          </DropBox>
+          <Label>
+            <span>100%</span>
+            <input type={'checkbox'} checked={showPerfect} onChange={() => setShowPerfect((prev) => !prev)} />
+          </Label>
+        </ButtonWrapper>
         <PuzzleContainer>
           {puzzleData?.map((data: any, index: number) => {
             return (
@@ -227,4 +260,68 @@ const CreateButton = styled.button`
   font-size: 19px;
   font-weight: 600;
   cursor: pointer;
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: min(1024px, 100%);
+  gap: 0.5rem;
+  line-height: 1.5;
+  padding: 0.5rem;
+  position: relative;
+`;
+
+const MainTitle = styled.div`
+  position: absolute;
+  font-weight: 600;
+  text-align: center;
+  inset: 0;
+`;
+
+const DropBox = styled.div`
+  color: black;
+  position: relative;
+  z-index: 10;
+  cursor: pointer;
+`;
+const DropText = styled.div`
+  background-color: white;
+  height: 100%;
+  font-size: 0.8rem;
+`;
+const DropUl = styled.ul`
+  width: 100%;
+  cursor: pointer;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  li {
+    width: 100%;
+    height: 1.5rem;
+    background-color: white;
+  }
+  li:hover {
+    background-color: lightgray;
+  }
+  button {
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    border: none;
+    padding: 0;
+  }
+`;
+
+const Label = styled.label`
+  z-index: 10;
+
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+  input {
+    margin: 0;
+    margin-top: 2px;
+  }
 `;
