@@ -1,12 +1,11 @@
-import { useToast } from 'hooks/useToast';
 import Pusher from 'pusher-js';
 import { useNotice } from 'hooks/useReactQuery';
 import { useEffect } from 'react';
 import { NEXT_SERVER } from 'config';
-import { useNotification } from 'hooks/useNotification';
+import { usePopup } from 'hooks/usePopup';
 
 const SocketNotice = ({ user }: { user: UserInfo | null }) => {
-  const notification = useNotification();
+  const popup = usePopup();
   const { refetchNotice } = useNotice(user);
 
   useEffect(() => {
@@ -29,7 +28,7 @@ const SocketNotice = ({ user }: { user: UserInfo | null }) => {
         const { friend, puzzle, nickname, picture, noticeId, puzzleId } = data;
         if (friend) {
           refetchNotice();
-          notification({
+          popup({
             nickname: `${nickname}`,
             content: `저랑 친구하실래요?`,
             picture: `${picture}`,
@@ -39,7 +38,7 @@ const SocketNotice = ({ user }: { user: UserInfo | null }) => {
         }
         if (puzzle) {
           refetchNotice();
-          notification({
+          popup({
             nickname: `${nickname}`,
             content: `퍼즐 방에 들어오실래요?`,
             picture: `${picture}`,
@@ -56,7 +55,7 @@ const SocketNotice = ({ user }: { user: UserInfo | null }) => {
       pusher.unsubscribe(`presence-${user?.id}`);
       subscribe = false;
     };
-  }, [refetchNotice, notification, user]);
+  }, [refetchNotice, popup, user]);
   return null;
 };
 

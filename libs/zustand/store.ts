@@ -46,23 +46,23 @@ export const useToastState = create<ToastProps>((set) => ({
     })),
   removeToast: () =>
     set((state) => ({
-      toast: state.toast.filter((item, index) => index !== 0),
+      toast: state.toast.filter((_, index) => index !== 0),
     })),
 }));
 
-export const useNotificationState = create<NotificationProps>((set) => ({
-  notification: [],
-  addNotification: (data) =>
+export const usePopupState = create<NotificationProps>((set) => ({
+  popup: [],
+  addPopup: (data) =>
     set((state) => ({
-      notification: [...state.notification, data],
+      popup: [...state.popup, data],
     })),
-  removeNotification: () =>
+  removePopup: () =>
     set((state) => ({
-      notification: state.notification.filter((item, index) => index !== 0),
+      popup: state.popup.filter((_, index) => index !== 0),
     })),
-  removeOneNotification: (id: string) =>
+  removeOnePopup: (id: string) =>
     set((state) => ({
-      notification: state.notification.filter((item) => item.noticeId !== id),
+      popup: state.popup.filter((item) => item.noticeId !== id),
     })),
 }));
 

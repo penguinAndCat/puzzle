@@ -13,7 +13,7 @@ import { userStore } from 'libs/zustand/store';
 import { useEffect } from 'react';
 import SocketNotice from 'components/common/SocketNotice';
 import ToastList from 'components/common/Toast/ToastList';
-import NotificationList from 'components/common/Notification/NotificationList';
+import NotificationList from 'components/common/Popup/PopupList';
 
 const queryClient = new QueryClient({
   defaultOptions: {

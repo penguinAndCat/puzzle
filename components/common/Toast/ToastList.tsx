@@ -1,6 +1,6 @@
 import { useToastState } from 'libs/zustand/store';
 import styled from 'styled-components';
-import Toast from './Toast';
+import Toast from '.';
 
 const ToastList = () => {
   const { toast } = useToastState();

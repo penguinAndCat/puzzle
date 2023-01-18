@@ -1,14 +1,14 @@
-import { useNotificationState } from 'libs/zustand/store';
+import { usePopupState } from 'libs/zustand/store';
 import styled from 'styled-components';
-import Notification from './Notification';
+import Popup from '.';
 
 const NotificationList = () => {
-  const { notification } = useNotificationState();
+  const { popup } = usePopupState();
 
   return (
     <Wrapper>
-      {notification.map((item, index) => (
-        <Notification key={index} option={item} />
+      {popup.map((item, index) => (
+        <Popup key={index} option={item} />
       ))}
     </Wrapper>
   );

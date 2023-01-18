@@ -3,19 +3,19 @@ import styled from 'styled-components';
 
 import { PopupCloseIcon } from '../Icon';
 import axios from 'libs/axios';
-import { useNotificationState, userStore } from 'libs/zustand/store';
+import { usePopupState, userStore } from 'libs/zustand/store';
 import { useNotice } from 'hooks/useReactQuery';
 import { useToast } from 'hooks/useToast';
 
-export default function Notification({ option }: { option: NotificationType }) {
-  const { removeOneNotification } = useNotificationState();
+export default function Popup({ option }: { option: PopupType }) {
+  const { removeOnePopup } = usePopupState();
   const { user } = userStore();
   const toast = useToast();
   const { refetchNotice } = useNotice(user);
 
   const onclick = async () => {
     if (!user?.id) return;
-    removeOneNotification(option.noticeId);
+    removeOnePopup(option.noticeId);
     if (option.type === 'friend') {
       const res = await axios.put(`/api/users/friends`, {
         data: {
@@ -54,7 +54,7 @@ export default function Notification({ option }: { option: NotificationType }) {
   return (
     <Container>
       <Header>
-        <IconWrapper onClick={() => removeOneNotification(option.noticeId)}>
+        <IconWrapper onClick={() => removeOnePopup(option.noticeId)}>
           <PopupCloseIcon />
         </IconWrapper>
       </Header>
@@ -129,7 +129,7 @@ const Button = styled.button`
   font-size: 0.9rem;
   color: ${({ theme }) => theme.bgColor};
   background-color: ${({ theme }) => theme.textColor};
-  border: 2px solid ${({ theme }) => theme.bgColor};
+  border: 1px solid ${({ theme }) => theme.bgColor};
   cursor: pointer;
 `;
 
