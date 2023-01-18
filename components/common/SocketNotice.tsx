@@ -34,6 +34,7 @@ const SocketNotice = ({ user }: { user: UserInfo | null }) => {
             content: `저랑 친구하실래요?`,
             picture: `${picture}`,
             noticeId: noticeId,
+            type: 'friend',
           });
         }
         if (puzzle) {
@@ -43,6 +44,8 @@ const SocketNotice = ({ user }: { user: UserInfo | null }) => {
             content: `퍼즐 방에 들어오실래요?`,
             picture: `${picture}`,
             noticeId: noticeId,
+            type: 'puzzle',
+            puzzleId: puzzleId,
           });
         }
       });

@@ -4,7 +4,7 @@ import useDebounce from './useDebounce';
 
 export const useNotification = () => {
   const { notification, addNotification, removeNotification } = useNotificationState();
-  const notificationData = useDebounce<NotificationType[]>(notification, 3000000);
+  const notificationData = useDebounce<NotificationType[]>(notification, 1500000);
 
   const handleToast = (option: NotificationType) => {
     addNotification(option);

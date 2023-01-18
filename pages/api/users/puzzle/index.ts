@@ -70,6 +70,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         nickname: requesterUser.nickname,
         picture: requesterUser.picture,
         noticeId: newNotice._id.toString(),
+        puzzleId: puzzleId,
       });
       res.status(201).json({ message: 'success' });
     } catch (err) {

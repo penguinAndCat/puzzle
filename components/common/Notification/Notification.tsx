@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { CloseIcon } from '../Icon';
+import { PopupCloseIcon } from '../Icon';
 import axios from 'libs/axios';
 import { useNotificationState, userStore } from 'libs/zustand/store';
 import { useNotice } from 'hooks/useReactQuery';
@@ -9,11 +9,53 @@ import { useToast } from 'hooks/useToast';
 
 export default function Notification({ option }: { option: NotificationType }) {
   const { removeOneNotification } = useNotificationState();
+  const { user } = userStore();
+  const toast = useToast();
+  const { refetchNotice } = useNotice(user);
+
+  const onclick = async () => {
+    if (!user?.id) return;
+    removeOneNotification(option.noticeId);
+    if (option.type === 'friend') {
+      const res = await axios.put(`/api/users/friends`, {
+        data: {
+          userId: user.id,
+          friendNickname: option.nickname,
+        },
+      });
+      if (res.data.message === 'success') {
+        toast({ nickname: option.nickname, content: '님과 친구가 되었습니다.', type: 'success' });
+      }
+      if (res.data.message === 'duplicated') {
+        toast({ content: '이미 친구입니다.', type: 'warning' });
+        return;
+      }
+    } else if (option.type === 'puzzle') {
+      const res = await axios.put(`/api/users/puzzle`, {
+        data: {
+          userId: user.id,
+          puzzleId: option.puzzleId,
+        },
+      });
+      if (res.data.message === 'success') {
+        toast({ content: '초대를 수락하였습니다.', type: 'success' });
+        if (confirm('초대받은 퍼즐로 이동하겠습니까?')) {
+          window.location.href = `/puzzle/${option.puzzleId}`;
+        }
+      }
+      if (res.data.message === 'failed') {
+        toast({ content: '초대 수락이 실패하였습니다.', type: 'warning' });
+        return;
+      }
+    }
+    refetchNotice();
+  };
+
   return (
     <Container>
       <Header>
         <IconWrapper onClick={() => removeOneNotification(option.noticeId)}>
-          <CloseIcon />
+          <PopupCloseIcon />
         </IconWrapper>
       </Header>
       <Main>
@@ -26,7 +68,7 @@ export default function Notification({ option }: { option: NotificationType }) {
         </ContentWrapper>
       </Main>
       <Footer>
-        <Button>수락</Button>
+        <Button onClick={onclick}>수락</Button>
       </Footer>
     </Container>
   );
@@ -83,11 +125,11 @@ const Button = styled.button`
   right: 0;
   width: 3rem;
   height: 1.4rem;
-  line-height: 1.4rem;
+  line-height: 1.2rem;
   font-size: 0.9rem;
   color: ${({ theme }) => theme.bgColor};
   background-color: ${({ theme }) => theme.textColor};
-  border: 1px solid ${({ theme }) => theme.bgColor};
+  border: 2px solid ${({ theme }) => theme.bgColor};
   cursor: pointer;
 `;
 
@@ -96,7 +138,7 @@ const Container = styled.div`
   width: 230px;
   height: 100%;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   font-size: 0.9rem;
   position: relative;
   box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
@@ -124,7 +166,7 @@ const Container = styled.div`
 
   animation-fill-mode: forwards;
   animation-name: fadeInNoti, fadeOutNoti;
-  animation-delay: 0s, 29000.6s;
+  animation-delay: 0s, 1400.6s;
   animation-duration: 2s, 1s;
 
   color: ${({ theme }) => theme.bgColor};

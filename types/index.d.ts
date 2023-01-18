@@ -78,6 +78,8 @@ interface NotificationType {
   picture: string;
   content: string;
   noticeId: string;
+  type: 'friend' | 'puzzle';
+  puzzleId?: string;
 }
 
 type NotificationProps = {

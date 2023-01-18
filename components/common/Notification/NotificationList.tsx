@@ -19,6 +19,6 @@ export default NotificationList;
 const Wrapper = styled.div`
   position: fixed;
   right: 10px;
-  bottom: 20px;
+  bottom: 0px;
   z-index: 999;
 `;
