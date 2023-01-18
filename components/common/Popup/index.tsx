@@ -166,7 +166,7 @@ const Container = styled.div`
 
   animation-fill-mode: forwards;
   animation-name: fadeInNoti, fadeOutNoti;
-  animation-delay: 0s, 1400.6s;
+  animation-delay: 0s, 59.6s;
   animation-duration: 2s, 1s;
 
   color: ${({ theme }) => theme.bgColor};
