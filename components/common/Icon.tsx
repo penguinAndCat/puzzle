@@ -1,5 +1,20 @@
 import styled from 'styled-components';
 
+const Svg = styled.svg`
+  color: ${({ theme }) => theme.modalTextColor};
+  fill: ${({ theme }) => theme.modalTextColor};
+`;
+
+const PaletteSvg = styled.svg`
+  color: ${({ theme }) => theme.paletteColor};
+  fill: ${({ theme }) => theme.paletteColor};
+`;
+
+const PopupSvg = styled.svg`
+  color: ${({ theme }) => theme.bgColor};
+  fill: ${({ theme }) => theme.bgColor};
+`;
+
 export const CloseIcon = () => {
   return (
     <Svg aria-label="삭제" height="12" role="img" viewBox="0 0 24 24" width="12">
@@ -29,10 +44,34 @@ export const CloseIcon = () => {
   );
 };
 
-const Svg = styled.svg`
-  color: ${({ theme }) => theme.modalTextColor};
-  fill: ${({ theme }) => theme.modalTextColor};
-`;
+export const PopupCloseIcon = () => {
+  return (
+    <PopupSvg aria-label="삭제" height="12" role="img" viewBox="0 0 24 24" width="12">
+      <line
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        x1="21"
+        x2="3"
+        y1="3"
+        y2="21"
+      ></line>
+      <line
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        x1="21"
+        x2="3"
+        y1="21"
+        y2="3"
+      ></line>
+    </PopupSvg>
+  );
+};
 
 export const SeeMoreIcon = () => {
   return (
@@ -83,8 +122,3 @@ export const PaletteIcon = () => {
     </PaletteSvg>
   );
 };
-
-const PaletteSvg = styled.svg`
-  color: ${({ theme }) => theme.paletteColor};
-  fill: ${({ theme }) => theme.paletteColor};
-`;

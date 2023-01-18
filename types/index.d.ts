@@ -73,6 +73,22 @@ type ToastProps = {
   removeToast: () => void;
 };
 
+interface PopupType {
+  nickname: string;
+  picture: string;
+  content: string;
+  noticeId: string;
+  type: 'friend' | 'puzzle';
+  puzzleId?: string;
+}
+
+type NotificationProps = {
+  popup: PopupType[];
+  addPopup: (data: PopupType) => void;
+  removePopup: () => void;
+  removeOnePopup: (id: string) => void;
+};
+
 interface LoadingContent {
   first: string;
   second: string;

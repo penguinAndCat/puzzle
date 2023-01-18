@@ -1,11 +1,11 @@
-import { useToast } from 'hooks/useToast';
 import Pusher from 'pusher-js';
 import { useNotice } from 'hooks/useReactQuery';
 import { useEffect } from 'react';
 import { NEXT_SERVER } from 'config';
+import { usePopup } from 'hooks/usePopup';
 
 const SocketNotice = ({ user }: { user: UserInfo | null }) => {
-  const toast = useToast();
+  const popup = usePopup();
   const { refetchNotice } = useNotice(user);
 
   useEffect(() => {
@@ -25,14 +25,27 @@ const SocketNotice = ({ user }: { user: UserInfo | null }) => {
       const channel: any = pusher.subscribe(`presence-${user?.id}`);
 
       channel.bind('onNotice', (data: any) => {
-        const { friend, puzzle, nickname } = data;
+        const { friend, puzzle, nickname, picture, noticeId, puzzleId } = data;
         if (friend) {
           refetchNotice();
-          toast({ nickname: `${nickname}`, content: `님이 친구 요청 하였습니다.`, type: 'info' });
+          popup({
+            nickname: `${nickname}`,
+            content: `저랑 친구하실래요?`,
+            picture: `${picture}`,
+            noticeId: noticeId,
+            type: 'friend',
+          });
         }
         if (puzzle) {
           refetchNotice();
-          toast({ nickname: `${nickname}`, content: `님이 퍼즐 방으로 초대 하였습니다.`, type: 'info' });
+          popup({
+            nickname: `${nickname}`,
+            content: `퍼즐 방에 들어오실래요?`,
+            picture: `${picture}`,
+            noticeId: noticeId,
+            type: 'puzzle',
+            puzzleId: puzzleId,
+          });
         }
       });
     }
@@ -42,7 +55,7 @@ const SocketNotice = ({ user }: { user: UserInfo | null }) => {
       pusher.unsubscribe(`presence-${user?.id}`);
       subscribe = false;
     };
-  }, [user]);
+  }, [refetchNotice, popup, user]);
   return null;
 };
 

@@ -46,7 +46,23 @@ export const useToastState = create<ToastProps>((set) => ({
     })),
   removeToast: () =>
     set((state) => ({
-      toast: state.toast.filter((item, index) => index !== 0),
+      toast: state.toast.filter((_, index) => index !== 0),
+    })),
+}));
+
+export const usePopupState = create<NotificationProps>((set) => ({
+  popup: [],
+  addPopup: (data) =>
+    set((state) => ({
+      popup: [...state.popup, data],
+    })),
+  removePopup: () =>
+    set((state) => ({
+      popup: state.popup.filter((_, index) => index !== 0),
+    })),
+  removeOnePopup: (id: string) =>
+    set((state) => ({
+      popup: state.popup.filter((item) => item.noticeId !== id),
     })),
 }));
 

@@ -61,7 +61,7 @@ const ToastBox = styled.div`
   position: relative;
   box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
 
-  @keyframes fadeIn {
+  @keyframes fadeInToast {
     0% {
       transform: translateX(100%);
       opacity: 0;
@@ -71,7 +71,7 @@ const ToastBox = styled.div`
       opacity: 1;
     }
   }
-  @keyframes fadeOut {
+  @keyframes fadeOutToast {
     0% {
       opacity: 1;
     }
@@ -84,7 +84,7 @@ const ToastBox = styled.div`
   }
 
   animation-fill-mode: forwards;
-  animation-name: fadeIn, fadeOut;
+  animation-name: fadeInToast, fadeOutToast;
   animation-delay: 0s, 2s;
   animation-duration: 2s, 1s;
 

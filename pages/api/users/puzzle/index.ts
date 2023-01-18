@@ -53,20 +53,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   if (method === 'POST') {
     const { requester, requestedNickname, puzzleId } = req.body.data;
     try {
-      const user = await User.findOne({ nickname: requestedNickname });
-      const notice = await Notice.findOne({ requester: requester, requested: user._id });
+      const requestedUser: any = await User.findOne({ nickname: requestedNickname });
+      const requesterUser: any = await User.findOne({ _id: requester });
+      const notice = await Notice.findOne({ requester: requester, requested: requestedUser._id, puzzleId: puzzleId });
       if (notice !== null) {
         return res.status(201).json({ message: 'duplicated' });
       }
-      await Notice.create({
+      const newNotice = await Notice.create({
         requester: requester,
-        requested: user._id,
+        requested: requestedUser._id,
         puzzleId: puzzleId,
         type: 'puzzle',
       });
-      await pusher.trigger(`presence-${user._id}`, 'onNotice', {
+      await pusher.trigger(`presence-${requestedUser._id}`, 'onNotice', {
         puzzle: true,
-        nickname: requestedNickname,
+        nickname: requesterUser.nickname,
+        picture: requesterUser.picture,
+        noticeId: newNotice._id.toString(),
+        puzzleId: puzzleId,
       });
       res.status(201).json({ message: 'success' });
     } catch (err) {

@@ -49,7 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       }>(accessToken);
 
       const user = await User.findOne({ nickname: userInfo.nickname });
-      const { puzzleId } = req.query;
+      const { id } = req.query;
       const friends = await Friend.aggregate([
         { $match: { userId: user._id.toString() } },
         {
@@ -64,7 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         {
           $lookup: {
             from: 'puzzles',
-            let: { puzzleObjId: { $toObjectId: puzzleId } },
+            let: { puzzleObjId: { $toObjectId: id } },
             pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$puzzleObjId'] } } }],
             as: 'puzzle',
           },
