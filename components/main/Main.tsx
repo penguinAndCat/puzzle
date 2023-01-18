@@ -1,14 +1,15 @@
-import Card from 'components/common/Card/Card';
-import RoomCard from 'components/common/Card/RoomCard';
-import axios from 'libs/axios';
-import { useModal, usePuzzle } from 'libs/zustand/store';
 import { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { Checkbox } from 'antd';
+
+import Card from 'components/common/Card/Card';
+import RoomCard from 'components/common/Card/RoomCard';
+import { DropdownIcon } from 'components/common/Icon';
 import { NEXT_SERVER } from 'config';
+import axios from 'libs/axios';
+import { useModal, usePuzzle } from 'libs/zustand/store';
 import useInfiniteScroll from 'hooks/useInfiniteScroll';
 import { useToast } from 'hooks/useToast';
-import dropicon from 'public/dropdown.png';
-import Image from 'next/image';
 
 const images = [
   'http://res.cloudinary.com/penguinandcatpuzzle/image/upload/v1666189078/bugvpkwfmde3q21zcm4s.png',
@@ -28,7 +29,7 @@ const Main = ({ user }: { user: UserInfo | null }) => {
   const toast = useToast();
   const [sortType, setSortType] = useState<'desc' | 'asc'>('desc');
   const [sortField, setSortField] = useState<'createdAt' | 'perfection'>('perfection');
-  const [showPerfect, setShowPerfect] = useState(false);
+  const [showPerfect, setShowPerfect] = useState(true);
   const [showDrop, setShowDrop] = useState(false);
   const [dropV, setDropV] = useState('최신순');
   const [{ data, refetch }, flagRef] = useInfiniteScroll({
@@ -103,63 +104,63 @@ const Main = ({ user }: { user: UserInfo | null }) => {
           <MainTitle>공개방</MainTitle>
           <DropBox onClick={(e) => setShowDrop((prev) => !prev)}>
             <DropText>
-              {dropV}
-              <Image src={dropicon} alt={'menu'} width={7} height={7} />
+              <div>{dropV}</div>
+              <IconWrapper showDrop={showDrop}>
+                <DropdownIcon />
+              </IconWrapper>
             </DropText>
-            <DropUl>
-              {showDrop && (
-                <>
-                  <li>
-                    <button
-                      onClick={(e) => {
-                        setSortField('createdAt');
-                        setSortType('desc');
-                        setDropV(e.currentTarget.textContent || '최신');
-                      }}
-                    >
-                      최신순
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      onClick={(e) => {
-                        setSortField('createdAt');
-                        setSortType('asc');
-                        setDropV(e.currentTarget.textContent || '신최');
-                      }}
-                    >
-                      신최순
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      onClick={(e) => {
-                        setSortField('perfection');
-                        setSortType('desc');
-                        setDropV(e.currentTarget.textContent || '완성');
-                      }}
-                    >
-                      완성순
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      onClick={(e) => {
-                        setSortField('perfection');
-                        setSortType('asc');
-                        setDropV(e.currentTarget.textContent || '실패');
-                      }}
-                    >
-                      실패순
-                    </button>
-                  </li>
-                </>
-              )}
-            </DropUl>
+            {showDrop && (
+              <DropUl>
+                <li>
+                  <button
+                    onClick={(e) => {
+                      setSortField('createdAt');
+                      setSortType('desc');
+                      setDropV(e.currentTarget.textContent || '최신');
+                    }}
+                  >
+                    최신순
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={(e) => {
+                      setSortField('createdAt');
+                      setSortType('asc');
+                      setDropV(e.currentTarget.textContent || '오래된');
+                    }}
+                  >
+                    오래된순
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={(e) => {
+                      setSortField('perfection');
+                      setSortType('desc');
+                      setDropV(e.currentTarget.textContent || '완성');
+                    }}
+                  >
+                    완성순
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={(e) => {
+                      setSortField('perfection');
+                      setSortType('asc');
+                      setDropV(e.currentTarget.textContent || '미완성');
+                    }}
+                  >
+                    미완성순
+                  </button>
+                </li>
+              </DropUl>
+            )}
           </DropBox>
           <Label>
-            <span>100%</span>
-            <input type={'checkbox'} checked={showPerfect} onChange={() => setShowPerfect((prev) => !prev)} />
+            <LabelSpan>100%</LabelSpan>
+            <Checkbox checked={showPerfect} onChange={() => setShowPerfect((prev) => !prev)} />
           </Label>
         </ButtonWrapper>
         <PuzzleContainer>
@@ -271,6 +272,11 @@ const ButtonWrapper = styled.div`
   line-height: 1.5;
   padding: 0.5rem;
   position: relative;
+  @media (max-width: 390px) {
+    flex-direction: column-reverse;
+    justify-content: flex-start;
+    align-items: flex-end;
+  }
 `;
 
 const MainTitle = styled.div`
@@ -285,43 +291,84 @@ const DropBox = styled.div`
   position: relative;
   z-index: 10;
   cursor: pointer;
-`;
-const DropText = styled.div`
-  background-color: white;
-  height: 100%;
+  width: 70px;
   font-size: 0.8rem;
+  @media (max-width: 390px) {
+    transform: translateY(-6px);
+  }
 `;
-const DropUl = styled.ul`
+
+const DropText = styled.div`
   width: 100%;
+  height: 100%;
+  display: flex;
+  background-color: white;
+  align-items: center;
+  padding: 0px;
+  background-color: ${({ theme }) => theme.bgColor};
+  color: ${({ theme }) => theme.textColor};
+`;
+
+const IconWrapper = styled.div<{ showDrop: boolean }>`
+  display: flex;
+  align-items: center;
+  margin-left: 4px;
+  transition: transform 0.5s;
+  transform: ${({ showDrop }) => (showDrop ? 'rotate(-180deg)' : 'rotate(0)')};
+`;
+
+const DropUl = styled.ul`
+  box-sizing: content-box;
+  width: 100%;
+  height: 96px;
   cursor: pointer;
   position: absolute;
   display: flex;
   flex-direction: column;
+  border: 2px solid ${({ theme }) => theme.textColor};
+
   li {
-    width: 100%;
-    height: 1.5rem;
-    background-color: white;
+    display: flex;
+    padding: 0px;
+    height: 24px;
   }
-  li:hover {
-    background-color: lightgray;
-  }
-  button {
+  li > button {
     width: 100%;
-    height: 100%;
-    background-color: transparent;
+    height: 24px;
+    text-align: left;
+    font-size: 0.8rem;
     border: none;
-    padding: 0;
+    background-color: ${({ theme }) => theme.bgColor};
+    color: ${({ theme }) => theme.textColor};
+    padding: 0 0 0 4px;
+    cursor: pointer;
   }
 `;
 
 const Label = styled.label`
   z-index: 10;
-
   display: flex;
   align-items: center;
   gap: 0.1rem;
   input {
     margin: 0;
-    margin-top: 2px;
   }
+  @media (max-width: 390px) {
+    width: 70px;
+  }
+  .ant-checkbox-inner {
+    width: 12px;
+    height: 12px;
+  }
+  .ant-checkbox {
+    transform: translateY(-0.1rem);
+  }
+  .ant-checkbox-checked .ant-checkbox-inner::after {
+    transform: rotate(45deg) scale(0.75) translate(-90%, -70%);
+  }
+`;
+
+const LabelSpan = styled.span`
+  margin-right: 4px;
+  font-size: 0.8rem;
 `;

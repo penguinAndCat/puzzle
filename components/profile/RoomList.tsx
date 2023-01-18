@@ -89,7 +89,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
 
         {tab == 'my' && (
           <>
-            <div>
+            {/* <div>
               <button
                 onClick={() => {
                   if (mySortField === 'createdAt') {
@@ -114,7 +114,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
               >
                 완성도
               </button>
-            </div>
+            </div> */}
             {puzzleData && puzzleData.length > 0 ? (
               <PuzzleWrapper>
                 {puzzleData?.map((item: any, index: number) => (
