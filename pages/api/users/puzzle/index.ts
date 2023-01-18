@@ -55,7 +55,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     try {
       const requestedUser: any = await User.findOne({ nickname: requestedNickname });
       const requesterUser: any = await User.findOne({ _id: requester });
-      const notice = await Notice.findOne({ requester: requester, requested: requestedUser._id });
+      const notice = await Notice.findOne({ requester: requester, requested: requestedUser._id, puzzleId: puzzleId });
       if (notice !== null) {
         return res.status(201).json({ message: 'duplicated' });
       }
