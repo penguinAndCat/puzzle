@@ -60,6 +60,10 @@ export const useNotificationState = create<NotificationProps>((set) => ({
     set((state) => ({
       notification: state.notification.filter((item, index) => index !== 0),
     })),
+  removeOneNotification: (id: string) =>
+    set((state) => ({
+      notification: state.notification.filter((item) => item.noticeId !== id),
+    })),
 }));
 
 export const useLoading = create<LoadingProps>((set) => ({

@@ -26,10 +26,15 @@ const SocketNotice = ({ user }: { user: UserInfo | null }) => {
       const channel: any = pusher.subscribe(`presence-${user?.id}`);
 
       channel.bind('onNotice', (data: any) => {
-        const { friend, puzzle, nickname, picture } = data;
+        const { friend, puzzle, nickname, picture, noticeId, puzzleId } = data;
         if (friend) {
           refetchNotice();
-          notification({ nickname: `${nickname}`, content: `저랑 친구하실래요?`, picture: `${picture}` });
+          notification({
+            nickname: `${nickname}`,
+            content: `저랑 친구하실래요?`,
+            picture: `${picture}`,
+            noticeId: noticeId,
+          });
         }
         if (puzzle) {
           refetchNotice();
@@ -37,6 +42,7 @@ const SocketNotice = ({ user }: { user: UserInfo | null }) => {
             nickname: `${nickname}`,
             content: `퍼즐 방에 들어오실래요?`,
             picture: `${picture}`,
+            noticeId: noticeId,
           });
         }
       });

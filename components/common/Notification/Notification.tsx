@@ -1,24 +1,18 @@
 import React from 'react';
 import styled from 'styled-components';
-import { CloseIcon } from '../Icon';
 
-const TYPE = {
-  success: {
-    color: '#0ED73F',
-  },
-  warning: {
-    color: '#E3E60E',
-  },
-  info: {
-    color: '#0E42E6',
-  },
-};
+import { CloseIcon } from '../Icon';
+import axios from 'libs/axios';
+import { useNotificationState, userStore } from 'libs/zustand/store';
+import { useNotice } from 'hooks/useReactQuery';
+import { useToast } from 'hooks/useToast';
 
 export default function Notification({ option }: { option: NotificationType }) {
+  const { removeOneNotification } = useNotificationState();
   return (
     <Container>
       <Header>
-        <IconWrapper>
+        <IconWrapper onClick={() => removeOneNotification(option.noticeId)}>
           <CloseIcon />
         </IconWrapper>
       </Header>

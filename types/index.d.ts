@@ -77,12 +77,14 @@ interface NotificationType {
   nickname: string;
   picture: string;
   content: string;
+  noticeId: string;
 }
 
 type NotificationProps = {
   notification: NotificationType[];
   addNotification: (data: NotificationType) => void;
   removeNotification: () => void;
+  removeOneNotification: (id: string) => void;
 };
 
 interface LoadingContent {
