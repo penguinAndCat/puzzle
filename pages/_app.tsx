@@ -13,6 +13,7 @@ import { userStore } from 'libs/zustand/store';
 import { useEffect } from 'react';
 import SocketNotice from 'components/common/SocketNotice';
 import ToastList from 'components/common/Toast/ToastList';
+import NotificationList from 'components/common/Notification/NotificationList';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -38,6 +39,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <GlobalStyle />
         <Component {...pageProps} />
         <ToastList />
+        <NotificationList />
         <Loading />
         <Modal />
         <SocketNotice user={pageProps.user} />

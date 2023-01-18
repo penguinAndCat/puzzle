@@ -3,9 +3,10 @@ import Pusher from 'pusher-js';
 import { useNotice } from 'hooks/useReactQuery';
 import { useEffect } from 'react';
 import { NEXT_SERVER } from 'config';
+import { useNotification } from 'hooks/useNotification';
 
 const SocketNotice = ({ user }: { user: UserInfo | null }) => {
-  const toast = useToast();
+  const notification = useNotification();
   const { refetchNotice } = useNotice(user);
 
   useEffect(() => {
@@ -25,14 +26,18 @@ const SocketNotice = ({ user }: { user: UserInfo | null }) => {
       const channel: any = pusher.subscribe(`presence-${user?.id}`);
 
       channel.bind('onNotice', (data: any) => {
-        const { friend, puzzle, nickname } = data;
+        const { friend, puzzle, nickname, picture } = data;
         if (friend) {
           refetchNotice();
-          toast({ nickname: `${nickname}`, content: `님이 친구 요청 하였습니다.`, type: 'info' });
+          notification({ nickname: `${nickname}`, content: `저랑 친구하실래요?`, picture: `${picture}` });
         }
         if (puzzle) {
           refetchNotice();
-          toast({ nickname: `${nickname}`, content: `님이 퍼즐 방으로 초대 하였습니다.`, type: 'info' });
+          notification({
+            nickname: `${nickname}`,
+            content: `퍼즐 방에 들어오실래요?`,
+            picture: `${picture}`,
+          });
         }
       });
     }
@@ -42,7 +47,7 @@ const SocketNotice = ({ user }: { user: UserInfo | null }) => {
       pusher.unsubscribe(`presence-${user?.id}`);
       subscribe = false;
     };
-  }, [user]);
+  }, [refetchNotice, notification, user]);
   return null;
 };
 

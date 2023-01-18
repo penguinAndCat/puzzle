@@ -50,6 +50,18 @@ export const useToastState = create<ToastProps>((set) => ({
     })),
 }));
 
+export const useNotificationState = create<NotificationProps>((set) => ({
+  notification: [],
+  addNotification: (data) =>
+    set((state) => ({
+      notification: [...state.notification, data],
+    })),
+  removeNotification: () =>
+    set((state) => ({
+      notification: state.notification.filter((item, index) => index !== 0),
+    })),
+}));
+
 export const useLoading = create<LoadingProps>((set) => ({
   loading: false,
   content: { first: '', second: '' },

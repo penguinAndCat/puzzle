@@ -73,6 +73,18 @@ type ToastProps = {
   removeToast: () => void;
 };
 
+interface NotificationType {
+  nickname: string;
+  picture: string;
+  content: string;
+}
+
+type NotificationProps = {
+  notification: NotificationType[];
+  addNotification: (data: NotificationType) => void;
+  removeNotification: () => void;
+};
+
 interface LoadingContent {
   first: string;
   second: string;
