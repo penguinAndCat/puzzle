@@ -30,6 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   }
   if (method === 'GET') {
     const { page = 1, limit = 8, sortField, sortType, searchField, searchKeyword, showPerfect = 'false' } = req.query;
+    console.log(sortField, sortType, searchField, searchKeyword);
     const sortTypeList = ['asc', 'desc'];
     const sortFieldList = ['createdAt', 'perfection'];
 
