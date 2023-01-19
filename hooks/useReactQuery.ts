@@ -82,3 +82,22 @@ export const useRoomInfo = (puzzleId: string | undefined | string[], user: UserI
 
   return { roomInfo: data, refetchRoomInfo: refetch };
 };
+
+export const usePopularPuzzle = () => {
+  const { data, refetch } = useQuery(['popularPuzzle'], () => getPopularPuzzle(), {
+    onError: (error: Error) => {
+      console.log(error.message);
+    },
+  });
+
+  const getPopularPuzzle = async () => {
+    try {
+      const res = await axios.get(`/api/puzzle/popular`);
+      return res.data.puzzle;
+    } catch (error) {
+      throw new Error('popularPuzzle error');
+    }
+  };
+
+  return { popularPuzzle: data, refetchPopularPuzzle: refetch };
+};

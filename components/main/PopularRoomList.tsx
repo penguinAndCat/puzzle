@@ -4,16 +4,26 @@ import { NEXT_SERVER } from 'config';
 import RoomCard from 'components/common/Card/RoomCard';
 import { userStore } from 'libs/zustand/store';
 import { useToast } from 'hooks/useToast';
+import { usePopularPuzzle } from 'hooks/useReactQuery';
 
-const PopularRoomList = ({ popularPuzzle }: { popularPuzzle: any }) => {
+const PopularRoomList = () => {
   const user = userStore();
   const toast = useToast();
+  const { popularPuzzle } = usePopularPuzzle();
+
+  const onClick = (puzzleId: string) => {
+    if (!user) {
+      toast({ content: '로그인이 필요합니다', type: 'warning' });
+      return;
+    }
+    window.location.href = `${NEXT_SERVER}/puzzle/${puzzleId}`;
+  };
 
   return (
     <Container>
       <Title>인기 있는 퍼즐</Title>
       <PuzzleContainer>
-        {popularPuzzle?.map((data: any, index: number) => {
+        {popularPuzzle?.map((data: any) => {
           return (
             <RoomCard
               key={data._id}
@@ -22,13 +32,7 @@ const PopularRoomList = ({ popularPuzzle }: { popularPuzzle: any }) => {
               title={data.title}
               isMain={true}
               puzzleId={data._id}
-              onClick={() => {
-                if (!user) {
-                  toast({ content: '로그인이 필요합니다', type: 'warning' });
-                  return;
-                }
-                window.location.href = `${NEXT_SERVER}/puzzle/${data._id}`;
-              }}
+              onClick={() => onClick(data._id)}
               puzzleNumber={data.config.tilesPerColumn * data.config.tilesPerRow}
             />
           );

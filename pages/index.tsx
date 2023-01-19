@@ -1,17 +1,17 @@
-// import axios from 'axios';
+import { useEffect } from 'react';
+import type { GetServerSideProps, NextPage } from 'next';
+import { useRouter } from 'next/router';
+import styled from 'styled-components';
+import { QueryClient, dehydrate } from 'react-query';
+
+import { NEXT_SERVER } from 'config';
 import Header from 'components/common/Header';
 import Main from 'components/main/Main';
 import Seo from 'components/Seo';
-import { NEXT_SERVER } from 'config';
-import { useToast } from 'hooks/useToast';
 import axios from 'libs/axios';
-import type { GetServerSideProps, NextPage } from 'next';
-import { useRouter } from 'next/router';
-import { useEffect } from 'react';
-import { QueryClient, dehydrate } from 'react-query';
-import styled from 'styled-components';
+import { useToast } from 'hooks/useToast';
 
-const Home: NextPage<{ user: UserInfo | null; popularPuzzle: any }> = ({ user = null, popularPuzzle }) => {
+const Home: NextPage<{ user: UserInfo | null }> = ({ user = null }) => {
   const toast = useToast();
   const router = useRouter();
 
@@ -28,7 +28,7 @@ const Home: NextPage<{ user: UserInfo | null; popularPuzzle: any }> = ({ user = 
         description="원하는 사진으로 퍼즐을 생성해보세요. 그리고 친구들을 초대하여 같이 맞춰보세요."
       />
       <Header user={user} />
-      <Main popularPuzzle={popularPuzzle} />
+      <Main />
     </Container>
   );
 };
@@ -58,10 +58,10 @@ export const getServerSideProps: GetServerSideProps = async () => {
   const queryClient = new QueryClient();
 
   await queryClient.prefetchInfiniteQuery(['public', 'createdAt', 'desc', 'true'], getPuzzle);
+  await queryClient.prefetchQuery(['popularPuzzle'], getPopularPuzzle);
 
   return {
     props: {
-      popularPuzzle: (await getPopularPuzzle()) as any,
       dehydratedState: JSON.parse(JSON.stringify(dehydrate(queryClient))),
     },
   };

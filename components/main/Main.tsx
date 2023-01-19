@@ -12,7 +12,7 @@ const images = [
   'http://res.cloudinary.com/penguinandcatpuzzle/image/upload/v1666189365/qtpra1i8dps1nwjhc17a.png',
 ];
 
-const Main = ({ popularPuzzle }: { popularPuzzle: any }) => {
+const Main = () => {
   const { addModal } = useModal();
   const { initialModal } = usePuzzle();
   const openModal = () => {
@@ -33,7 +33,7 @@ const Main = ({ popularPuzzle }: { popularPuzzle: any }) => {
           })}
         </PuzzleContainer>
       </BasicWrapper>
-      <PopularRoomList popularPuzzle={popularPuzzle} />
+      <PopularRoomList />
       <OpenRoomList />
     </Wrapper>
   );
