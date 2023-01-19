@@ -28,7 +28,7 @@ const Home: NextPage<{ user: UserInfo | null; popularPuzzle: any }> = ({ user = 
         description="원하는 사진으로 퍼즐을 생성해보세요. 그리고 친구들을 초대하여 같이 맞춰보세요."
       />
       <Header user={user} />
-      <Main user={user} popularPuzzle={popularPuzzle} />
+      <Main popularPuzzle={popularPuzzle} />
     </Container>
   );
 };
