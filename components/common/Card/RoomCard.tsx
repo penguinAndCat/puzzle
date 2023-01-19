@@ -37,7 +37,7 @@ export default function RoomCard({
       <Container onClick={onClick}>
         <HoverImage
           src={src}
-          alt="test"
+          alt={title}
           width={`100%`}
           style={{ objectFit: 'cover', aspectRatio: 1, cursor: 'pointer' }}
         />

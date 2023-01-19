@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 import { Checkbox } from 'antd';
 
@@ -27,7 +27,7 @@ const Main = ({ user, popularPuzzle }: { user: UserInfo | null; popularPuzzle: a
   };
   const toast = useToast();
   const [sortType, setSortType] = useState<'desc' | 'asc'>('desc');
-  const [sortField, setSortField] = useState<'createdAt' | 'perfection'>('perfection');
+  const [sortField, setSortField] = useState<'createdAt' | 'perfection'>('createdAt');
   const [showPerfect, setShowPerfect] = useState(true);
   const [showDrop, setShowDrop] = useState(false);
   const [dropV, setDropV] = useState('최신순');
@@ -48,10 +48,6 @@ const Main = ({ user, popularPuzzle }: { user: UserInfo | null; popularPuzzle: a
     },
     getNextPageParam: (lastPage) => (lastPage.isLast ? undefined : lastPage.page + 1),
   });
-
-  const puzzleData = useMemo(() => {
-    return data?.pages.reduce((acc, cur) => [...acc, ...cur.item], []);
-  }, [data?.pages]);
 
   return (
     <Wrapper>
@@ -156,26 +152,28 @@ const Main = ({ user, popularPuzzle }: { user: UserInfo | null; popularPuzzle: a
           </Label>
         </ButtonWrapper>
         <PuzzleContainer>
-          {puzzleData?.map((data: any, index: number) => {
-            return (
-              <RoomCard
-                key={data._id}
-                src={data.config.puzzleImage?.src}
-                progress={Number((data.perfection * 100).toFixed(3))}
-                title={data.title}
-                isMain={true}
-                puzzleId={data._id}
-                onClick={() => {
-                  if (!user) {
-                    toast({ content: '로그인이 필요합니다', type: 'warning' });
-                    return;
-                  }
-                  window.location.href = `${NEXT_SERVER}/puzzle/${data._id}`;
-                }}
-                puzzleNumber={data.config.tilesPerColumn * data.config.tilesPerRow}
-              />
-            );
-          })}
+          {data?.pages.map((page) =>
+            page.item.map((data: any, index: number) => {
+              return (
+                <RoomCard
+                  key={data._id}
+                  src={data.config.puzzleImage?.src}
+                  progress={Number((data.perfection * 100).toFixed(3))}
+                  title={data.title}
+                  isMain={true}
+                  puzzleId={data._id}
+                  onClick={() => {
+                    if (!user) {
+                      toast({ content: '로그인이 필요합니다', type: 'warning' });
+                      return;
+                    }
+                    window.location.href = `${NEXT_SERVER}/puzzle/${data._id}`;
+                  }}
+                  puzzleNumber={data.config.tilesPerColumn * data.config.tilesPerRow}
+                />
+              );
+            })
+          )}
           <div ref={flagRef} style={{ height: '100px' }} />
         </PuzzleContainer>
       </FavoriteWrapper>

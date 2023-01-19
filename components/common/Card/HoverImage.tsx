@@ -7,7 +7,14 @@ export default function HoverImage({ src, ...rest }: { src: string; [key: string
   return (
     <>
       <ThumbComp thumbImage={thumbImage} width={width} mousePosition={mousePosition} />
-      <img src={src} onMouseLeave={onMouseLeave} onMouseMove={onMouseMove} onMouseOver={onMouseOver} {...rest} />
+      <Img
+        alt={src}
+        src={src}
+        onMouseLeave={onMouseLeave}
+        onMouseMove={onMouseMove}
+        onMouseOver={onMouseOver}
+        {...rest}
+      />
     </>
   );
 }
@@ -25,18 +32,20 @@ const ThumbComp = ({
   };
 }) => {
   return (
-    <ThumbImageWrap style={{ top: `${mousePosition.y}px`, left: `${mousePosition.x}px` }}>
-      <Img src={thumbImage} alt="" width={width} />
-    </ThumbImageWrap>
+    <ThumbImgWrapper style={{ top: `${mousePosition.y}px`, left: `${mousePosition.x}px` }}>
+      <ThumbImg src={thumbImage} alt="" width={width} />
+    </ThumbImgWrapper>
   );
 };
 
-const ThumbImageWrap = styled.div`
+const ThumbImgWrapper = styled.div`
   position: fixed;
   z-index: 100;
   pointer-events: none;
 `;
 
-const Img = styled.img`
+const ThumbImg = styled.img`
   width: ${({ width }) => width}px;
 `;
+
+const Img = styled.img``;
