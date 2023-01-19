@@ -3,7 +3,7 @@ import { NEXT_SERVER } from 'config';
 import useInfiniteScroll from 'hooks/useInfiniteScroll';
 import axios from 'libs/axios';
 import { useModal, usePuzzle } from 'libs/zustand/store';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 export default function RoomList({ user }: { user: UserInfo | null }) {
@@ -89,7 +89,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
 
         {tab == 'my' && (
           <>
-            <div>
+            {/* <div>
               <button
                 onClick={() => {
                   if (mySortField === 'createdAt') {
@@ -114,7 +114,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
               >
                 완성도
               </button>
-            </div>
+            </div> */}
             {puzzleData && puzzleData.length > 0 ? (
               <PuzzleWrapper>
                 {puzzleData?.map((item: any, index: number) => (
@@ -151,7 +151,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
         )}
         {tab === 'invited' && (
           <>
-            <div>
+            {/* <div>
               <button
                 onClick={() => {
                   if (invitedSortField === 'createdAt') {
@@ -176,7 +176,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
               >
                 완성도
               </button>
-            </div>
+            </div> */}
             {invitedPuzzleData && invitedPuzzleData.length > 0 ? (
               <PuzzleWrapper>
                 {invitedPuzzleData?.map((item: any, index: number) => (
