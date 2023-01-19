@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { Checkbox } from 'antd';
 
@@ -18,10 +18,9 @@ const images = [
   'http://res.cloudinary.com/penguinandcatpuzzle/image/upload/v1666189365/qtpra1i8dps1nwjhc17a.png',
 ];
 
-const Main = ({ user }: { user: UserInfo | null }) => {
+const Main = ({ user, popularPuzzle }: { user: UserInfo | null; popularPuzzle: any }) => {
   const { addModal } = useModal();
   const { initialModal } = usePuzzle();
-  const [popularPuzzle, setPopularPuzzle] = useState([]);
   const openModal = () => {
     initialModal();
     addModal('puzzle');
@@ -32,7 +31,7 @@ const Main = ({ user }: { user: UserInfo | null }) => {
   const [showPerfect, setShowPerfect] = useState(true);
   const [showDrop, setShowDrop] = useState(false);
   const [dropV, setDropV] = useState('최신순');
-  const [{ data, refetch }, flagRef] = useInfiniteScroll({
+  const [{ data }, flagRef] = useInfiniteScroll({
     queryKey: ['public', sortField, sortType, showPerfect.toString()],
     queryFn: async ({ pageParam = 1 }) => {
       const { data } = await axios.get('/api/puzzle', {
@@ -49,17 +48,10 @@ const Main = ({ user }: { user: UserInfo | null }) => {
     },
     getNextPageParam: (lastPage) => (lastPage.isLast ? undefined : lastPage.page + 1),
   });
+
   const puzzleData = useMemo(() => {
     return data?.pages.reduce((acc, cur) => [...acc, ...cur.item], []);
   }, [data?.pages]);
-  const getPopularPuzzle = async () => {
-    const res = await axios.get('/api/puzzle/popular');
-    setPopularPuzzle(res.data.puzzle);
-  };
-
-  useEffect(() => {
-    getPopularPuzzle();
-  }, []);
 
   return (
     <Wrapper>
