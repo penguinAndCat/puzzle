@@ -23,12 +23,14 @@ export const usePuzzle = create<PuzzleProps>()(
       number: 1,
       title: '',
       secretRoom: false,
+      firstRender: true,
       setModalImage: (image) => set({ modalImage: image }),
       initialModal: () =>
         set({ number: 1, title: '', secretRoom: false, modalImage: { src: '', width: 0, height: 0 } }),
       setNumber: (number) => set({ number: number }),
       setSecretRoom: (value) => set({ secretRoom: value }),
       setTitle: (title) => set({ title: title }),
+      setFirstRender: (value) => set({ firstRender: value }),
     }),
     {
       name: 'puzzle',
@@ -44,7 +46,23 @@ export const useToastState = create<ToastProps>((set) => ({
     })),
   removeToast: () =>
     set((state) => ({
-      toast: state.toast.filter((item, index) => index !== 0),
+      toast: state.toast.filter((_, index) => index !== 0),
+    })),
+}));
+
+export const usePopupState = create<NotificationProps>((set) => ({
+  popup: [],
+  addPopup: (data) =>
+    set((state) => ({
+      popup: [...state.popup, data],
+    })),
+  removePopup: () =>
+    set((state) => ({
+      popup: state.popup.filter((_, index) => index !== 0),
+    })),
+  removeOnePopup: (id: string) =>
+    set((state) => ({
+      popup: state.popup.filter((item) => item.noticeId !== id),
     })),
 }));
 

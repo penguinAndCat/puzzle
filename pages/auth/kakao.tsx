@@ -3,12 +3,12 @@ import axios from 'libs/axios';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { AuthComponent } from 'components/common/Auth';
-import Loading from 'components/common/Loading';
-import { useLoading } from 'libs/zustand/store';
 import LoginLoading from 'components/common/LoginLoading';
+import { useToast } from 'hooks/useToast';
 
 const Kakao: NextPage = () => {
   const router = useRouter();
+  const toast = useToast();
   const { code } = router.query;
   const inputRef = useRef<HTMLInputElement>(null);
   const [userInfo, setUserInfo] = useState<any>(null);
@@ -32,15 +32,20 @@ const Kakao: NextPage = () => {
     }
   }, [code, router]);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!inputRef.current) return;
     if (inputRef.current?.value.length > 5) {
-      alert('닉네임은 5글자 이하입니다');
+      toast({ content: '5글자 이하로 입력해주세요.', type: 'warning' });
       return;
     }
-    axios.post('/api/auth/kakao', { nick: inputRef.current?.value, user: userInfo });
-    window.location.replace('/');
+    try {
+      await axios.post('/api/auth/kakao', { nick: inputRef.current?.value, user: userInfo });
+      window.location.replace('/');
+    } catch (err: any) {
+      if (err.response.status === 401) toast({ content: '중복된 닉네임입니다.', type: 'warning' });
+      if (err.response.status === 400) toast({ content: '5글자 이하로 입력해주세요.', type: 'warning' });
+    }
   };
 
   if (userInfo && userInfo.email) {

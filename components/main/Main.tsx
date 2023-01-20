@@ -1,12 +1,9 @@
-import Card from 'components/common/Card/Card';
-import RoomCard from 'components/common/Card/RoomCard';
-import axios from 'libs/axios';
-import { useModal, usePuzzle } from 'libs/zustand/store';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { NEXT_SERVER } from 'config';
-import useInfiniteScroll from 'hooks/useInfiniteScroll';
-import { useToast } from 'hooks/useToast';
+
+import Card from 'components/common/Card/Card';
+import { useModal, usePuzzle } from 'libs/zustand/store';
+import OpenRoomList from './OpenRoomList';
+import PopularRoomList from './PopularRoomList';
 
 const images = [
   'http://res.cloudinary.com/penguinandcatpuzzle/image/upload/v1666189078/bugvpkwfmde3q21zcm4s.png',
@@ -15,41 +12,13 @@ const images = [
   'http://res.cloudinary.com/penguinandcatpuzzle/image/upload/v1666189365/qtpra1i8dps1nwjhc17a.png',
 ];
 
-const Main = ({ user }: { user: UserInfo | null }) => {
+const Main = () => {
   const { addModal } = useModal();
   const { initialModal } = usePuzzle();
-  const [popularPuzzle, setPopularPuzzle] = useState([]);
   const openModal = () => {
     initialModal();
     addModal('puzzle');
   };
-  const toast = useToast();
-
-  const [{ data }, flagRef] = useInfiniteScroll({
-    queryKey: 'public',
-    queryFn: async ({ pageParam = 1 }) => {
-      const { data } = await axios.get('/api/puzzle', {
-        params: {
-          page: pageParam,
-        },
-      });
-      return data;
-    },
-    getNextPageParam: (lastPage) => (lastPage.isLast ? undefined : lastPage.page + 1),
-  });
-
-  const puzzleData = useMemo(() => {
-    return data?.pages.reduce((acc, cur) => [...acc, ...cur.item], []);
-  }, [data?.pages]);
-
-  const getPopularPuzzle = async () => {
-    const res = await axios.get('/api/puzzle/popular');
-    setPopularPuzzle(res.data.puzzle);
-  };
-
-  useEffect(() => {
-    getPopularPuzzle();
-  }, []);
 
   return (
     <Wrapper>
@@ -64,57 +33,8 @@ const Main = ({ user }: { user: UserInfo | null }) => {
           })}
         </PuzzleContainer>
       </BasicWrapper>
-      <FavoriteWrapper>
-        <Title>인기 있는 퍼즐</Title>
-        <PuzzleContainer>
-          {popularPuzzle?.map((data: any, index: number) => {
-            return (
-              <RoomCard
-                key={data._id}
-                src={data.config.puzzleImage.src}
-                progress={Number((data.perfection * 100).toFixed(3))}
-                title={data.title}
-                isMain={true}
-                puzzleId={data._id}
-                onClick={() => {
-                  if (!user) {
-                    toast({ content: '로그인이 필요합니다', type: 'warning' });
-                    return;
-                  }
-                  window.location.href = `${NEXT_SERVER}/puzzle/${data._id}`;
-                }}
-                puzzleNumber={data.config.tilesPerColumn * data.config.tilesPerRow}
-              />
-            );
-          })}
-        </PuzzleContainer>
-      </FavoriteWrapper>
-      <FavoriteWrapper>
-        <Title>공개방</Title>
-        <PuzzleContainer>
-          {puzzleData?.map((data: any, index: number) => {
-            return (
-              <RoomCard
-                key={data._id}
-                src={data.config.puzzleImage.src}
-                progress={Number((data.perfection * 100).toFixed(3))}
-                title={data.title}
-                isMain={true}
-                puzzleId={data._id}
-                onClick={() => {
-                  if (!user) {
-                    toast({ content: '로그인이 필요합니다', type: 'warning' });
-                    return;
-                  }
-                  window.location.href = `${NEXT_SERVER}/puzzle/${data._id}`;
-                }}
-                puzzleNumber={data.config.tilesPerColumn * data.config.tilesPerRow}
-              />
-            );
-          })}
-          <div ref={flagRef} style={{ height: '100px' }} />
-        </PuzzleContainer>
-      </FavoriteWrapper>
+      <PopularRoomList />
+      <OpenRoomList />
     </Wrapper>
   );
 };
@@ -152,15 +72,6 @@ const BasicWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   margin-top: 20px;
-`;
-
-const FavoriteWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 20px;
-  padding: 0.5rem;
 `;
 
 const Title = styled.div`

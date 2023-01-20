@@ -3,7 +3,7 @@ import { NEXT_SERVER } from 'config';
 import useInfiniteScroll from 'hooks/useInfiniteScroll';
 import axios from 'libs/axios';
 import { useModal, usePuzzle } from 'libs/zustand/store';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 export default function RoomList({ user }: { user: UserInfo | null }) {
@@ -14,13 +14,20 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
     initialModal();
     addModal('puzzle');
   };
+  const [mySortType, setMySortType] = useState<'desc' | 'asc'>('desc');
+  const [mySortField, setMySortField] = useState<'createdAt' | 'perfection'>('createdAt');
+  const [invitedSortType, setInvitedSortType] = useState<'desc' | 'asc'>('desc');
+  const [invitedSortField, setInvitedSortField] = useState<'createdAt' | 'perfection'>('createdAt');
 
   const [{ data: myPuzzle, refetch: refetchMyPuzzle }, myPuzzleRef] = useInfiniteScroll({
-    queryKey: 'myPuzzle',
+    queryKey: ['myPuzzle', mySortField, mySortType],
     queryFn: async ({ pageParam = 1 }) => {
-      const response = await axios.get('/api/puzzle/myPuzzle', {
+      const response = await axios.get('/api/puzzle', {
         params: {
-          id: user?.id,
+          searchKeyword: user?.id,
+          searchField: 'userId',
+          sortField: mySortField,
+          sortType: mySortType,
           page: pageParam,
         },
       });
@@ -34,11 +41,14 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
   }, [myPuzzle?.pages]);
 
   const [{ data: invitedPuzzle }, invitedRef] = useInfiniteScroll({
-    queryKey: 'invitedPuzzle',
+    queryKey: ['invitedPuzzle', invitedSortField, invitedSortType],
     queryFn: async ({ pageParam = 1 }) => {
-      const response = await axios.get('/api/puzzle/invited', {
+      const response = await axios.get('/api/puzzle', {
         params: {
-          id: user?.id,
+          searchKeyword: user?.id,
+          searchField: 'invitedUser',
+          sortField: invitedSortField,
+          sortType: invitedSortType,
           page: pageParam,
         },
       });
@@ -79,6 +89,32 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
 
         {tab == 'my' && (
           <>
+            {/* <div>
+              <button
+                onClick={() => {
+                  if (mySortField === 'createdAt') {
+                    setMySortType((prev) => (prev === 'desc' ? 'asc' : 'desc'));
+                    return;
+                  }
+                  setMySortField('createdAt');
+                  setMySortType('desc');
+                }}
+              >
+                날짜
+              </button>
+              <button
+                onClick={() => {
+                  if (mySortField === 'perfection') {
+                    setMySortType((prev) => (prev === 'desc' ? 'asc' : 'desc'));
+                    return;
+                  }
+                  setMySortField('perfection');
+                  setMySortType('desc');
+                }}
+              >
+                완성도
+              </button>
+            </div> */}
             {puzzleData && puzzleData.length > 0 ? (
               <PuzzleWrapper>
                 {puzzleData?.map((item: any, index: number) => (
@@ -115,6 +151,32 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
         )}
         {tab === 'invited' && (
           <>
+            {/* <div>
+              <button
+                onClick={() => {
+                  if (invitedSortField === 'createdAt') {
+                    setInvitedSortType((prev) => (prev === 'desc' ? 'asc' : 'desc'));
+                    return;
+                  }
+                  setInvitedSortField('createdAt');
+                  setInvitedSortType('desc');
+                }}
+              >
+                날짜
+              </button>
+              <button
+                onClick={() => {
+                  if (invitedSortField === 'perfection') {
+                    setInvitedSortType((prev) => (prev === 'desc' ? 'asc' : 'desc'));
+                    return;
+                  }
+                  setInvitedSortField('createdAt');
+                  setInvitedSortType('desc');
+                }}
+              >
+                완성도
+              </button>
+            </div> */}
             {invitedPuzzleData && invitedPuzzleData.length > 0 ? (
               <PuzzleWrapper>
                 {invitedPuzzleData?.map((item: any, index: number) => (

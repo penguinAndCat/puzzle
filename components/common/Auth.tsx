@@ -17,7 +17,7 @@ const AuthStyle = css`
 `;
 
 const Div = styled.div`
-  color: ${({ theme }) => theme.modalColor};
+  color: ${({ theme }) => theme.profileTextColor};
   height: 24px;
   line-height: 22px;
   margin-right: 6px;

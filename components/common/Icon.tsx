@@ -1,5 +1,25 @@
 import styled from 'styled-components';
 
+const Svg = styled.svg`
+  color: ${({ theme }) => theme.modalTextColor};
+  fill: ${({ theme }) => theme.modalTextColor};
+`;
+
+const PaletteSvg = styled.svg`
+  color: ${({ theme }) => theme.paletteColor};
+  fill: ${({ theme }) => theme.paletteColor};
+`;
+
+const PopupSvg = styled.svg`
+  color: ${({ theme }) => theme.bgColor};
+  fill: ${({ theme }) => theme.bgColor};
+`;
+
+const DropdownSvg = styled.svg`
+  color: ${({ theme }) => theme.textColor};
+  fill: ${({ theme }) => theme.textColor};
+`;
+
 export const CloseIcon = () => {
   return (
     <Svg aria-label="삭제" height="12" role="img" viewBox="0 0 24 24" width="12">
@@ -29,10 +49,34 @@ export const CloseIcon = () => {
   );
 };
 
-const Svg = styled.svg`
-  color: ${({ theme }) => theme.modalTextColor};
-  fill: ${({ theme }) => theme.modalTextColor};
-`;
+export const PopupCloseIcon = () => {
+  return (
+    <PopupSvg aria-label="삭제" height="12" role="img" viewBox="0 0 24 24" width="12">
+      <line
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        x1="21"
+        x2="3"
+        y1="3"
+        y2="21"
+      ></line>
+      <line
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        x1="21"
+        x2="3"
+        y1="21"
+        y2="3"
+      ></line>
+    </PopupSvg>
+  );
+};
 
 export const SeeMoreIcon = () => {
   return (
@@ -84,7 +128,13 @@ export const PaletteIcon = () => {
   );
 };
 
-const PaletteSvg = styled.svg`
-  color: ${({ theme }) => theme.paletteColor};
-  fill: ${({ theme }) => theme.paletteColor};
-`;
+export const DropdownIcon = () => {
+  return (
+    <DropdownSvg xmlns="http://www.w3.org/2000/svg" width="12px" height="12px" viewBox="6 6 12 12">
+      <rect x="0" fill="none" width="24" height="24" />
+      <g>
+        <path d="M7 10l5 5 5-5" />
+      </g>
+    </DropdownSvg>
+  );
+};

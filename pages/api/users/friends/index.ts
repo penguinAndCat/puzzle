@@ -103,7 +103,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       if (notice !== null) {
         return res.status(201).json({ message: 'duplicated' });
       }
-      await Notice.create({
+      const newNotice = await Notice.create({
         requester: requester,
         requested: requestedUser._id,
         type: 'friend',
@@ -111,6 +111,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       await pusher.trigger(`presence-${requestedUser._id}`, 'onNotice', {
         friend: true,
         nickname: requesterUser.nickname,
+        picture: requesterUser.picture,
+        noticeId: newNotice._id.toString(),
       });
       res.status(201).json({ message: 'success' });
     } catch (err) {

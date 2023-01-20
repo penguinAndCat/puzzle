@@ -1,9 +1,14 @@
+import React, { useEffect } from 'react';
+import { GetServerSideProps } from 'next';
+import { QueryClient, dehydrate } from 'react-query';
+import styled from 'styled-components';
+
+import { NEXT_SERVER } from 'config';
 import Header from 'components/common/Header';
 import Profile from 'components/profile/Profile';
 import RoomList from 'components/profile/RoomList';
 import Seo from 'components/Seo';
-import React, { useEffect } from 'react';
-import styled from 'styled-components';
+import axios from 'libs/axios';
 
 export default function MyPage({ user }: { user: UserInfo | null }) {
   useEffect(() => {
@@ -23,6 +28,37 @@ export default function MyPage({ user }: { user: UserInfo | null }) {
     </Container>
   );
 }
+
+const getPuzzle = async (userId: string) => {
+  const response = await axios.get(`${NEXT_SERVER}/api/puzzle`, {
+    params: {
+      searchKeyword: userId,
+      searchField: 'userId',
+      sortField: 'createdAt',
+      sortType: 'desc',
+      page: 1,
+    },
+  });
+  return response.data;
+};
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { req } = ctx;
+  const { data } = await axios.get(`${NEXT_SERVER}/api/auth`, {
+    headers: {
+      Cookie: req?.headers.cookie || '',
+    },
+  });
+
+  const queryClient = new QueryClient();
+  await queryClient.prefetchInfiniteQuery(['myPuzzle', 'createdAt', 'desc'], async () => getPuzzle(data.user.id));
+
+  return {
+    props: {
+      dehydratedState: JSON.parse(JSON.stringify(dehydrate(queryClient))),
+    },
+  };
+};
 
 const Container = styled.div`
   width: 100%;

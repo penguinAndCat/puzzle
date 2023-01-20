@@ -35,7 +35,6 @@ type Config = {
   project: any;
   puzzleImage: img;
   groupCheck: boolean;
-  firstClient: boolean;
   canvasSize: size;
   canvasPreSize: size;
   complete: boolean;
@@ -53,11 +52,13 @@ type PuzzleProps = {
   number: number;
   title: string;
   secretRoom: boolean;
+  firstRender: boolean;
   setModalImage: (value: img) => void;
   initialModal: () => void;
   setNumber: (value: number) => void;
   setSecretRoom: (value: boolean) => void;
   setTitle: (value: string) => void;
+  setFirstRender: (value: boolean) => void;
 };
 
 interface Toast {
@@ -70,6 +71,22 @@ type ToastProps = {
   toast: Toast[];
   addToast: (data: Toast) => void;
   removeToast: () => void;
+};
+
+interface PopupType {
+  nickname: string;
+  picture: string;
+  content: string;
+  noticeId: string;
+  type: 'friend' | 'puzzle';
+  puzzleId?: string;
+}
+
+type NotificationProps = {
+  popup: PopupType[];
+  addPopup: (data: PopupType) => void;
+  removePopup: () => void;
+  removeOnePopup: (id: string) => void;
 };
 
 interface LoadingContent {

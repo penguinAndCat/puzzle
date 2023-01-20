@@ -2,7 +2,7 @@ import { useRef, useCallback, useEffect, RefObject } from 'react';
 import { GetNextPageParamFunction, QueryFunction, useInfiniteQuery, UseInfiniteQueryResult } from 'react-query';
 
 const useInfiniteScroll = (option: {
-  queryKey: string;
+  queryKey: string[];
   queryFn: QueryFunction<any, any>;
   getNextPageParam?: GetNextPageParamFunction<any> | undefined;
 }): [UseInfiniteQueryResult<any, unknown>, RefObject<HTMLDivElement>] => {
@@ -10,7 +10,7 @@ const useInfiniteScroll = (option: {
   const flagRef = useRef<HTMLDivElement>(null);
   const { queryKey, queryFn, getNextPageParam } = option;
   const infiniteQuery = useInfiniteQuery({
-    queryKey: [queryKey],
+    queryKey: queryKey,
     queryFn,
     getNextPageParam,
   });

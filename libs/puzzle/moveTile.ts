@@ -38,16 +38,14 @@ const moveTile = (config: Config, query?: string | string[], socket?: any) => {
       // sockect
       if (query !== undefined) {
         const data = {
-          config: {
-            ...config,
-            groupTiles: config.groupTiles.map((item, groupIndex) => {
-              if (indexArr.includes(groupIndex)) {
-                return [item.tile.position.x, item.tile.position.y, item.groupIndex, false];
-              } else {
-                return [item.tile.position.x, item.tile.position.y, item.groupIndex, true];
-              }
-            }),
-          },
+          groupTiles: config.groupTiles.map((item, groupIndex) => {
+            if (indexArr.includes(groupIndex)) {
+              return [item.tile.position.x, item.tile.position.y, item.groupIndex, false];
+            } else {
+              return [item.tile.position.x, item.tile.position.y, item.groupIndex, true];
+            }
+          }),
+          canvasSize: config.canvasSize,
           socketId: socket,
         };
         axios.post(`/api/puzzle/${query}`, {
@@ -124,7 +122,7 @@ const moveTile = (config: Config, query?: string | string[], socket?: any) => {
       }
       const perfection = matchedTiles / (totalTiles - 1);
 
-      if (perfection === 1) {
+      if (perfection === 1 && config.complete !== true) {
         config.complete = true;
 
         createSavePuzzleModal();
@@ -133,12 +131,10 @@ const moveTile = (config: Config, query?: string | string[], socket?: any) => {
 
       if (query !== undefined) {
         const data = {
-          config: {
-            ...config,
-            groupTiles: config.groupTiles.map((item) => {
-              return [item.tile.position.x, item.tile.position.y, item.groupIndex, true];
-            }),
-          },
+          groupTiles: config.groupTiles.map((item) => {
+            return [item.tile.position.x, item.tile.position.y, item.groupIndex, true];
+          }),
+          canvasSize: config.canvasSize,
           indexArr: indexArr,
           socketId: socket,
           perfection: perfection,
@@ -149,7 +145,7 @@ const moveTile = (config: Config, query?: string | string[], socket?: any) => {
               data,
             })
             .then((res) => {
-              if (res.data.message === 'failed') alert('통신이 불안정합니다. 다시 시도해주세요.');
+              if (res.data.message !== 'success') alert('통신이 불안정합니다. 다시 시도해주세요.');
             });
         } catch (err) {
           console.log(err);

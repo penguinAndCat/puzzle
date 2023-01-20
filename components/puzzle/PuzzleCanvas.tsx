@@ -1,16 +1,17 @@
+import { useRouter } from 'next/router';
 import { useRef, useState, useEffect } from 'react';
 import Paper from 'paper';
 import styled from 'styled-components';
-import { exportConfig, initConfig, restartConfig } from 'libs/puzzle/createPuzzle';
-import { useRouter } from 'next/router';
+import Pusher from 'pusher-js';
 
+import { NEXT_SERVER } from 'config';
+import axios from 'libs/axios';
+import { initConfig, restartConfig } from 'libs/puzzle/createPuzzle';
 import { movableIndex, moveIndex } from 'libs/puzzle/socketMove';
 import { useLoading, usePuzzle, useSocket } from 'libs/zustand/store';
-import Pusher from 'pusher-js';
-import { NEXT_SERVER } from 'config';
 import { useToast } from 'hooks/useToast';
 import { useInvitedUser, usePuzzleFriend } from 'hooks/useReactQuery';
-import axios from 'libs/axios';
+import { useCanvasSize } from 'hooks/useResize';
 
 interface Props {
   puzzleLv: number;
@@ -21,47 +22,31 @@ interface Props {
 const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
   const { offLoading } = useLoading();
   const { setParticipant } = useSocket();
-  const { title } = usePuzzle();
+  const { title, firstRender, setFirstRender } = usePuzzle();
+  const canvasSize = useCanvasSize();
   const toast = useToast();
   const router = useRouter();
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const [socket, setSocket] = useState();
   const { refetchInvitedUser } = useInvitedUser(router.query.id, user);
   const { refetchPuzzleFriend } = usePuzzleFriend(router.query.id);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (canvas === null) return;
-
-    const imgResize = () => {
-      if (window.innerWidth < window.innerHeight - 61) {
-        setCanvasSize({ width: window.innerWidth, height: window.innerWidth });
-      } else {
-        setCanvasSize({ width: window.innerHeight - 61, height: window.innerHeight - 61 });
-      }
-    };
-
-    window.addEventListener('resize', imgResize);
-    imgResize();
-    return () => {
-      window.removeEventListener('resize', imgResize);
-    };
+    setFirstRender(true);
   }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas === null) return;
     if (canvasSize.width === 0 || canvasSize.width === 0) return;
-    if (!router.isReady) return;
 
     const setPuzzle = async () => {
       canvas.width = canvasSize.width;
       canvas.height = canvasSize.height;
       Paper.setup(canvas);
       if (router.query.id === undefined) {
-        const config = exportConfig();
-        initConfig(Paper, puzzleImg, config, canvasSize, puzzleLv, title);
+        initConfig(Paper, puzzleImg, canvasSize, puzzleLv, title, firstRender);
+        setFirstRender(false);
         offLoading();
       } else {
         if (socket === undefined) return;
@@ -75,7 +60,7 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
       }
     };
     setPuzzle();
-  }, [puzzleLv, router.isReady, puzzleImg, canvasSize, router.query.id, socket, user, offLoading, title]);
+  }, [puzzleLv, puzzleImg, canvasSize, router.query.id, socket, user, offLoading, title, firstRender, setFirstRender]);
 
   useEffect(() => {
     if (!router.isReady) return;

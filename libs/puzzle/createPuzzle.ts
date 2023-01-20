@@ -1,6 +1,5 @@
-import { openConfetti } from 'hooks/useConfetti';
 import paper from 'paper';
-import { Group, Point } from 'paper/dist/paper-core';
+import { Point } from 'paper/dist/paper-core';
 import puzzle from './moveTile';
 
 const constant = {
@@ -20,7 +19,6 @@ let config: Config = {
   puzzleImage: { src: '', width: 0, height: 0 },
   groupTiles: [],
   groupCheck: false,
-  firstClient: true,
   canvasSize: { width: 0, height: 0 },
   canvasPreSize: { width: 0, height: 0 },
   complete: false,
@@ -34,31 +32,34 @@ let puzzleName = '';
 export const initConfig = (
   Paper: typeof paper,
   puzzleImage: img,
-  config: Config,
   canvasSize: size,
   level: number,
-  title: string
+  title: string,
+  firstRender: boolean = true
 ) => {
-  config.firstClient = false;
   puzzleLevel = level;
   puzzleName = title;
   setPuzzleRowColumn(puzzleImage);
   setConfig(Paper, puzzleImage, canvasSize);
-  getRandomShapes();
-  createTiles();
+  if (firstRender) {
+    getRandomShapes();
+    createTiles();
+  } else {
+    recreateTiles();
+  }
 };
 
 export const restartConfig = (
   Paper: typeof paper,
   puzzleImage: img,
-  config2: Config,
+  serverConfig: Config,
   canvasSize: size,
   level: number,
   query: string | string[],
   socket: any,
   title: string
 ) => {
-  config = config2;
+  config = serverConfig;
   puzzleLevel = level;
   puzzleName = title;
   setPuzzleRowColumn(puzzleImage);
@@ -152,15 +153,11 @@ const popRandom = (array: position[]) => {
 };
 
 const createTiles = () => {
-  const tileRatio = config.tileWidth / 100;
-  const tileRatio2 = config.tileHeight / 100;
   config.groupTiles = [];
   for (let y = 0; y < config.tilesPerColumn; y++) {
     for (let x = 0; x < config.tilesPerRow; x++) {
       const shape = config.shapes[y * config.tilesPerRow + x];
       const mask = getMask(
-        tileRatio,
-        tileRatio2,
         shape.topTab,
         shape.rightTab,
         shape.bottomTab,
@@ -190,8 +187,8 @@ const createTiles = () => {
       tile.opacity = constant.tileOpacity;
       const margin = getMargin(shape);
       // tile.position = new Point(
-      //   config.project.view.center.x + (x - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.x,
-      //   config.project.view.center.y + (y - (config.tilesPerColumn - 1) / 2) * config.tileWidth + margin.y
+      //   config.project.view.center.x + (x - (config.tilesPerRow - 1) / 2) * config.tileWidth + margin.x,
+      //   config.project.view.center.y + (y - (config.tilesPerColumn - 1) / 2) * config.tileHeight + margin.y
       // );
       const position = popRandom(positionArr);
       tile.position = new Point(position.x + margin.x, position.y + margin.y);
@@ -201,16 +198,12 @@ const createTiles = () => {
   puzzle.moveTile(config);
 };
 const recreateTiles = () => {
-  const tileRatio = config.tileWidth / 100;
-  const tileRatio2 = config.tileHeight / 100;
   const groupTiles = config.groupTiles;
   config.groupTiles = [];
   for (let y = 0; y < config.tilesPerColumn; y++) {
     for (let x = 0; x < config.tilesPerRow; x++) {
       const shape = config.shapes[y * config.tilesPerRow + x];
       const mask = getMask(
-        tileRatio,
-        tileRatio2,
         shape.topTab,
         shape.rightTab,
         shape.bottomTab,
@@ -254,16 +247,12 @@ const recreateTiles = () => {
   puzzle.moveTile(config);
 };
 const serverCreateTiles = (query: string | string[], socket: any) => {
-  const tileRatio = config.tileWidth / 100;
-  const tileRatio2 = config.tileHeight / 100;
   const groupTiles = config.groupTiles;
   config.groupTiles = [];
   for (let y = 0; y < config.tilesPerColumn; y++) {
     for (let x = 0; x < config.tilesPerRow; x++) {
       const shape = config.shapes[y * config.tilesPerRow + x];
       const mask = getMask(
-        tileRatio,
-        tileRatio2,
         shape.topTab,
         shape.rightTab,
         shape.bottomTab,
@@ -337,7 +326,7 @@ export const getMargin = (shape: shape) => {
   }
   return margin;
 };
-const getTileRaster = (puzzleImage: string | Blob, offset: paper.Point, scaleValue: number, Paper: any) => {
+export const getTileRaster = (puzzleImage: string | Blob, offset: paper.Point, scaleValue: number, Paper: any) => {
   const targetRaster = new Paper.Raster(puzzleImage);
   targetRaster.crossOrigin = 'Anonymous';
   targetRaster.scale(scaleValue);
@@ -346,9 +335,7 @@ const getTileRaster = (puzzleImage: string | Blob, offset: paper.Point, scaleVal
   return targetRaster;
 };
 
-const getMask = (
-  tileRatio: number,
-  tileRatio2: number,
+export const getMask = (
   topTab: number | undefined,
   rightTab: number | undefined,
   bottomTab: number | undefined,
@@ -361,71 +348,87 @@ const getMask = (
 ) => {
   if (topTab === undefined || rightTab === undefined || bottomTab === undefined || leftTab === undefined) return;
 
-  const cx1 = 20,
-    cy1 = 3,
+  const tileWidthRatio = tileWidth / 100;
+  const tileHeightRatio = tileHeight / 100;
+  const cx11 = 4,
+    cy11 = 1,
+    cx12 = 10,
+    cy12 = 3,
     x1 = 20,
     y1 = 3;
-  const cx2 = 46,
-    cy2 = 3,
-    x2 = 44,
-    y2 = -7;
-  const cx3 = 30,
-    cy3 = -30,
+  const cx21 = 42,
+    cy21 = 3,
+    cx22 = 42,
+    cy22 = -2,
+    x2 = 42,
+    y2 = -5.9;
+  const cx31 = 36,
+    cy31 = -14,
+    cx32 = 36,
+    cy32 = -30,
     x3 = 50,
     y3 = -30;
-  const cx4 = 70,
-    cy4 = -30,
+  const cx41 = 100 - cx32,
+    cy41 = cy32,
+    cx42 = 100 - cx31,
+    cy42 = cy31,
     x4 = 100 - x2,
     y4 = y2;
-  const cx5 = 100 - cx2,
-    cy5 = cy2,
+  const cx51 = 100 - cx22,
+    cy51 = cy22,
+    cx52 = 100 - cx21,
+    cy52 = cy21,
     x5 = 100 - x1,
     y5 = y1;
-  const cx6 = 100 - cx1,
-    cy6 = cy1;
+  const cx61 = 100 - cx12,
+    cy61 = cy12,
+    cx62 = 100 - cx11,
+    cy62 = cy11,
+    x6 = 100,
+    y6 = 0;
 
   const curvyCoords = [
-    0,
-    0,
-    cx1,
-    cy1,
+    cx11,
+    cy11,
+    cx12,
+    cy12,
     x1,
     y1,
 
-    x1,
-    y1,
-    cx2,
-    cy2,
+    cx21,
+    cy21,
+    cx22,
+    cy22,
     x2,
     y2,
 
-    x2,
-    y2,
-    cx3,
-    cy3,
+    cx31,
+    cy31,
+    cx32,
+    cy32,
     x3,
     y3,
 
-    x3,
-    y3,
-    cx4,
-    cy4,
+    cx41,
+    cy41,
+    cx42,
+    cy42,
     x4,
     y4,
 
-    x4,
-    y4,
-    cx5,
-    cy5,
+    cx51,
+    cy51,
+    cx52,
+    cy52,
     x5,
     y5,
 
-    x5,
-    y5,
-    cx6,
-    cy6,
-    100,
-    0,
+    cx61,
+    cy61,
+    cx62,
+    cy62,
+    x6,
+    y6,
   ];
 
   const mask = new project.Path();
@@ -435,37 +438,35 @@ const getMask = (
   //Top
   for (let i = 0; i < curvyCoords.length / 6; i++) {
     const p1 = new Point(
-      topLeftEdge.x + curvyCoords[i * 6 + 0] * tileRatio,
-      topLeftEdge.y + topTab * curvyCoords[i * 6 + 1] * tileRatio
+      topLeftEdge.x + curvyCoords[i * 6 + 0] * tileWidthRatio,
+      topLeftEdge.y + topTab * curvyCoords[i * 6 + 1] * tileWidthRatio
     );
-
     const p2 = new Point(
-      topLeftEdge.x + curvyCoords[i * 6 + 2] * tileRatio,
-      topLeftEdge.y + topTab * curvyCoords[i * 6 + 3] * tileRatio
+      topLeftEdge.x + curvyCoords[i * 6 + 2] * tileWidthRatio,
+      topLeftEdge.y + topTab * curvyCoords[i * 6 + 3] * tileWidthRatio
     );
-
     const p3 = new Point(
-      topLeftEdge.x + curvyCoords[i * 6 + 4] * tileRatio,
-      topLeftEdge.y + topTab * curvyCoords[i * 6 + 5] * tileRatio
+      topLeftEdge.x + curvyCoords[i * 6 + 4] * tileWidthRatio,
+      topLeftEdge.y + topTab * curvyCoords[i * 6 + 5] * tileWidthRatio
     );
 
-    mask.cubicCurveTo(p1, p2, p3); // 곡선의 첫점, 중앙점, 끝점
+    mask.cubicCurveTo(p1, p2, p3);
   }
 
   //Right
   const topRightEdge = new Point(topLeftEdge.x + tileWidth, topLeftEdge.y);
   for (let i = 0; i < curvyCoords.length / 6; i++) {
     const p1 = new Point(
-      topRightEdge.x - rightTab * curvyCoords[i * 6 + 1] * tileRatio2,
-      topRightEdge.y + curvyCoords[i * 6 + 0] * tileRatio2
+      topRightEdge.x - rightTab * curvyCoords[i * 6 + 1] * tileHeightRatio,
+      topRightEdge.y + curvyCoords[i * 6 + 0] * tileHeightRatio
     );
     const p2 = new Point(
-      topRightEdge.x - rightTab * curvyCoords[i * 6 + 3] * tileRatio2,
-      topRightEdge.y + curvyCoords[i * 6 + 2] * tileRatio2
+      topRightEdge.x - rightTab * curvyCoords[i * 6 + 3] * tileHeightRatio,
+      topRightEdge.y + curvyCoords[i * 6 + 2] * tileHeightRatio
     );
     const p3 = new Point(
-      topRightEdge.x - rightTab * curvyCoords[i * 6 + 5] * tileRatio2,
-      topRightEdge.y + curvyCoords[i * 6 + 4] * tileRatio2
+      topRightEdge.x - rightTab * curvyCoords[i * 6 + 5] * tileHeightRatio,
+      topRightEdge.y + curvyCoords[i * 6 + 4] * tileHeightRatio
     );
 
     mask.cubicCurveTo(p1, p2, p3);
@@ -475,16 +476,16 @@ const getMask = (
   const bottomRightEdge = new Point(topRightEdge.x, topRightEdge.y + tileHeight);
   for (let i = 0; i < curvyCoords.length / 6; i++) {
     const p1 = new Point(
-      bottomRightEdge.x - curvyCoords[i * 6 + 0] * tileRatio,
-      bottomRightEdge.y - bottomTab * curvyCoords[i * 6 + 1] * tileRatio
+      bottomRightEdge.x - curvyCoords[i * 6 + 0] * tileWidthRatio,
+      bottomRightEdge.y - bottomTab * curvyCoords[i * 6 + 1] * tileWidthRatio
     );
     const p2 = new Point(
-      bottomRightEdge.x - curvyCoords[i * 6 + 2] * tileRatio,
-      bottomRightEdge.y - bottomTab * curvyCoords[i * 6 + 3] * tileRatio
+      bottomRightEdge.x - curvyCoords[i * 6 + 2] * tileWidthRatio,
+      bottomRightEdge.y - bottomTab * curvyCoords[i * 6 + 3] * tileWidthRatio
     );
     const p3 = new Point(
-      bottomRightEdge.x - curvyCoords[i * 6 + 4] * tileRatio,
-      bottomRightEdge.y - bottomTab * curvyCoords[i * 6 + 5] * tileRatio
+      bottomRightEdge.x - curvyCoords[i * 6 + 4] * tileWidthRatio,
+      bottomRightEdge.y - bottomTab * curvyCoords[i * 6 + 5] * tileWidthRatio
     );
 
     mask.cubicCurveTo(p1, p2, p3);
@@ -494,16 +495,16 @@ const getMask = (
   const bottomLeftEdge = new Point(bottomRightEdge.x - tileWidth, bottomRightEdge.y);
   for (let i = 0; i < curvyCoords.length / 6; i++) {
     const p1 = new Point(
-      bottomLeftEdge.x + leftTab * curvyCoords[i * 6 + 1] * tileRatio2,
-      bottomLeftEdge.y - curvyCoords[i * 6 + 0] * tileRatio2
+      bottomLeftEdge.x + leftTab * curvyCoords[i * 6 + 1] * tileHeightRatio,
+      bottomLeftEdge.y - curvyCoords[i * 6 + 0] * tileHeightRatio
     );
     const p2 = new Point(
-      bottomLeftEdge.x + leftTab * curvyCoords[i * 6 + 3] * tileRatio2,
-      bottomLeftEdge.y - curvyCoords[i * 6 + 2] * tileRatio2
+      bottomLeftEdge.x + leftTab * curvyCoords[i * 6 + 3] * tileHeightRatio,
+      bottomLeftEdge.y - curvyCoords[i * 6 + 2] * tileHeightRatio
     );
     const p3 = new Point(
-      bottomLeftEdge.x + leftTab * curvyCoords[i * 6 + 5] * tileRatio2,
-      bottomLeftEdge.y - curvyCoords[i * 6 + 4] * tileRatio2
+      bottomLeftEdge.x + leftTab * curvyCoords[i * 6 + 5] * tileHeightRatio,
+      bottomLeftEdge.y - curvyCoords[i * 6 + 4] * tileHeightRatio
     );
 
     mask.cubicCurveTo(p1, p2, p3);

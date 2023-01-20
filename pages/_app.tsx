@@ -5,25 +5,21 @@ import { ThemeProvider } from 'libs/theme/ThemeProvider';
 import { GlobalStyle } from 'libs/theme/GlobalStyle';
 import Loading from 'components/common/Loading';
 import Modal from 'components/common/Modal';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { Hydrate, QueryClient, QueryClientProvider } from 'react-query';
 import { getCookie, setCookie } from 'cookies-next';
 import axios from 'libs/axios';
 import { NEXT_SERVER } from 'config';
 import { userStore } from 'libs/zustand/store';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import SocketNotice from 'components/common/SocketNotice';
 import ToastList from 'components/common/Toast/ToastList';
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      retry: 0,
-    },
-  },
-});
+import NotificationList from 'components/common/Popup/PopupList';
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const queryClientRef = useRef<QueryClient>();
+  if (!queryClientRef.current) {
+    queryClientRef.current = new QueryClient();
+  }
   const { setUser } = userStore();
 
   useEffect(() => {
@@ -33,15 +29,18 @@ function MyApp({ Component, pageProps }: AppProps) {
   }, [setUser, pageProps.user]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider pageTheme={pageProps.theme}>
-        <GlobalStyle />
-        <Component {...pageProps} />
-        <ToastList />
-        <Loading />
-        <Modal />
-        <SocketNotice user={pageProps.user} />
-      </ThemeProvider>
+    <QueryClientProvider client={queryClientRef.current}>
+      <Hydrate state={pageProps.dehydratedState}>
+        <ThemeProvider pageTheme={pageProps.theme}>
+          <GlobalStyle />
+          <Component {...pageProps} />
+          <ToastList />
+          <NotificationList />
+          <Loading />
+          <Modal />
+          <SocketNotice user={pageProps.user} />
+        </ThemeProvider>
+      </Hydrate>
     </QueryClientProvider>
   );
 }

@@ -14,11 +14,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     try {
       const nick = req.body.nick;
       if (nick.length > 5) {
-        return res.status(500).json({ message: '닉네임은 5글자 이하입니다.' });
+        return res.status(400).json({ message: '닉네임은 5글자 이하입니다.' });
       }
       const isExistNick = await User.exists({ nickname: nick });
       if (isExistNick) {
-        return res.status(500).json({ message: 'already Exist Nick' });
+        return res.status(401).json({ message: '이미 존재하는 닉네임입니다.' });
       }
       const { email, name, picture } = req.body.user;
       await signup({ name, email, picture, nickname: nick }, 'kakao', req, res);
