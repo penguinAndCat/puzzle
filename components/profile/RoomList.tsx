@@ -28,6 +28,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
           searchField: 'userId',
           sortField: mySortField,
           sortType: mySortType,
+          showPerfect: true,
           page: pageParam,
         },
       });
@@ -49,6 +50,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
           searchField: 'invitedUser',
           sortField: invitedSortField,
           sortType: invitedSortType,
+          showPerfect: true,
           page: pageParam,
         },
       });
