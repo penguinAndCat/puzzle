@@ -1,4 +1,5 @@
 import RoomCard from 'components/common/Card/RoomCard';
+import RoomCardSkeleton from 'components/common/Card/RoomCardSkeleton';
 import { NEXT_SERVER } from 'config';
 import useInfiniteScroll from 'hooks/useInfiniteScroll';
 import axios from 'libs/axios';
@@ -19,7 +20,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
   const [invitedSortType, setInvitedSortType] = useState<'desc' | 'asc'>('desc');
   const [invitedSortField, setInvitedSortField] = useState<'createdAt' | 'perfection'>('createdAt');
 
-  const [{ data: myPuzzle, refetch: refetchMyPuzzle }, myPuzzleRef] = useInfiniteScroll({
+  const [{ data: myPuzzle, refetch: refetchMyPuzzle, isFetching: myPuzzleFetching }, myPuzzleRef] = useInfiniteScroll({
     queryKey: ['myPuzzle', mySortField, mySortType],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await axios.get('/api/puzzle', {
@@ -41,7 +42,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
     return myPuzzle?.pages.reduce((acc, cur) => [...acc, ...cur.item], []);
   }, [myPuzzle?.pages]);
 
-  const [{ data: invitedPuzzle }, invitedRef] = useInfiniteScroll({
+  const [{ data: invitedPuzzle, isFetching: invitedFetching }, invitedRef] = useInfiniteScroll({
     queryKey: ['invitedPuzzle', invitedSortField, invitedSortType],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await axios.get('/api/puzzle', {
@@ -140,6 +141,8 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
                     puzzleNumber={item.config.tilesPerColumn * item.config.tilesPerRow}
                   />
                 ))}
+                {myPuzzleFetching &&
+                  Array.from({ length: 4 }, (v, i) => i).map((_, index) => <RoomCardSkeleton key={index * 100} />)}
               </PuzzleWrapper>
             ) : (
               <CreateWrapper>
@@ -195,6 +198,8 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
                     puzzleNumber={item.config.tilesPerColumn * item.config.tilesPerRow}
                   />
                 ))}
+                {invitedFetching &&
+                  Array.from({ length: 4 }, (v, i) => i).map((_, index) => <RoomCardSkeleton key={index * 100} />)}
               </PuzzleWrapper>
             ) : (
               <div style={{ marginTop: '36px' }}>초대된 방이 없습니다.😥</div>

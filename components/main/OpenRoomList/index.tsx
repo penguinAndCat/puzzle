@@ -9,6 +9,7 @@ import { userStore } from 'libs/zustand/store';
 import useInfiniteScroll from 'hooks/useInfiniteScroll';
 import { useToast } from 'hooks/useToast';
 import SortDropBox from './SortDropBox';
+import RoomCardSkeleton from 'components/common/Card/RoomCardSkeleton';
 
 const OpenRoomList = () => {
   const user = userStore();
@@ -19,7 +20,7 @@ const OpenRoomList = () => {
   const [showDrop, setShowDrop] = useState(false);
   const [dropV, setDropV] = useState<string>('최신순');
 
-  const [{ data }, flagRef] = useInfiniteScroll({
+  const [{ data, isFetching }, flagRef] = useInfiniteScroll({
     queryKey: ['public', sortField, sortType, showPerfect.toString()],
     queryFn: async ({ pageParam = 1 }) => {
       const { data } = await axios.get('/api/puzzle', {
@@ -79,6 +80,7 @@ const OpenRoomList = () => {
             );
           })
         )}
+        {isFetching && Array.from({ length: 4 }, (v, i) => i).map((_, index) => <RoomCardSkeleton key={index * 100} />)}
         <div ref={flagRef} style={{ height: '100px' }} />
       </PuzzleContainer>
     </Container>
