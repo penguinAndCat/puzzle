@@ -5,6 +5,7 @@ import { useModal, usePuzzle } from 'libs/zustand/store';
 import OpenRoomList from './OpenRoomList';
 import PopularRoomList from './PopularRoomList';
 import { BASE_IMAGE } from 'libs/common/saveImage';
+import CreateThumbImageButton from 'components/common/CreateThumbImageButton';
 
 const Main = () => {
   const { addModal } = useModal();
@@ -16,6 +17,7 @@ const Main = () => {
 
   return (
     <Wrapper>
+      {/* <CreateThumbImageButton /> */}
       <CreateWrapper>
         <CreateButton onClick={openModal}>새로운 퍼즐 만들기</CreateButton>
       </CreateWrapper>

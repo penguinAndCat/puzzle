@@ -31,6 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             title: 1,
             config: 1,
             perfection: 1,
+            thumbImage: 1,
             popular: '$popular',
           },
         },
