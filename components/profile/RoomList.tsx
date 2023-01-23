@@ -122,7 +122,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
                 {puzzleData?.map((item: any, index: number) => (
                   <RoomCard
                     key={item._id}
-                    src={item.config.puzzleImage.src}
+                    src={item.thumbImage ? item.thumbImage : item.config.puzzleImage.src}
                     progress={Number((item.perfection * 100).toFixed(3))}
                     title={item.title}
                     isPrivate={item.secretRoom}
@@ -184,7 +184,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
                 {invitedPuzzleData?.map((item: any, index: number) => (
                   <RoomCard
                     key={item._id}
-                    src={item.config.puzzleImage.src}
+                    src={item.thumbImage ? item.thumbImage : item.config.puzzleImage.src}
                     progress={Number((item.perfection * 100).toFixed(3))}
                     title={item.title}
                     puzzleId={item._id}

@@ -27,7 +27,7 @@ const PopularRoomList = () => {
           return (
             <RoomCard
               key={data._id}
-              src={data.config.puzzleImage.src}
+              src={data.thumbImage ? data.thumbImage : data.config.puzzleImage.src}
               progress={Number((data.perfection * 100).toFixed(3))}
               title={data.title}
               isMain={true}
