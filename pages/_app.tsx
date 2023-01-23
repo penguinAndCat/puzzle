@@ -13,7 +13,7 @@ import { userStore } from 'libs/zustand/store';
 import { useEffect, useRef } from 'react';
 import SocketNotice from 'components/common/SocketNotice';
 import ToastList from 'components/common/Toast/ToastList';
-import NotificationList from 'components/common/Popup/PopupList';
+import PopupList from 'components/common/Popup/PopupList';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const queryClientRef = useRef<QueryClient>();
@@ -35,7 +35,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           <GlobalStyle />
           <Component {...pageProps} />
           <ToastList />
-          <NotificationList />
+          <PopupList />
           <Loading />
           <Modal />
           <SocketNotice user={pageProps.user} />
