@@ -220,16 +220,11 @@ const PuzzleContainer = styled.div`
 `;
 
 const PuzzleWrapper = styled.div`
+  width: min(100%, 1024px);
   display: grid;
-  padding: 1rem 0;
   grid-template-columns: repeat(4, 1fr);
+  padding: 1rem 0;
   gap: 0.5rem;
-  // @media (max-width: 1440px) {
-  //   grid-template-columns: repeat(6, 1fr);
-  // }
-  // @media (max-width: 1024px) {
-  //   grid-template-columns: repeat(4, 1fr);
-  // }
   @media (max-width: 720px) {
     grid-template-columns: repeat(2, 1fr);
   }
