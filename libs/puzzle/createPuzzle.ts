@@ -1,5 +1,4 @@
-import paper from 'paper';
-import { Point } from 'paper/dist/paper-core';
+import paper, { Point } from 'paper/dist/paper-core';
 import puzzle from './moveTile';
 
 const constant = {

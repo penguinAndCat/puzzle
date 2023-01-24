@@ -20,6 +20,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           },
         },
         {
+          $addFields: {
+            puzzleNumber: { $multiply: ['$config.tilesPerColumn', '$config.tilesPerRow'] },
+          },
+        },
+        {
+          $addFields: {
+            src: '$config.puzzleImage.src',
+          },
+        },
+        {
           $match: {
             perfection: { $not: { $eq: 1 } },
             secretRoom: false,
@@ -29,9 +39,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
           $project: {
             _id: 1,
             title: 1,
-            config: 1,
             perfection: 1,
+            thumbImage: 1,
+            puzzleNumber: '$puzzleNumber',
             popular: '$popular',
+            src: '$src',
           },
         },
       ])

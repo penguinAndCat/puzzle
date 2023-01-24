@@ -1,12 +1,12 @@
 import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
-import Paper from 'paper';
+import Paper from 'paper/dist/paper-core';
 import styled, { css } from 'styled-components';
 
 import axios from 'libs/axios';
 import { theme } from 'libs/theme/theme';
 import { useLoading, useModal, usePuzzle, userStore } from 'libs/zustand/store';
 import { exportConfig, initConfig, setPuzzleRowColumn } from 'libs/puzzle/createPuzzle';
-import { saveImage } from 'libs/common/saveImage';
+import { saveImage, saveThumbImage } from 'libs/common/saveImage';
 import { useToast } from 'hooks/useToast';
 import { CloseIcon } from '../Icon';
 
@@ -111,6 +111,7 @@ const PuzzleModal = () => {
 
       const puzzleData = exportConfig();
       delete puzzleData.project;
+      const thumbImage = await saveThumbImage(puzzleData.puzzleImage.src);
       puzzleData.puzzleImage.src = await saveImage(puzzleData.puzzleImage.src);
       const data = {
         config: {
@@ -125,12 +126,13 @@ const PuzzleModal = () => {
         secretRoom: secretRoom,
         maximumPlayer: 4,
         perfection: 0,
+        thumbImage: thumbImage,
       };
 
       const response = await axios.post('/api/puzzle', {
         data: data,
       });
-      const { item, message } = response.data;
+      const { item } = response.data;
       window.location.href = `/puzzle/${item._id}`;
     } catch (err) {
       alert('failed');

@@ -4,13 +4,8 @@ import Card from 'components/common/Card/Card';
 import { useModal, usePuzzle } from 'libs/zustand/store';
 import OpenRoomList from './OpenRoomList';
 import PopularRoomList from './PopularRoomList';
-
-const images = [
-  'http://res.cloudinary.com/penguinandcatpuzzle/image/upload/v1666189078/bugvpkwfmde3q21zcm4s.png',
-  'http://res.cloudinary.com/penguinandcatpuzzle/image/upload/v1666189134/ylij9nqsupthcypczcjn.png',
-  'http://res.cloudinary.com/penguinandcatpuzzle/image/upload/v1666189479/uzxtq97qotpu68qhjunh.png',
-  'http://res.cloudinary.com/penguinandcatpuzzle/image/upload/v1666189365/qtpra1i8dps1nwjhc17a.png',
-];
+import { BASE_IMAGE } from 'libs/common/saveImage';
+import CreateThumbImageButton from 'components/common/CreateThumbImageButton';
 
 const Main = () => {
   const { addModal } = useModal();
@@ -22,14 +17,15 @@ const Main = () => {
 
   return (
     <Wrapper>
+      {/* <CreateThumbImageButton /> */}
       <CreateWrapper>
         <CreateButton onClick={openModal}>새로운 퍼즐 만들기</CreateButton>
       </CreateWrapper>
       <BasicWrapper>
         <Title>기본 퍼즐</Title>
         <PuzzleContainer>
-          {images.map((img, index) => {
-            return <Card key={index} image={img} />;
+          {BASE_IMAGE.map((item, index) => {
+            return <Card key={index} image={item.thumbImage} />;
           })}
         </PuzzleContainer>
       </BasicWrapper>

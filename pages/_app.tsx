@@ -1,19 +1,39 @@
-import '../styles/globals.css';
-import '../styles/completeModal.css';
+import { useEffect, useRef } from 'react';
 import type { AppProps } from 'next/app';
-import { ThemeProvider } from 'libs/theme/ThemeProvider';
-import { GlobalStyle } from 'libs/theme/GlobalStyle';
-import Loading from 'components/common/Loading';
-import Modal from 'components/common/Modal';
 import { Hydrate, QueryClient, QueryClientProvider } from 'react-query';
 import { getCookie, setCookie } from 'cookies-next';
-import axios from 'libs/axios';
+
+import '../styles/globals.css';
+import '../styles/completeModal.css';
 import { NEXT_SERVER } from 'config';
+import axios from 'libs/axios';
+import { ThemeProvider } from 'libs/theme/ThemeProvider';
+import { GlobalStyle } from 'libs/theme/GlobalStyle';
 import { userStore } from 'libs/zustand/store';
-import { useEffect, useRef } from 'react';
-import SocketNotice from 'components/common/SocketNotice';
-import ToastList from 'components/common/Toast/ToastList';
-import NotificationList from 'components/common/Popup/PopupList';
+
+// import Modal from 'components/common/Modal';
+// import Loading from 'components/common/Loading';
+// import SocketNotice from 'components/common/SocketNotice';
+// import ToastList from 'components/common/Toast/ToastList';
+// import PopupList from 'components/common/Popup/PopupList';
+
+import dynamic from 'next/dynamic';
+
+const Modal = dynamic(() => import('components/common/Modal'), {
+  ssr: false,
+});
+const Loading = dynamic(() => import('components/common/Loading'), {
+  ssr: false,
+});
+const SocketNotice = dynamic(() => import('components/common/SocketNotice'), {
+  ssr: false,
+});
+const ToastList = dynamic(() => import('components/common/Toast/ToastList'), {
+  ssr: false,
+});
+const PopupList = dynamic(() => import('components/common/Popup/PopupList'), {
+  ssr: false,
+});
 
 function MyApp({ Component, pageProps }: AppProps) {
   const queryClientRef = useRef<QueryClient>();
@@ -35,7 +55,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           <GlobalStyle />
           <Component {...pageProps} />
           <ToastList />
-          <NotificationList />
+          <PopupList />
           <Loading />
           <Modal />
           <SocketNotice user={pageProps.user} />

@@ -27,13 +27,13 @@ const PopularRoomList = () => {
           return (
             <RoomCard
               key={data._id}
-              src={data.config.puzzleImage.src}
+              src={data.thumbImage ? data.thumbImage : data.src}
               progress={Number((data.perfection * 100).toFixed(3))}
               title={data.title}
               isMain={true}
               puzzleId={data._id}
               onClick={() => onClick(data._id)}
-              puzzleNumber={data.config.tilesPerColumn * data.config.tilesPerRow}
+              puzzleNumber={data.puzzleNumber}
             />
           );
         })}
