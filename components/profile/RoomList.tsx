@@ -122,7 +122,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
                 {puzzleData?.map((item: any, index: number) => (
                   <RoomCard
                     key={item._id}
-                    src={item.thumbImage ? item.thumbImage : item.config.puzzleImage.src}
+                    src={item.thumbImage ? item.thumbImage : item.src}
                     progress={Number((item.perfection * 100).toFixed(3))}
                     title={item.title}
                     isPrivate={item.secretRoom}
@@ -137,7 +137,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
                         });
                       }
                     }}
-                    puzzleNumber={item.config.tilesPerColumn * item.config.tilesPerRow}
+                    puzzleNumber={item.puzzleNumber}
                   />
                 ))}
               </PuzzleWrapper>
@@ -184,7 +184,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
                 {invitedPuzzleData?.map((item: any, index: number) => (
                   <RoomCard
                     key={item._id}
-                    src={item.thumbImage ? item.thumbImage : item.config.puzzleImage.src}
+                    src={item.thumbImage ? item.thumbImage : item.src}
                     progress={Number((item.perfection * 100).toFixed(3))}
                     title={item.title}
                     puzzleId={item._id}
@@ -192,7 +192,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
                     onClick={() => {
                       window.location.href = `${NEXT_SERVER}/puzzle/${item._id}`;
                     }}
-                    puzzleNumber={item.config.tilesPerColumn * item.config.tilesPerRow}
+                    puzzleNumber={item.puzzleNumber}
                   />
                 ))}
               </PuzzleWrapper>

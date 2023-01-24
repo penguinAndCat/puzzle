@@ -86,11 +86,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         query.where('perfection').ne(1);
         countQuery.where('perfection').ne(1);
       }
-      const puzzle = await query
+      const puzzle2 = await query
         .sort(sortObject)
         .skip((pageN - 1) * limitN)
         .limit(limitN)
         .exec();
+      const puzzle = puzzle2.map((item) => {
+        return {
+          _id: item._id,
+          thumbImage: item.thumbImage,
+          src: item.config.puzzleImage.src,
+          perfection: item.perfection,
+          title: item.title,
+          puzzleNumber: item.config.tilesPerColumn * item.config.tilesPerRow,
+          secretRoom: item.secretRoom,
+        };
+      });
       const totalCount = await countQuery.count().exec();
       const totalPage = Math.ceil(totalCount / limitN);
       const isLast = totalPage === pageN || totalCount === 0;
