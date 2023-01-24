@@ -30,7 +30,7 @@ const Palette = () => {
 
   return (
     <ColorsWrapper ref={el}>
-      <Colors onClick={onClick}>
+      <Colors onClick={onClick} role="button" aria-label="theme">
         <PaletteIcon />
       </Colors>
       {palette && (
