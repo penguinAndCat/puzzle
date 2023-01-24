@@ -1,5 +1,5 @@
 import { useRef, useEffect, useMemo } from 'react';
-import Paper from 'paper';
+import Paper from 'paper/dist/paper-core';
 import styled from 'styled-components';
 import { initConfig } from 'libs/puzzle/createPuzzle';
 

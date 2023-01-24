@@ -1,5 +1,5 @@
 import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
-import Paper from 'paper';
+import Paper from 'paper/dist/paper-core';
 import styled, { css } from 'styled-components';
 
 import axios from 'libs/axios';

@@ -1,8 +1,12 @@
-import type { NextPage } from 'next';
-import Header from 'components/common/Header';
-import styled from 'styled-components';
-import PuzzleCanvas from 'components/common/404/PuzzleCanvas';
 import { useState } from 'react';
+import type { NextPage } from 'next';
+import dynamic from 'next/dynamic';
+import styled from 'styled-components';
+
+import Header from 'components/common/Header';
+const PuzzleCanvas = dynamic(() => import('components/common/404/PuzzleCanvas'), {
+  ssr: false,
+});
 
 const IMAGE = ['/cp2.png', 'cp3.png', 'cp4.png'];
 
