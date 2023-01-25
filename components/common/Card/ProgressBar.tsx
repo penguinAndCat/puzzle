@@ -31,7 +31,7 @@ const BlockBar = styled.div<{ percent: number }>`
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
   top: 1px;
-  right: 1px;
+  right: 0px;
   width: ${({ percent }) => `${percent}%;`}
   height: 8px;
   z-index: 2;

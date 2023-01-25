@@ -64,9 +64,6 @@ const OpenRoomList = () => {
         </Label>
       </ButtonWrapper>
       <PuzzleContainer>
-        {Array.from({ length: 4 }, (v, i) => i).map((_, index) => (
-          <RoomCardSkeleton key={index * 100} />
-        ))}
         {data?.pages.map((page) =>
           page.item.map((data: any) => {
             return (
@@ -139,22 +136,23 @@ const Label = styled.label`
   display: flex;
   align-items: center;
   gap: 0.1rem;
+  font-size: 0.9rem;
   input {
     margin: 0;
   }
   @media (max-width: 390px) {
     width: 70px;
   }
-  .ant-checkbox-inner {
-    width: 12px;
-    height: 12px;
-  }
-  .ant-checkbox {
-    transform: translateY(-0.1rem);
-  }
-  .ant-checkbox-checked .ant-checkbox-inner::after {
-    transform: rotate(45deg) scale(0.75) translate(-90%, -70%);
-  }
+  // .ant-checkbox-inner {
+  //   width: 12px;
+  //   height: 12px;
+  // }
+  // .ant-checkbox {
+  //   transform: translateY(-0.1rem);
+  // }
+  // .ant-checkbox-checked .ant-checkbox-inner::after {
+  //   transform: rotate(45deg) scale(0.75) translate(-90%, -70%);
+  // }
 `;
 
 const LabelSpan = styled.span`
