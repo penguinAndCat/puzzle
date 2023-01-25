@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { useRef, useState, useEffect } from 'react';
-import Paper from 'paper';
+import Paper from 'paper/dist/paper-core';
 import styled from 'styled-components';
 import Pusher from 'pusher-js';
 

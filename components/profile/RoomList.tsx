@@ -1,4 +1,5 @@
 import RoomCard from 'components/common/Card/RoomCard';
+import RoomCardSkeleton from 'components/common/Card/RoomCardSkeleton';
 import { NEXT_SERVER } from 'config';
 import useInfiniteScroll from 'hooks/useInfiniteScroll';
 import axios from 'libs/axios';
@@ -19,7 +20,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
   const [invitedSortType, setInvitedSortType] = useState<'desc' | 'asc'>('desc');
   const [invitedSortField, setInvitedSortField] = useState<'createdAt' | 'perfection'>('createdAt');
 
-  const [{ data: myPuzzle, refetch: refetchMyPuzzle }, myPuzzleRef] = useInfiniteScroll({
+  const [{ data: myPuzzle, refetch: refetchMyPuzzle, isFetching: myPuzzleFetching }, myPuzzleRef] = useInfiniteScroll({
     queryKey: ['myPuzzle', mySortField, mySortType],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await axios.get('/api/puzzle', {
@@ -28,6 +29,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
           searchField: 'userId',
           sortField: mySortField,
           sortType: mySortType,
+          showPerfect: true,
           page: pageParam,
         },
       });
@@ -40,7 +42,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
     return myPuzzle?.pages.reduce((acc, cur) => [...acc, ...cur.item], []);
   }, [myPuzzle?.pages]);
 
-  const [{ data: invitedPuzzle }, invitedRef] = useInfiniteScroll({
+  const [{ data: invitedPuzzle, isFetching: invitedFetching }, invitedRef] = useInfiniteScroll({
     queryKey: ['invitedPuzzle', invitedSortField, invitedSortType],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await axios.get('/api/puzzle', {
@@ -49,6 +51,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
           searchField: 'invitedUser',
           sortField: invitedSortField,
           sortType: invitedSortType,
+          showPerfect: true,
           page: pageParam,
         },
       });
@@ -120,7 +123,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
                 {puzzleData?.map((item: any, index: number) => (
                   <RoomCard
                     key={item._id}
-                    src={item.config.puzzleImage.src}
+                    src={item.thumbImage ? item.thumbImage : item.src}
                     progress={Number((item.perfection * 100).toFixed(3))}
                     title={item.title}
                     isPrivate={item.secretRoom}
@@ -135,9 +138,11 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
                         });
                       }
                     }}
-                    puzzleNumber={item.config.tilesPerColumn * item.config.tilesPerRow}
+                    puzzleNumber={item.puzzleNumber}
                   />
                 ))}
+                {myPuzzleFetching &&
+                  Array.from({ length: 4 }, (v, i) => i).map((_, index) => <RoomCardSkeleton key={index * 100} />)}
               </PuzzleWrapper>
             ) : (
               <CreateWrapper>
@@ -182,7 +187,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
                 {invitedPuzzleData?.map((item: any, index: number) => (
                   <RoomCard
                     key={item._id}
-                    src={item.config.puzzleImage.src}
+                    src={item.thumbImage ? item.thumbImage : item.src}
                     progress={Number((item.perfection * 100).toFixed(3))}
                     title={item.title}
                     puzzleId={item._id}
@@ -190,9 +195,11 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
                     onClick={() => {
                       window.location.href = `${NEXT_SERVER}/puzzle/${item._id}`;
                     }}
-                    puzzleNumber={item.config.tilesPerColumn * item.config.tilesPerRow}
+                    puzzleNumber={item.puzzleNumber}
                   />
                 ))}
+                {invitedFetching &&
+                  Array.from({ length: 4 }, (v, i) => i).map((_, index) => <RoomCardSkeleton key={index * 100} />)}
               </PuzzleWrapper>
             ) : (
               <div style={{ marginTop: '36px' }}>초대된 방이 없습니다.😥</div>
@@ -213,16 +220,11 @@ const PuzzleContainer = styled.div`
 `;
 
 const PuzzleWrapper = styled.div`
+  width: min(100%, 1024px);
   display: grid;
-  padding: 1rem 0;
   grid-template-columns: repeat(4, 1fr);
+  padding: 1rem 0;
   gap: 0.5rem;
-  // @media (max-width: 1440px) {
-  //   grid-template-columns: repeat(6, 1fr);
-  // }
-  // @media (max-width: 1024px) {
-  //   grid-template-columns: repeat(4, 1fr);
-  // }
   @media (max-width: 720px) {
     grid-template-columns: repeat(2, 1fr);
   }

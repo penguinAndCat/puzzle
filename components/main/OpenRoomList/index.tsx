@@ -9,6 +9,7 @@ import { userStore } from 'libs/zustand/store';
 import useInfiniteScroll from 'hooks/useInfiniteScroll';
 import { useToast } from 'hooks/useToast';
 import SortDropBox from './SortDropBox';
+import RoomCardSkeleton from 'components/common/Card/RoomCardSkeleton';
 
 const OpenRoomList = () => {
   const user = userStore();
@@ -19,7 +20,7 @@ const OpenRoomList = () => {
   const [showDrop, setShowDrop] = useState(false);
   const [dropV, setDropV] = useState<string>('최신순');
 
-  const [{ data }, flagRef] = useInfiniteScroll({
+  const [{ data, isFetching }, flagRef] = useInfiniteScroll({
     queryKey: ['public', sortField, sortType, showPerfect.toString()],
     queryFn: async ({ pageParam = 1 }) => {
       const { data } = await axios.get('/api/puzzle', {
@@ -68,17 +69,18 @@ const OpenRoomList = () => {
             return (
               <RoomCard
                 key={data._id}
-                src={data.config.puzzleImage?.src}
+                src={data.thumbImage ? data.thumbImage : data.src}
                 progress={Number((data.perfection * 100).toFixed(3))}
                 title={data.title}
                 isMain={true}
                 puzzleId={data._id}
                 onClick={() => onClick(data._id)}
-                puzzleNumber={data.config.tilesPerColumn * data.config.tilesPerRow}
+                puzzleNumber={data.puzzleNumber}
               />
             );
           })
         )}
+        {isFetching && Array.from({ length: 4 }, (v, i) => i).map((_, index) => <RoomCardSkeleton key={index * 100} />)}
         <div ref={flagRef} style={{ height: '100px' }} />
       </PuzzleContainer>
     </Container>
@@ -97,12 +99,12 @@ const Container = styled.div`
 `;
 
 const PuzzleContainer = styled.div`
-  max-width: 1024px;
+  width: min(100%, 1024px);
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: repeat(4, 1fr);
   gap: 0.5rem;
   @media (max-width: 720px) {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 `;
 
@@ -134,22 +136,23 @@ const Label = styled.label`
   display: flex;
   align-items: center;
   gap: 0.1rem;
+  font-size: 0.9rem;
   input {
     margin: 0;
   }
   @media (max-width: 390px) {
     width: 70px;
   }
-  .ant-checkbox-inner {
-    width: 12px;
-    height: 12px;
-  }
-  .ant-checkbox {
-    transform: translateY(-0.1rem);
-  }
-  .ant-checkbox-checked .ant-checkbox-inner::after {
-    transform: rotate(45deg) scale(0.75) translate(-90%, -70%);
-  }
+  // .ant-checkbox-inner {
+  //   width: 12px;
+  //   height: 12px;
+  // }
+  // .ant-checkbox {
+  //   transform: translateY(-0.1rem);
+  // }
+  // .ant-checkbox-checked .ant-checkbox-inner::after {
+  //   transform: rotate(45deg) scale(0.75) translate(-90%, -70%);
+  // }
 `;
 
 const LabelSpan = styled.span`

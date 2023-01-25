@@ -92,7 +92,7 @@ const DropText = styled.div`
   display: flex;
   background-color: white;
   align-items: center;
-  padding: 0px;
+  padding: 2px 0 0 0;
   background-color: ${({ theme }) => theme.bgColor};
   color: ${({ theme }) => theme.textColor};
 `;

@@ -1,15 +1,20 @@
-import type { GetServerSideProps, NextPage } from 'next';
 import { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import RoomInfo from 'components/puzzle/RoomInfo';
-import Header from 'components/puzzle/Header';
-import PuzzleCanvas from 'components/puzzle/PuzzleCanvas';
-import Levels from 'components/puzzle/Levels';
-import { usePuzzle } from 'libs/zustand/store';
+import type { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
-import Seo from 'components/Seo';
+import styled from 'styled-components';
+import dynamic from 'next/dynamic';
+
 import { NEXT_SERVER } from 'config';
 import axios from 'libs/axios';
+import { usePuzzle } from 'libs/zustand/store';
+import Seo from 'components/Seo';
+import RoomInfo from 'components/puzzle/RoomInfo';
+import Header from 'components/puzzle/Header';
+import Levels from 'components/puzzle/Levels';
+
+const PuzzleCanvas = dynamic(() => import('components/puzzle/PuzzleCanvas'), {
+  ssr: false,
+});
 
 const Home: NextPage<{ user: UserInfo | null; roomInfo: RoomInfo }> = ({ user, roomInfo }) => {
   const router = useRouter();

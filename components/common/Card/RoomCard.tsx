@@ -1,3 +1,4 @@
+import { Skeleton } from 'antd';
 import axios from 'libs/axios';
 import { theme } from 'libs/theme/theme';
 import React, { useEffect, useState } from 'react';

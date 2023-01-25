@@ -87,6 +87,9 @@ const PuzzleSchema = new mongoose.Schema(
     },
     invitedUser: [{ type: String, ref: 'users' }],
     player: [{ type: String, ref: 'users' }],
+    thumbImage: {
+      type: String,
+    },
   },
   {
     timestamps: true,

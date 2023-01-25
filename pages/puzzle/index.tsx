@@ -1,12 +1,17 @@
-import type { NextPage } from 'next';
 import { useState } from 'react';
+import type { NextPage } from 'next';
+import dynamic from 'next/dynamic';
 import styled from 'styled-components';
+
+import { usePuzzle } from 'libs/zustand/store';
 import RoomInfo from 'components/puzzle/RoomInfo';
 import Header from 'components/puzzle/Header';
-import PuzzleCanvas from 'components/puzzle/PuzzleCanvas';
 import Levels from 'components/puzzle/Levels';
-import { usePuzzle } from 'libs/zustand/store';
 import Seo from 'components/Seo';
+
+const PuzzleCanvas = dynamic(() => import('components/puzzle/PuzzleCanvas'), {
+  ssr: false,
+});
 
 const Home: NextPage<{ user: UserInfo | null }> = ({ user = null }) => {
   const { modalImage, number } = usePuzzle();

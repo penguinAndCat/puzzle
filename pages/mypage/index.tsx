@@ -36,6 +36,7 @@ const getPuzzle = async (userId: string) => {
       searchField: 'userId',
       sortField: 'createdAt',
       sortType: 'desc',
+      showPerfect: true,
       page: 1,
     },
   });

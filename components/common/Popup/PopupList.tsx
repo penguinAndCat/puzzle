@@ -2,7 +2,7 @@ import { usePopupState } from 'libs/zustand/store';
 import styled from 'styled-components';
 import Popup from '.';
 
-const NotificationList = () => {
+const PopupList = () => {
   const { popup } = usePopupState();
 
   return (
@@ -14,7 +14,7 @@ const NotificationList = () => {
   );
 };
 
-export default NotificationList;
+export default PopupList;
 
 const Wrapper = styled.div`
   position: fixed;

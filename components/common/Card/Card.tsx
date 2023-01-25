@@ -27,10 +27,10 @@ const Card = ({ image }: Props) => {
       onMouseMove={(e) => onMouseMove(e)}
       onClick={onClick}
     >
-      <CardImg src={image} />
+      <CardImg src={image} alt={image} />
       {thumbImage !== '' && (
         <ThumbImage style={{ top: `${mousePosition.y}px`, left: `${mousePosition.x}px` }}>
-          <Img src={thumbImage} alt="" width={width} />
+          <Img src={thumbImage} alt={image} width={width} />
         </ThumbImage>
       )}
     </Wrapper>
