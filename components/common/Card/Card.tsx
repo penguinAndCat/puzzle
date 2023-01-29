@@ -4,9 +4,10 @@ import styled from 'styled-components';
 
 interface Props {
   image: string;
+  originalImage: string;
 }
 
-const Card = ({ image }: Props) => {
+const Card = ({ image, originalImage }: Props) => {
   const { addModal } = useModal();
   const { initialModal } = usePuzzle();
   const { setModalImage } = usePuzzle();
@@ -15,9 +16,9 @@ const Card = ({ image }: Props) => {
     initialModal();
     addModal('puzzle');
     const img = new Image();
-    img.src = image;
+    img.src = originalImage;
     img.onload = function () {
-      setModalImage({ src: image, width: img.width, height: img.height }); // 파일 base64 상태 업데이트
+      setModalImage({ src: originalImage, width: img.width, height: img.height }); // 파일 base64 상태 업데이트
     };
   };
   return (
