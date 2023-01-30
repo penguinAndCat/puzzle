@@ -25,7 +25,7 @@ const Main = () => {
         <Title>기본 퍼즐</Title>
         <PuzzleContainer>
           {BASE_IMAGE.map((item, index) => {
-            return <Card key={index} image={item.thumbImage} />;
+            return <Card key={index} originalImage={item.image} image={item.thumbImage} />;
           })}
         </PuzzleContainer>
       </BasicWrapper>
