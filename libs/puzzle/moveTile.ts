@@ -48,9 +48,17 @@ const moveTile = (config: Config, query?: string | string[], socket?: any) => {
           canvasSize: config.canvasSize,
           socketId: socket,
         };
-        axios.post(`/api/puzzle/${query}`, {
-          data,
-        });
+        axios
+          .post(`/api/puzzle/${query}`, {
+            data,
+          })
+          .then((res) => {
+            if (res.data.message !== 'success') alert('통신이 불안정합니다. 다시 시도해주세요.');
+          })
+          .catch(function (error) {
+            console.log(error);
+            alert('통신이 불안정합니다. 다시 시도해주세요.');
+          });
       }
     };
     item.tile.onMouseDrag = (event: any) => {
@@ -139,18 +147,17 @@ const moveTile = (config: Config, query?: string | string[], socket?: any) => {
           socketId: socket,
           perfection: perfection,
         };
-        try {
-          axios
-            .put(`/api/puzzle/${query}`, {
-              data,
-            })
-            .then((res) => {
-              if (res.data.message !== 'success') alert('통신이 불안정합니다. 다시 시도해주세요.');
-            });
-        } catch (err) {
-          console.log(err);
-          alert('통신이 불안정합니다. 다시 시도해주세요.');
-        }
+        axios
+          .put(`/api/puzzle/${query}`, {
+            data,
+          })
+          .then((res) => {
+            if (res.data.message !== 'success') alert('통신이 불안정합니다. 다시 시도해주세요.');
+          })
+          .catch(function (error) {
+            console.log(error);
+            alert('통신이 불안정합니다. 다시 시도해주세요.');
+          });
       }
 
       const copy = [...config.groupTiles];
