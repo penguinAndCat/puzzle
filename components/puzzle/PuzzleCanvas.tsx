@@ -8,9 +8,9 @@ import { NEXT_SERVER } from 'config';
 import { initConfig, restartConfig } from 'libs/puzzle/createPuzzle';
 import { movableIndex, moveIndex } from 'libs/puzzle/socketMove';
 import { useLoading, usePuzzle, useSocket } from 'libs/zustand/store';
-import { useToast } from 'hooks/useToast';
-import { useInvitedUser, usePuzzleFriend } from 'hooks/useReactQuery';
-import { useCanvasSize } from 'hooks/useResize';
+import { useToast } from 'hooks/views/useToast';
+import { useCanvasSize } from 'hooks/views/useResize';
+import { useInvitedUser, usePuzzleFriend } from 'hooks/apis/useReactQuery';
 import apis from 'apis';
 
 interface Props {

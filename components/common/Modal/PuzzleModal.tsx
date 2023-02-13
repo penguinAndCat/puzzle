@@ -7,7 +7,7 @@ import { theme } from 'libs/theme/theme';
 import { useLoading, useModal, usePuzzle, userStore } from 'libs/zustand/store';
 import { exportConfig, initConfig, setPuzzleRowColumn } from 'libs/puzzle/createPuzzle';
 import { saveImage, saveThumbImage } from 'libs/common/saveImage';
-import { useToast } from 'hooks/useToast';
+import { useToast } from 'hooks/views/useToast';
 import { CloseIcon } from '../Icon';
 
 const PuzzleModal = () => {

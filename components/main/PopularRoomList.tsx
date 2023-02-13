@@ -3,8 +3,8 @@ import styled from 'styled-components';
 import { NEXT_SERVER } from 'config';
 import RoomCard from 'components/common/Card/RoomCard';
 import { userStore } from 'libs/zustand/store';
-import { useToast } from 'hooks/useToast';
-import { usePopularPuzzle } from 'hooks/useReactQuery';
+import { useToast } from 'hooks/views/useToast';
+import { usePopularPuzzle } from 'hooks/apis/useReactQuery';
 
 const PopularRoomList = () => {
   const user = userStore();

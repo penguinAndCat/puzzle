@@ -5,8 +5,8 @@ import styled from 'styled-components';
 import apis from 'apis';
 import { useSocket } from 'libs/zustand/store';
 import { exportLevels } from 'libs/puzzle/createPuzzle';
-import { useToast } from 'hooks/useToast';
-import { useInvitedUser, useRoomInfo } from 'hooks/useReactQuery';
+import { useToast } from 'hooks/views/useToast';
+import { useInvitedUser, useRoomInfo } from 'hooks/apis/useReactQuery';
 
 interface Props {
   showRoomInfo: boolean;

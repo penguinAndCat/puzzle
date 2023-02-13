@@ -1,6 +1,6 @@
-import useImaegHover from 'hooks/useImageHover';
-import { useModal, usePuzzle } from 'libs/zustand/store';
 import styled from 'styled-components';
+import { useModal, usePuzzle } from 'libs/zustand/store';
+import useImaegHover from 'hooks/views/useImageHover';
 
 interface Props {
   image: string;

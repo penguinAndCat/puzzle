@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 
 import { userStore } from 'libs/zustand/store';
-import { useToast } from 'hooks/useToast';
+import { useToast } from 'hooks/views/useToast';
 import apis from 'apis';
 
 const SearchFriend = () => {

@@ -1,6 +1,6 @@
-import { usePopupState } from 'libs/zustand/store';
 import { useEffect } from 'react';
-import useDebounce from './useDebounce';
+import useDebounce from 'hooks/utils/useDebounce';
+import { usePopupState } from 'libs/zustand/store';
 
 export const usePopup = () => {
   const { popup, addPopup, removePopup } = usePopupState();

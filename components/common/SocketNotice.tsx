@@ -1,8 +1,8 @@
-import Pusher from 'pusher-js';
-import { useNotice } from 'hooks/useReactQuery';
 import { useEffect } from 'react';
+import Pusher from 'pusher-js';
 import { NEXT_SERVER } from 'config';
-import { usePopup } from 'hooks/usePopup';
+import { useNotice } from 'hooks/apis/useReactQuery';
+import { usePopup } from 'hooks/views/usePopup';
 
 const SocketNotice = ({ user }: { user: UserInfo | null }) => {
   const popup = usePopup();

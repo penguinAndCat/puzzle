@@ -4,7 +4,7 @@ import apis from 'apis';
 import RoomCard from 'components/common/Card/RoomCard';
 import RoomCardSkeleton from 'components/common/Card/RoomCardSkeleton';
 import { NEXT_SERVER } from 'config';
-import useInfiniteScroll from 'hooks/useInfiniteScroll';
+import useInfiniteScroll from 'hooks/apis/useInfiniteScroll';
 import { useModal, usePuzzle } from 'libs/zustand/store';
 
 export default function RoomList({ user }: { user: UserInfo | null }) {

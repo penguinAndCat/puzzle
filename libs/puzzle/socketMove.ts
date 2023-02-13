@@ -1,6 +1,6 @@
-import { openConfetti } from 'hooks/useConfetti';
 import { exportConfig } from './createPuzzle';
 import { savePuzzle } from './savePuzzle';
+import { openConfetti } from 'hooks/views/useConfetti';
 
 export const moveIndex = (groupTiles: any, indexArr: number[], socketCanvasSize: size) => {
   const config = exportConfig();

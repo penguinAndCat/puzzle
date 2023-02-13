@@ -8,7 +8,7 @@ import Palette from 'components/common/Palette';
 import { saveImage } from 'libs/common/saveImage';
 import { exportConfig } from 'libs/puzzle/createPuzzle';
 import { useLoading, useModal, usePuzzle } from 'libs/zustand/store';
-import { useRoomInfo } from 'hooks/useReactQuery';
+import { useRoomInfo } from 'hooks/apis/useReactQuery';
 
 interface Props {
   setShowLevel: Dispatch<SetStateAction<boolean>>;

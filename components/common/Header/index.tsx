@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { useModal } from 'libs/zustand/store';
-import { useNotice } from 'hooks/useReactQuery';
+import { useNotice } from 'hooks/apis/useReactQuery';
 import Palette from '../Palette';
 import Menu from './Menu';
 

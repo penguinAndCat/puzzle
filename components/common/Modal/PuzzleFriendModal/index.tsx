@@ -5,8 +5,8 @@ import styled from 'styled-components';
 import { CloseIcon } from 'components/common/Icon';
 import { theme } from 'libs/theme/theme';
 import { useModal, userStore } from 'libs/zustand/store';
-import { usePuzzleFriend } from 'hooks/useReactQuery';
-import { useToast } from 'hooks/useToast';
+import { usePuzzleFriend } from 'hooks/apis/useReactQuery';
+import { useToast } from 'hooks/views/useToast';
 import apis from 'apis';
 
 const PuzzleFriendModal = () => {

@@ -1,7 +1,7 @@
 import apis from 'apis';
-import { openConfetti } from 'hooks/useConfetti';
 import { getMargin } from './createPuzzle';
 import { createSavePuzzleModal } from './createSavePuzzleModal';
+import { openConfetti } from 'hooks/views/useConfetti';
 
 const moveTile = (config: Config, query?: string | string[], socket?: any) => {
   config.groupTiles.forEach((item, index) => {

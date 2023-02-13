@@ -3,8 +3,8 @@ import styled from 'styled-components';
 
 import { PopupCloseIcon } from '../Icon';
 import { usePopupState, userStore } from 'libs/zustand/store';
-import { useNotice } from 'hooks/useReactQuery';
-import { useToast } from 'hooks/useToast';
+import { useNotice } from 'hooks/apis/useReactQuery';
+import { useToast } from 'hooks/views/useToast';
 import apis from 'apis';
 
 export default function Popup({ option }: { option: PopupType }) {

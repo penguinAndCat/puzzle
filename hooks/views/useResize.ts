@@ -1,6 +1,6 @@
 //useResize.jsx
 import { useState, useEffect } from 'react';
-import useDebounce from './useDebounce';
+import useDebounce from 'hooks/utils/useDebounce';
 
 const HEADER_MARGIN = 61;
 

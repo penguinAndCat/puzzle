@@ -6,8 +6,8 @@ import apis from 'apis';
 import { NEXT_SERVER } from 'config';
 import RoomCard from 'components/common/Card/RoomCard';
 import { userStore } from 'libs/zustand/store';
-import useInfiniteScroll from 'hooks/useInfiniteScroll';
-import { useToast } from 'hooks/useToast';
+import useInfiniteScroll from 'hooks/apis/useInfiniteScroll';
+import { useToast } from 'hooks/views/useToast';
 import SortDropBox from './SortDropBox';
 import RoomCardSkeleton from 'components/common/Card/RoomCardSkeleton';
 

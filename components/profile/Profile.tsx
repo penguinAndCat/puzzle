@@ -7,7 +7,7 @@ import apis from 'apis';
 import CropImageModal from 'components/common/Modal/CropImageModal';
 import ModalLayout from 'components/common/Modal/ModalLayout';
 import { saveImage } from 'libs/common/saveImage';
-import { useToast } from 'hooks/useToast';
+import { useToast } from 'hooks/views/useToast';
 
 export default function Profile({ user }: { user: UserInfo | null }) {
   const toast = useToast();

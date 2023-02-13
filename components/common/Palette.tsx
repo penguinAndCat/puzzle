@@ -1,7 +1,7 @@
-import useTheme from 'hooks/useTheme';
-import { theme } from 'libs/theme/theme';
 import { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
+import useTheme from 'hooks/views/useTheme';
+import { theme } from 'libs/theme/theme';
 import { PaletteIcon } from './Icon';
 
 const Palette = () => {

@@ -5,8 +5,8 @@ import apis from 'apis';
 import { CloseIcon } from 'components/common/Icon';
 import { theme } from 'libs/theme/theme';
 import { useModal, userStore } from 'libs/zustand/store';
-import { useNotice } from 'hooks/useReactQuery';
-import { useToast } from 'hooks/useToast';
+import { useNotice } from 'hooks/apis/useReactQuery';
+import { useToast } from 'hooks/views/useToast';
 
 const NoticeModal = () => {
   const { removeModal } = useModal();

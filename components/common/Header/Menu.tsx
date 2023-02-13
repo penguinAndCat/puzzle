@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import styled, { css } from 'styled-components';
 
 import apis from 'apis';
-import { useNotice } from 'hooks/useReactQuery';
+import { useNotice } from 'hooks/apis/useReactQuery';
 import { theme } from 'libs/theme/theme';
 import { useModal } from 'libs/zustand/store';
 

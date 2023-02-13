@@ -7,7 +7,7 @@ import { QueryClient, dehydrate } from 'react-query';
 import Header from 'components/common/Header';
 import Main from 'components/main/Main';
 import Seo from 'components/Seo';
-import { useToast } from 'hooks/useToast';
+import { useToast } from 'hooks/views/useToast';
 import apis from 'apis';
 
 const Home: NextPage<{ user: UserInfo | null }> = ({ user = null }) => {
