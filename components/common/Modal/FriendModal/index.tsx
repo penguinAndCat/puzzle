@@ -1,10 +1,11 @@
-import { CloseIcon } from 'components/common/Icon';
-import axios from 'libs/axios';
-import { theme } from 'libs/theme/theme';
-import { useModal, userStore } from 'libs/zustand/store';
 import { MouseEvent, useEffect, useState } from 'react';
 import styled from 'styled-components';
+
 import SearchFriend from './Search';
+import { CloseIcon } from 'components/common/Icon';
+import { theme } from 'libs/theme/theme';
+import { useModal, userStore } from 'libs/zustand/store';
+import apis from 'apis';
 
 const FriendModal = () => {
   const { removeModal } = useModal();
@@ -15,13 +16,23 @@ const FriendModal = () => {
     removeModal('friend');
   };
   useEffect(() => {
-    getNotice();
+    getFriend();
   }, []);
 
-  const getNotice = async () => {
-    if (!user?.id) return;
-    const res = await axios.get(`/api/users/friends`);
-    setFriends(res.data.friends);
+  const getFriend = async () => {
+    const friends = await apis.friends.getFriend();
+    setFriends(friends);
+  };
+
+  const deleteFriend = async (friendNickname: string) => {
+    if (window.confirm('정말로 삭제하시겠습니까?')) {
+      try {
+        await apis.friends.deleteFriend(user.id, friendNickname);
+        setFriends((prev) => prev.filter((data: any) => data.nickname !== friendNickname));
+      } catch (err) {
+        console.log(err);
+      }
+    }
   };
   return (
     <Container onClick={(e) => e.stopPropagation()}>
@@ -40,22 +51,7 @@ const FriendModal = () => {
             <Li key={item.nickname}>
               <Img src={item.picture} />
               <Nickname>{item.nickname}</Nickname>
-              <DeleteButton
-                onClick={async () => {
-                  if (window.confirm('정말로 삭제하시겠습니까?')) {
-                    try {
-                      await axios.delete(`/api/users/friends/${user.id}`, {
-                        params: { friendNickname: item.nickname },
-                      });
-                      setFriends((prev) => prev.filter((data: any) => data.nickname !== item.nickname));
-                    } catch (err) {
-                      console.log(err);
-                    }
-                  }
-                }}
-              >
-                삭제
-              </DeleteButton>
+              <DeleteButton onClick={() => deleteFriend(item.nickname)}>삭제</DeleteButton>
             </Li>
           );
         })}

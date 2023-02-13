@@ -1,12 +1,13 @@
+import { MouseEvent } from 'react';
+import { useRouter } from 'next/router';
+import styled from 'styled-components';
+
 import { CloseIcon } from 'components/common/Icon';
-import { usePuzzleFriend } from 'hooks/useReactQuery';
-import { useToast } from 'hooks/useToast';
-import axios from 'libs/axios';
 import { theme } from 'libs/theme/theme';
 import { useModal, userStore } from 'libs/zustand/store';
-import { useRouter } from 'next/router';
-import { MouseEvent } from 'react';
-import styled from 'styled-components';
+import { usePuzzleFriend } from 'hooks/useReactQuery';
+import { useToast } from 'hooks/useToast';
+import apis from 'apis';
 
 const PuzzleFriendModal = () => {
   const router = useRouter();
@@ -22,17 +23,11 @@ const PuzzleFriendModal = () => {
 
   const inviteFriend = async (requestedNickname: string) => {
     if (!user?.id) return;
-    const res = await axios.post(`/api/users/puzzle`, {
-      data: {
-        requester: user.id,
-        requestedNickname: requestedNickname,
-        puzzleId: router.query.id,
-      },
-    });
-    if (res.data.message === 'success') {
+    const message = await apis.puzzles.requestInvitation(user.id, requestedNickname, router.query.id);
+    if (message === 'success') {
       toast({ content: '초대 요청을 보냈습니다.', type: 'info' });
     }
-    if (res.data.message === 'duplicated') {
+    if (message === 'duplicated') {
       toast({ content: '이미 초대 요청을 보냈습니다.', type: 'warning' });
     }
   };

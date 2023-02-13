@@ -5,13 +5,13 @@ import styled from 'styled-components';
 import Pusher from 'pusher-js';
 
 import { NEXT_SERVER } from 'config';
-import axios from 'libs/axios';
 import { initConfig, restartConfig } from 'libs/puzzle/createPuzzle';
 import { movableIndex, moveIndex } from 'libs/puzzle/socketMove';
 import { useLoading, usePuzzle, useSocket } from 'libs/zustand/store';
 import { useToast } from 'hooks/useToast';
 import { useInvitedUser, usePuzzleFriend } from 'hooks/useReactQuery';
 import { useCanvasSize } from 'hooks/useResize';
+import apis from 'apis';
 
 interface Props {
   puzzleLv: number;
@@ -50,12 +50,17 @@ const PuzzleCanvas = ({ puzzleLv, puzzleImg, user }: Props) => {
         offLoading();
       } else {
         if (socket === undefined) return;
-        const response = await axios.get(`/api/puzzle/${router.query.id}`);
-        const item = response.data.item;
-        const config = { ...item.config };
-        const puzzleImage = { ...config.puzzleImage };
-        const puzzleTitle = item.title;
-        restartConfig(Paper, puzzleImage, config, canvasSize, item.level, router.query.id, socket, puzzleTitle);
+        const puzzle = await apis.puzzles.getPuzzle(router.query.id);
+        restartConfig(
+          Paper,
+          puzzle.config.puzzleImage,
+          puzzle.config,
+          canvasSize,
+          puzzle.level,
+          router.query.id,
+          socket,
+          puzzle.title
+        );
         offLoading();
       }
     };

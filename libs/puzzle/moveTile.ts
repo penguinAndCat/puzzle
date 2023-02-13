@@ -1,5 +1,5 @@
+import apis from 'apis';
 import { openConfetti } from 'hooks/useConfetti';
-import axios from 'libs/axios';
 import { getMargin } from './createPuzzle';
 import { createSavePuzzleModal } from './createSavePuzzleModal';
 
@@ -48,17 +48,7 @@ const moveTile = (config: Config, query?: string | string[], socket?: any) => {
           canvasSize: config.canvasSize,
           socketId: socket,
         };
-        axios
-          .post(`/api/puzzle/${query}`, {
-            data,
-          })
-          .then((res) => {
-            if (res.data.message !== 'success') alert('통신이 불안정합니다. 다시 시도해주세요.');
-          })
-          .catch(function (error) {
-            console.log(error);
-            alert('통신이 불안정합니다. 다시 시도해주세요.');
-          });
+        apis.puzzles.grabTiles(query, data);
       }
     };
     item.tile.onMouseDrag = (event: any) => {
@@ -147,17 +137,7 @@ const moveTile = (config: Config, query?: string | string[], socket?: any) => {
           socketId: socket,
           perfection: perfection,
         };
-        axios
-          .put(`/api/puzzle/${query}`, {
-            data,
-          })
-          .then((res) => {
-            if (res.data.message !== 'success') alert('통신이 불안정합니다. 다시 시도해주세요.');
-          })
-          .catch(function (error) {
-            console.log(error);
-            alert('통신이 불안정합니다. 다시 시도해주세요.');
-          });
+        apis.puzzles.moveTiles(query, data);
       }
 
       const copy = [...config.groupTiles];

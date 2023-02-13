@@ -2,7 +2,7 @@ import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 import Paper from 'paper/dist/paper-core';
 import styled, { css } from 'styled-components';
 
-import axios from 'libs/axios';
+import apis from 'apis';
 import { theme } from 'libs/theme/theme';
 import { useLoading, useModal, usePuzzle, userStore } from 'libs/zustand/store';
 import { exportConfig, initConfig, setPuzzleRowColumn } from 'libs/puzzle/createPuzzle';
@@ -129,10 +129,7 @@ const PuzzleModal = () => {
         thumbImage: thumbImage,
       };
 
-      const response = await axios.post('/api/puzzle', {
-        data: data,
-      });
-      const { item } = response.data;
+      const item = await apis.puzzles.createPuzzle(data);
       window.location.href = `/puzzle/${item._id}`;
     } catch (err) {
       alert('failed');

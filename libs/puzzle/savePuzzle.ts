@@ -1,4 +1,4 @@
-import axios from 'libs/axios';
+import axios from 'apis/axios';
 import paper, { Point } from 'paper/dist/paper-core';
 import { exportConfig, exportLevel, exportPuzzleName, getMargin, getMask, getTileRaster } from './createPuzzle';
 

@@ -1,10 +1,11 @@
+import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/router';
+import styled, { css } from 'styled-components';
+
+import apis from 'apis';
 import { useNotice } from 'hooks/useReactQuery';
-import axios from 'libs/axios';
 import { theme } from 'libs/theme/theme';
 import { useModal } from 'libs/zustand/store';
-import { useRouter } from 'next/router';
-import { useEffect, useRef, useState } from 'react';
-import styled, { css } from 'styled-components';
 
 const Menu = ({ user }: { user: UserInfo | null }) => {
   const { addModal } = useModal();
@@ -32,6 +33,11 @@ const Menu = ({ user }: { user: UserInfo | null }) => {
     };
   }, []);
 
+  const logout = async () => {
+    await apis.users.logout();
+    router.reload();
+  };
+
   return (
     <ButtonWrapper ref={el}>
       {user?.name ? <Button onClick={onClick}>메뉴</Button> : <Button onClick={() => addModal('login')}>로그인</Button>}
@@ -43,15 +49,7 @@ const Menu = ({ user }: { user: UserInfo | null }) => {
             알림
             {notice && notice.length > 0 && <Notice />}
           </DropDownMobileButton>
-          <DropDownButton
-            onClick={() =>
-              axios.delete('/api/auth').then(() => {
-                router.reload();
-              })
-            }
-          >
-            로그아웃
-          </DropDownButton>
+          <DropDownButton onClick={logout}>로그아웃</DropDownButton>
         </DropDownWrapper>
       )}
     </ButtonWrapper>

@@ -2,10 +2,10 @@ import React from 'react';
 import styled from 'styled-components';
 
 import { PopupCloseIcon } from '../Icon';
-import axios from 'libs/axios';
 import { usePopupState, userStore } from 'libs/zustand/store';
 import { useNotice } from 'hooks/useReactQuery';
 import { useToast } from 'hooks/useToast';
+import apis from 'apis';
 
 export default function Popup({ option }: { option: PopupType }) {
   const { removeOnePopup } = usePopupState();
@@ -17,33 +17,23 @@ export default function Popup({ option }: { option: PopupType }) {
     if (!user?.id) return;
     removeOnePopup(option.noticeId);
     if (option.type === 'friend') {
-      const res = await axios.put(`/api/users/friends`, {
-        data: {
-          userId: user.id,
-          friendNickname: option.nickname,
-        },
-      });
-      if (res.data.message === 'success') {
+      const message = await apis.friends.acceptFriend(user.id, option.nickname);
+      if (message === 'success') {
         toast({ nickname: option.nickname, content: '님과 친구가 되었습니다.', type: 'success' });
       }
-      if (res.data.message === 'duplicated') {
+      if (message === 'duplicated') {
         toast({ content: '이미 친구입니다.', type: 'warning' });
         return;
       }
     } else if (option.type === 'puzzle') {
-      const res = await axios.put(`/api/users/puzzle`, {
-        data: {
-          userId: user.id,
-          puzzleId: option.puzzleId,
-        },
-      });
-      if (res.data.message === 'success') {
+      const message = await apis.puzzles.acceptInvitation(user.id, option.puzzleId);
+      if (message === 'success') {
         toast({ content: '초대를 수락하였습니다.', type: 'success' });
         if (confirm('초대받은 퍼즐로 이동하겠습니까?')) {
           window.location.href = `/puzzle/${option.puzzleId}`;
         }
       }
-      if (res.data.message === 'failed') {
+      if (message === 'failed') {
         toast({ content: '초대 수락이 실패하였습니다.', type: 'warning' });
         return;
       }

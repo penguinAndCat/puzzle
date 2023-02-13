@@ -1,11 +1,11 @@
+import React, { useMemo, useState } from 'react';
+import styled from 'styled-components';
+import apis from 'apis';
 import RoomCard from 'components/common/Card/RoomCard';
 import RoomCardSkeleton from 'components/common/Card/RoomCardSkeleton';
 import { NEXT_SERVER } from 'config';
 import useInfiniteScroll from 'hooks/useInfiniteScroll';
-import axios from 'libs/axios';
 import { useModal, usePuzzle } from 'libs/zustand/store';
-import React, { useMemo, useState } from 'react';
-import styled from 'styled-components';
 
 export default function RoomList({ user }: { user: UserInfo | null }) {
   const [tab, setTab] = useState<'my' | 'invited'>('my');
@@ -23,17 +23,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
   const [{ data: myPuzzle, refetch: refetchMyPuzzle, isFetching: myPuzzleFetching }, myPuzzleRef] = useInfiniteScroll({
     queryKey: ['myPuzzle', mySortField, mySortType],
     queryFn: async ({ pageParam = 1 }) => {
-      const response = await axios.get('/api/puzzle', {
-        params: {
-          searchKeyword: user?.id,
-          searchField: 'userId',
-          sortField: mySortField,
-          sortType: mySortType,
-          showPerfect: true,
-          page: pageParam,
-        },
-      });
-      return response.data;
+      return await apis.puzzles.getPuzzleList(pageParam, mySortField, mySortType, true, user?.id, 'userId');
     },
     getNextPageParam: (lastPage) => (lastPage.isLast ? undefined : lastPage.page + 1),
   });
@@ -45,17 +35,14 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
   const [{ data: invitedPuzzle, isFetching: invitedFetching }, invitedRef] = useInfiniteScroll({
     queryKey: ['invitedPuzzle', invitedSortField, invitedSortType],
     queryFn: async ({ pageParam = 1 }) => {
-      const response = await axios.get('/api/puzzle', {
-        params: {
-          searchKeyword: user?.id,
-          searchField: 'invitedUser',
-          sortField: invitedSortField,
-          sortType: invitedSortType,
-          showPerfect: true,
-          page: pageParam,
-        },
-      });
-      return response.data;
+      return await apis.puzzles.getPuzzleList(
+        pageParam,
+        invitedSortField,
+        invitedSortType,
+        true,
+        user?.id,
+        'invitedUser'
+      );
     },
     getNextPageParam: (lastPage) => (lastPage.isLast ? undefined : lastPage.page + 1),
   });
@@ -63,6 +50,13 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
   const invitedPuzzleData = useMemo(() => {
     return invitedPuzzle?.pages.reduce((acc, cur) => [...acc, ...cur.item], []);
   }, [invitedPuzzle?.pages]);
+
+  const deletePuzzle = async (id: string) => {
+    if (window.confirm('정말로 삭제하시겠습니까?')) {
+      await apis.puzzles.deletePuzzle(id);
+      refetchMyPuzzle();
+    }
+  };
 
   return (
     <Wrapper>
@@ -131,13 +125,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
                     onClick={() => {
                       window.location.href = `${NEXT_SERVER}/puzzle/${item._id}`;
                     }}
-                    onDelete={() => {
-                      if (window.confirm('정말로 삭제하시겠습니까?')) {
-                        axios.delete(`/api/puzzle/${item._id}`).then(() => {
-                          refetchMyPuzzle();
-                        });
-                      }
-                    }}
+                    onDelete={() => deletePuzzle(item._id)}
                     puzzleNumber={item.puzzleNumber}
                   />
                 ))}

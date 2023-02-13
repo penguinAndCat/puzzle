@@ -1,5 +1,5 @@
 import React, { FormEvent, useEffect, useRef, useState } from 'react';
-import axios from 'libs/axios';
+import axios from 'apis/axios';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { AuthComponent } from 'components/common/Auth';
