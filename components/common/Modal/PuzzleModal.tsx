@@ -160,12 +160,18 @@ const PuzzleModal = () => {
         ) : (
           <Img onClick={inputImage} src={modalImage.src} />
         )}
-        <Input ref={inputRef} type="file" accept="image/jpg, image/jpeg" onChange={handleChangeFile} />
+        <Input
+          ref={inputRef}
+          type="file"
+          accept="image/jpg, image/jpeg"
+          onChange={handleChangeFile}
+          data-testid="puzzleImage-input"
+        />
       </ImgWrapper>
       <RoomNameWrapper>
         <SubTitle>방 이름</SubTitle>
         <div>
-          <RoomNameInput value={roomName} onChange={(e) => onchangeRoomName(e)} />
+          <RoomNameInput value={roomName} onChange={(e) => onchangeRoomName(e)} data-testid="roomName-input" />
         </div>
       </RoomNameWrapper>
       <PuzzleNumberWrapper>
@@ -193,12 +199,12 @@ const PuzzleModal = () => {
         </RadioLabel>
       </SecretRoomWrapper>
       <PlayAloneWrapper>
-        <CreateButton ref={buttonRef} onClick={playAlonePuzzle}>
+        <CreateButton ref={buttonRef} onClick={playAlonePuzzle} data-testid="playAlonePuzzle-button">
           혼자 하기
         </CreateButton>
       </PlayAloneWrapper>
       <CreateWrapper>
-        <CreateButton ref={buttonRef} onClick={createPuzzleRoom}>
+        <CreateButton ref={buttonRef} onClick={createPuzzleRoom} data-testid="createPuzzleRoom-button">
           방 만들기
         </CreateButton>
       </CreateWrapper>
