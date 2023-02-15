@@ -74,7 +74,7 @@ const PuzzleModal = () => {
       return;
     }
     if (roomName === '') {
-      toast({ content: '방 이름을 지어 주세요.', type: 'warning' });
+      toast({ content: '방 제목을 지어주세요.', type: 'warning' });
       return;
     }
     removeModal('puzzle');
@@ -90,7 +90,7 @@ const PuzzleModal = () => {
       return;
     }
     if (roomName === '') {
-      toast({ content: '방 이름을 지어 주세요.', type: 'warning' });
+      toast({ content: '방 제목을 지어주세요.', type: 'warning' });
       return;
     }
     if (!user?.name) {
@@ -169,7 +169,7 @@ const PuzzleModal = () => {
         />
       </ImgWrapper>
       <RoomNameWrapper>
-        <SubTitle>방 이름</SubTitle>
+        <SubTitle>방 제목</SubTitle>
         <div>
           <RoomNameInput value={roomName} onChange={(e) => onchangeRoomName(e)} data-testid="roomName-input" />
         </div>

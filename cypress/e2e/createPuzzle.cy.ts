@@ -3,12 +3,27 @@ beforeEach(() => {
 });
 
 describe('create puzzle test', () => {
-  it('playAlonePuzzle test', () => {
+  it('not title', () => {
     cy.get('[data-testid=create-button]').click();
+    cy.get('[data-testid=puzzleImage-input]').as('fileInput').attachFile('cat.jpg');
+    cy.wait(1000); // 이미지 저장 기다림
+    cy.get('[data-testid=playAlonePuzzle-button]').click();
 
+    cy.get('[data-testid=toast-div]').should('contain', '방 제목을 지어주세요.');
+  });
+
+  it('not image', () => {
+    cy.get('[data-testid=create-button]').click();
+    cy.get('[data-testid=roomName-input]').type('테스트 제목');
+    cy.get('[data-testid=playAlonePuzzle-button]').click();
+
+    cy.get('[data-testid=toast-div]').should('contain', '퍼즐 이미지를 등록해주세요.');
+  });
+
+  it('play alone puzzle', () => {
+    cy.get('[data-testid=create-button]').click();
     cy.get('[data-testid=roomName-input]').type('테스트 제목');
     cy.get('[data-testid=puzzleImage-input]').as('fileInput').attachFile('cat.jpg');
-
     cy.wait(1000); // 이미지 저장 기다림
     cy.get('[data-testid=playAlonePuzzle-button]').click();
 
@@ -17,13 +32,11 @@ describe('create puzzle test', () => {
     cy.get('button').eq(1).should('contain', '방 만들기');
   });
 
-  it('createPuzzle test', () => {
+  it('create pzzle', () => {
     cy.login('/');
     cy.get('[data-testid=create-button]').click();
-
     cy.get('[data-testid=roomName-input]').type('테스트 제목');
     cy.get('[data-testid=puzzleImage-input]').as('fileInput').attachFile('cat.jpg');
-
     cy.wait(1000); // 이미지 저장 기다림
     cy.get('[data-testid=createPuzzleRoom-button]').click();
 
@@ -47,6 +60,7 @@ describe('create puzzle test', () => {
         item: { _id: '63be44aebc49226bbf55344a' },
       });
     });
+    cy.wait(1000); // 퍼즐 페이지 이동 기다림
 
     cy.url().should('include', '/puzzle');
     cy.get('button').eq(0).should('contain', '방 정보');
