@@ -1,5 +1,11 @@
 /// <reference types="cypress" />
 import 'cypress-file-upload';
+
+Cypress.Commands.add('login', (url: string) => {
+  cy.log('Logging in to Google');
+  cy.setCookie('refreshToken', String(Cypress.env('CYPRESS_REFRESH_TOKEN')));
+  cy.visit(url);
+});
 // ***********************************************
 // This example commands.ts shows you how to
 // create various custom commands and overwrite
