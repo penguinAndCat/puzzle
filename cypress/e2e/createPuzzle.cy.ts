@@ -32,7 +32,7 @@ describe('create puzzle test', () => {
     cy.get('button').eq(1).should('contain', '방 만들기');
   });
 
-  it('create pzzle', () => {
+  it('create puzzle', () => {
     cy.login('/');
     cy.get('[data-testid=create-button]').click();
     cy.get('[data-testid=roomName-input]').type('테스트 제목');

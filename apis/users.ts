@@ -49,7 +49,7 @@ class UserAPI {
    */
   public async searchUser(searched: string) {
     try {
-      const response = await axios.get(`/api/users/friends`);
+      const response = await axios.get(`/api/users/${searched}`);
       return response.data.user;
     } catch (error) {
       console.log(error);

@@ -13,7 +13,9 @@ const Header = ({ user }: { user: UserInfo | null }) => {
       <Wrapper>
         {user?.name ? (
           <Left>
-            <Button onClick={() => addModal('friend')}>친구</Button>
+            <Button onClick={() => addModal('friend')} data-testid="friend-button">
+              친구
+            </Button>
             <Button onClick={() => addModal('notice')}>
               알림
               {notice && notice.length > 0 && <Notice />}

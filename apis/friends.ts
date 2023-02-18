@@ -7,7 +7,7 @@ class FriendAPI {
   public async getFriend() {
     try {
       const response = await axios.get(`/api/users/friends`);
-      return response.data.freinds;
+      return response.data.friends;
     } catch (error) {
       console.log(error);
     }
@@ -20,7 +20,7 @@ class FriendAPI {
    */
   public async requestFriend(requester: string, requestedNickname: string) {
     try {
-      const response = await axios.post(`/api/users/freinds`, {
+      const response = await axios.post(`/api/users/friends`, {
         data: {
           requester: requester,
           requestedNickname: requestedNickname,

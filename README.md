@@ -155,4 +155,3 @@ const batchTiles = Math.ceil(batchStandard * 1.5);
 <img alt="cropper" src="./public/readme/popup.gif"/>
 
 - 친구 요청 받았거나, 친구 요청 받았을 때 오른쪽 하단에 팝업 창이 뜬다. 사용자는 팝업 창으로 실시간 정보를 얻고, 친구 요청이나 퍼즐 방 초대를 수락할 수 있다.
-s

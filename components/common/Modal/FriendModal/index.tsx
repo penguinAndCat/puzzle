@@ -51,7 +51,9 @@ const FriendModal = () => {
             <Li key={item.nickname}>
               <Img src={item.picture} />
               <Nickname>{item.nickname}</Nickname>
-              <DeleteButton onClick={() => deleteFriend(item.nickname)}>삭제</DeleteButton>
+              <DeleteButton onClick={() => deleteFriend(item.nickname)} data-testid="deleteFriend-button">
+                삭제
+              </DeleteButton>
             </Li>
           );
         })}

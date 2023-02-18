@@ -7,7 +7,7 @@ import apis from 'apis';
 
 const SearchFriend = () => {
   const [searched, setSearched] = useState('');
-  const [searchedUser, setSearchedUser] = useState<any>([]);
+  const [searchedUser, setSearchedUser] = useState<any>({});
   const toast = useToast();
   const { user } = userStore();
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -33,15 +33,26 @@ const SearchFriend = () => {
       <InputWrapper>
         <div>새로운 친구 찾기</div>
         <div>
-          <Input onChange={(e) => setSearched(e.target.value)} value={searched} placeholder="닉네임을 입력해주세요." />
-          <SearchButton onClick={searchUser}>찾기</SearchButton>
+          <Input
+            onChange={(e) => setSearched(e.target.value)}
+            value={searched}
+            placeholder="닉네임을 입력해주세요."
+            data-testid="friend-input"
+          />
+          <SearchButton onClick={searchUser} data-testid="searchFriend-button">
+            찾기
+          </SearchButton>
         </div>
       </InputWrapper>
-      {searchedUser.length === 1 && (
+      {searchedUser?.nickname && (
         <SearchUserWrapper>
-          <Img src={searchedUser[0].picture} />
-          <Nickname>{searchedUser[0].nickname}</Nickname>
-          <RequestButton onClick={() => requestFriend(searchedUser[0].nickname)} ref={buttonRef}>
+          <Img src={searchedUser.picture} />
+          <Nickname>{searchedUser.nickname}</Nickname>
+          <RequestButton
+            onClick={() => requestFriend(searchedUser.nickname)}
+            ref={buttonRef}
+            data-testid="requestFriend-button"
+          >
             친구하기
           </RequestButton>
         </SearchUserWrapper>
