@@ -89,8 +89,12 @@ const NoticeModal = () => {
                     <NoticeMessage>
                       <Span>{item.nickname}</Span>님께서 당신과 친구를 하고 싶어합니다.
                     </NoticeMessage>
-                    <AcceptButton onClick={() => acceptFriend(item.nickname)}>수락</AcceptButton>
-                    <RefuseButton onClick={() => rejectFriend(item.nickname)}>거절</RefuseButton>
+                    <AcceptButton onClick={() => acceptFriend(item.nickname)} data-testid="acceptFriend-button">
+                      수락
+                    </AcceptButton>
+                    <RejectButton onClick={() => rejectFriend(item.nickname)} data-testid="rejectFriend-button">
+                      거절
+                    </RejectButton>
                   </Li>
                 );
               if (item.type === 'puzzle')
@@ -99,8 +103,12 @@ const NoticeModal = () => {
                     <NoticeMessage>
                       <Span>{item.nickname}</Span>님께서 당신을 퍼즐 방에 초대합니다.
                     </NoticeMessage>
-                    <AcceptButton onClick={() => acceptInvite(item.puzzleId)}>수락</AcceptButton>
-                    <RefuseButton onClick={() => rejectInvite(item.puzzleId)}>거절</RefuseButton>
+                    <AcceptButton onClick={() => acceptInvite(item.puzzleId)} data-testid="acceptPuzzle-button">
+                      수락
+                    </AcceptButton>
+                    <RejectButton onClick={() => rejectInvite(item.puzzleId)} data-testid="rejectPuzzle-button">
+                      거절
+                    </RejectButton>
                   </Li>
                 );
             }
@@ -212,7 +220,7 @@ const AcceptButton = styled.button`
   margin-right: 6px;
 `;
 
-const RefuseButton = styled.button`
+const RejectButton = styled.button`
   width: 50px;
   height: 20px;
   font-size: 12px;
