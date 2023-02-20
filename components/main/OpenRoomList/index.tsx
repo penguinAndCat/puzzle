@@ -2,12 +2,12 @@ import { useState } from 'react';
 import styled from 'styled-components';
 import { Checkbox } from 'antd';
 
+import apis from 'apis';
 import { NEXT_SERVER } from 'config';
 import RoomCard from 'components/common/Card/RoomCard';
-import axios from 'libs/axios';
 import { userStore } from 'libs/zustand/store';
-import useInfiniteScroll from 'hooks/useInfiniteScroll';
-import { useToast } from 'hooks/useToast';
+import useInfiniteScroll from 'hooks/apis/useInfiniteScroll';
+import { useToast } from 'hooks/views/useToast';
 import SortDropBox from './SortDropBox';
 import RoomCardSkeleton from 'components/common/Card/RoomCardSkeleton';
 
@@ -23,17 +23,7 @@ const OpenRoomList = () => {
   const [{ data, isFetching }, flagRef] = useInfiniteScroll({
     queryKey: ['public', sortField, sortType, showPerfect.toString()],
     queryFn: async ({ pageParam = 1 }) => {
-      const { data } = await axios.get('/api/puzzle', {
-        params: {
-          page: pageParam,
-          sortField: sortField,
-          sortType: sortType,
-          searchKeyword: `false`,
-          searchField: 'secretRoom',
-          showPerfect: showPerfect,
-        },
-      });
-      return data;
+      return await apis.puzzles.getPuzzleList(pageParam, sortField, sortType, showPerfect);
     },
     getNextPageParam: (lastPage) => (lastPage.isLast ? undefined : lastPage.page + 1),
   });

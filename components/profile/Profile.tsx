@@ -1,12 +1,13 @@
+import React, { useEffect, useState } from 'react';
+import router from 'next/router';
+import styled, { css } from 'styled-components';
 import { AxiosError } from 'axios';
+
+import apis from 'apis';
 import CropImageModal from 'components/common/Modal/CropImageModal';
 import ModalLayout from 'components/common/Modal/ModalLayout';
-import { useToast } from 'hooks/useToast';
-import axios from 'libs/axios';
 import { saveImage } from 'libs/common/saveImage';
-import router from 'next/router';
-import React, { useEffect, useState } from 'react';
-import styled, { css } from 'styled-components';
+import { useToast } from 'hooks/views/useToast';
 
 export default function Profile({ user }: { user: UserInfo | null }) {
   const toast = useToast();
@@ -31,8 +32,8 @@ export default function Profile({ user }: { user: UserInfo | null }) {
     }
     try {
       data.profileImage = await saveImage(croppedImg);
-      const res = await axios.put('/api/users', data);
-      if (res.data.message === 'success') {
+      const message = await apis.users.updateProfile(data);
+      if (message === 'success') {
         router.replace(router.asPath);
         toast({ content: '프로필을 수정하였습니다.', type: 'success' });
       }
@@ -42,6 +43,7 @@ export default function Profile({ user }: { user: UserInfo | null }) {
       }
     }
   };
+
   useEffect(() => {
     if (!user) {
       window.location.href = '/';

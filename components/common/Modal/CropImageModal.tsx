@@ -198,5 +198,5 @@ const InputWrapper = styled.div`
   justify-content: center;
   align-items: center;
   border: 2px ${({ theme }) => theme.borderColor};
-  cursor: pointer;s
+  cursor: pointer;
 `;

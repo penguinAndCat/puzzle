@@ -1,11 +1,12 @@
 import { Dispatch, Key, SetStateAction, useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
-import { exportLevels } from '../../libs/puzzle/createPuzzle';
 import { useRouter } from 'next/router';
-import axios from 'axios';
-import { useInvitedUser, useRoomInfo } from 'hooks/useReactQuery';
-import { useToast } from 'hooks/useToast';
+import styled from 'styled-components';
+
+import apis from 'apis';
 import { useSocket } from 'libs/zustand/store';
+import { exportLevels } from 'libs/puzzle/createPuzzle';
+import { useToast } from 'hooks/views/useToast';
+import { useInvitedUser, useRoomInfo } from 'hooks/apis/useReactQuery';
 
 interface Props {
   showRoomInfo: boolean;
@@ -56,16 +57,11 @@ const RoomInfo = ({ showRoomInfo, setShowRoomInfo, user }: Props) => {
 
   const requestFriend = async (requestedNickname: string) => {
     if (user === null) return;
-    const res = await axios.post(`/api/users/freinds`, {
-      data: {
-        requester: user.id,
-        requestedNickname: requestedNickname,
-      },
-    });
-    if (res.data.message === 'success') {
+    const message = await apis.friends.requestFriend(user.id, requestedNickname);
+    if (message === 'success') {
       toast({ content: '친구 요청을 보냈습니다.', type: 'success' });
     }
-    if (res.data.message === 'duplicated') {
+    if (message === 'duplicated') {
       toast({ content: '이미 친구 요청을 보냈습니다.', type: 'warning' });
     }
   };

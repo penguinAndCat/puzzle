@@ -1,5 +1,5 @@
 import { setCookie } from 'cookies-next';
-import axios from 'libs/axios';
+import axios from 'apis/axios';
 import dbConnect from 'libs/db/mongoose';
 import { makeAccessToken, makeRefreshToken } from 'libs/jwt';
 import { login } from 'libs/login/login';

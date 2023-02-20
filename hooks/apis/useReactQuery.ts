@@ -1,4 +1,4 @@
-import axios from 'libs/axios';
+import axios from 'apis/axios';
 import { useQuery } from 'react-query';
 
 export const usePuzzleFriend = (puzzleId: string | undefined | string[]) => {
@@ -30,7 +30,7 @@ export const useNotice = (user: UserInfo | null) => {
 
   const getNotice = async () => {
     try {
-      if (user === null) return [];
+      if (user === null || user === undefined) return [];
       const res = await axios.get(`/api/users/notices`);
       return res.data.notice;
     } catch (error) {
@@ -51,7 +51,7 @@ export const useInvitedUser = (puzzleId: string | undefined | string[], user: Us
   const getInvitedUser = async () => {
     try {
       if (puzzleId === undefined) return {};
-      if (user === null) return {};
+      if (user === null || user === undefined) return {};
       const res = await axios.get(`/api/puzzle/users/${puzzleId}?userId=${user.id}`);
       return res.data.data;
     } catch (error) {
@@ -72,7 +72,7 @@ export const useRoomInfo = (puzzleId: string | undefined | string[], user: UserI
   const getRoomInfo = async () => {
     try {
       if (puzzleId === undefined) return {};
-      if (user === null) return { title: '', secretRoom: false, level: 1 };
+      if (user === null || user === undefined) return { title: '', secretRoom: false, level: 1 };
       const res = await axios.get(`/api/puzzle/info/${puzzleId}`);
       return res.data.item;
     } catch (error) {

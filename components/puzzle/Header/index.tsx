@@ -1,13 +1,14 @@
+import { Dispatch, SetStateAction } from 'react';
+import { useRouter } from 'next/router';
+import styled, { css } from 'styled-components';
+
+import apis from 'apis';
+import PuzzleMenu from './PuzzleMenu';
 import Palette from 'components/common/Palette';
-import { useRoomInfo } from 'hooks/useReactQuery';
-import axios from 'libs/axios';
 import { saveImage } from 'libs/common/saveImage';
 import { exportConfig } from 'libs/puzzle/createPuzzle';
 import { useLoading, useModal, usePuzzle } from 'libs/zustand/store';
-import { useRouter } from 'next/router';
-import { Dispatch, SetStateAction } from 'react';
-import styled, { css } from 'styled-components';
-import PuzzleMenu from './PuzzleMenu';
+import { useRoomInfo } from 'hooks/apis/useReactQuery';
 
 interface Props {
   setShowLevel: Dispatch<SetStateAction<boolean>>;
@@ -23,6 +24,10 @@ const Header = ({ setShowLevel, setShowRoomInfo, user }: Props) => {
   const { roomInfo } = useRoomInfo(router.query.id, user);
 
   const createPuzzleRoom = async () => {
+    if (user === null) {
+      addModal('login');
+      return;
+    }
     try {
       const content = {
         first: '퍼즐을 생성 중입니다.',
@@ -48,10 +53,7 @@ const Header = ({ setShowLevel, setShowRoomInfo, user }: Props) => {
         perfection: 0,
       };
 
-      const response = await axios.post('/api/puzzle', {
-        data: data,
-      });
-      const { item, message } = response.data;
+      const item = await apis.puzzles.createPuzzle(data);
       window.location.href = `/puzzle/${item._id}`;
     } catch (err) {
       alert('failed');

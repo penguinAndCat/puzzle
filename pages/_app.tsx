@@ -5,8 +5,6 @@ import { getCookie, setCookie } from 'cookies-next';
 
 import '../styles/globals.css';
 import '../styles/completeModal.css';
-import { NEXT_SERVER } from 'config';
-import axios from 'libs/axios';
 import { ThemeProvider } from 'libs/theme/ThemeProvider';
 import { GlobalStyle } from 'libs/theme/GlobalStyle';
 import { userStore } from 'libs/zustand/store';
@@ -18,6 +16,7 @@ import { userStore } from 'libs/zustand/store';
 // import PopupList from 'components/common/Popup/PopupList';
 
 import dynamic from 'next/dynamic';
+import apis from 'apis';
 
 const Modal = dynamic(() => import('components/common/Modal'), {
   ssr: false,
@@ -87,11 +86,7 @@ MyApp.getInitialProps = async ({ ctx, Component }: { ctx: any; Component: any })
   }
 
   const { req, res } = ctx;
-  const { data } = await axios.get(`${NEXT_SERVER}/api/auth`, {
-    headers: {
-      Cookie: req?.headers.cookie || '',
-    },
-  });
+  const data = await apis.users.getAuth(req?.headers.cookie);
   if (data.accessToken) {
     setCookie('accessToken', data.accessToken, { req, res });
   }

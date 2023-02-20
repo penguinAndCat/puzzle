@@ -1,20 +1,22 @@
 import styled from 'styled-components';
 import { useModal } from 'libs/zustand/store';
-import { useNotice } from 'hooks/useReactQuery';
+import { useNotice } from 'hooks/apis/useReactQuery';
 import Palette from '../Palette';
 import Menu from './Menu';
 
 const Header = ({ user }: { user: UserInfo | null }) => {
   const { addModal } = useModal();
-  const { notice, refetchNotice } = useNotice(user);
+  const { notice } = useNotice(user);
 
   return (
     <Container>
       <Wrapper>
         {user?.name ? (
           <Left>
-            <Button onClick={() => addModal('friend')}>친구</Button>
-            <Button onClick={() => addModal('notice')}>
+            <Button onClick={() => addModal('friend')} data-testid="friend-button">
+              친구
+            </Button>
+            <Button onClick={() => addModal('notice')} data-testid="notice-button">
               알림
               {notice && notice.length > 0 && <Notice />}
             </Button>

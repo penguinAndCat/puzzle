@@ -1,6 +1,6 @@
 import { useToastState } from 'libs/zustand/store';
 import { useEffect } from 'react';
-import useDebounce from './useDebounce';
+import useDebounce from 'hooks/utils/useDebounce';
 
 export const useToast = () => {
   const { toast, addToast, removeToast } = useToastState();

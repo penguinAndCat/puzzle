@@ -75,7 +75,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       const user: any = await User.findOne({ nickname: friendNickname });
       const friend: any = await Friend.findOne({ userId: userId, friend: user._id });
       if (friend !== null) {
-        return res.status(201).json({ message: 'duplicated' });
+        return res.status(202).json({ message: 'duplicated' });
       }
       await Friend.create({
         userId: userId,
@@ -89,7 +89,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         requester: user._id,
         requested: userId,
       });
-      res.status(201).json({ message: 'success' });
+      res.status(202).json({ message: 'success' });
     } catch (err) {
       res.status(500).json({ error: err, message: 'failed' });
     }

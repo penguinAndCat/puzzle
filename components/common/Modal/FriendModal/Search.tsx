@@ -1,49 +1,58 @@
-import axios from 'axios';
-import { useToast } from 'hooks/useToast';
-import { userStore } from 'libs/zustand/store';
 import { useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 
+import { userStore } from 'libs/zustand/store';
+import { useToast } from 'hooks/views/useToast';
+import apis from 'apis';
+
 const SearchFriend = () => {
   const [searched, setSearched] = useState('');
-  const [searchedUser, setSearchedUser] = useState<any>([]);
+  const [searchedUser, setSearchedUser] = useState<any>({});
   const toast = useToast();
   const { user } = userStore();
   const buttonRef = useRef<HTMLButtonElement>(null);
+
   const searchUser = async () => {
-    const res = await axios.get(`/api/users/${searched}`);
-    setSearchedUser(res.data.user);
+    const user = await apis.users.searchUser(searched);
+    setSearchedUser(user);
   };
+
   const requestFriend = async (requestedNickname: string) => {
     if (!user?.id) return;
-    const res = await axios.post(`/api/users/friends`, {
-      data: {
-        requester: user.id,
-        requestedNickname: requestedNickname,
-      },
-    });
-    const top = buttonRef.current?.getBoundingClientRect().top;
-    if (res.data.message === 'success') {
+    const message = await apis.friends.requestFriend(user.id, requestedNickname);
+    if (message === 'success') {
       toast({ content: '친구 요청을 보냈습니다.', type: 'success' });
     }
-    if (res.data.message === 'duplicated') {
+    if (message === 'duplicated') {
       toast({ content: '이미 친구 요청을 보냈습니다.', type: 'warning' });
     }
   };
+
   return (
     <Container>
       <InputWrapper>
         <div>새로운 친구 찾기</div>
         <div>
-          <Input onChange={(e) => setSearched(e.target.value)} value={searched} placeholder="닉네임을 입력해주세요." />
-          <SearchButton onClick={searchUser}>찾기</SearchButton>
+          <Input
+            onChange={(e) => setSearched(e.target.value)}
+            value={searched}
+            placeholder="닉네임을 입력해주세요."
+            data-testid="friend-input"
+          />
+          <SearchButton onClick={searchUser} data-testid="searchFriend-button">
+            찾기
+          </SearchButton>
         </div>
       </InputWrapper>
-      {searchedUser.length === 1 && (
+      {searchedUser?.nickname && (
         <SearchUserWrapper>
-          <Img src={searchedUser[0].picture} />
-          <Nickname>{searchedUser[0].nickname}</Nickname>
-          <RequestButton onClick={() => requestFriend(searchedUser[0].nickname)} ref={buttonRef}>
+          <Img src={searchedUser.picture} />
+          <Nickname>{searchedUser.nickname}</Nickname>
+          <RequestButton
+            onClick={() => requestFriend(searchedUser.nickname)}
+            ref={buttonRef}
+            data-testid="requestFriend-button"
+          >
             친구하기
           </RequestButton>
         </SearchUserWrapper>

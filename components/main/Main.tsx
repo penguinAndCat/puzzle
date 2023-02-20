@@ -19,7 +19,9 @@ const Main = () => {
     <Wrapper>
       {/* <CreateThumbImageButton /> */}
       <CreateWrapper>
-        <CreateButton onClick={openModal}>새로운 퍼즐 만들기</CreateButton>
+        <CreateButton onClick={openModal} data-testid="create-button">
+          새로운 퍼즐 만들기
+        </CreateButton>
       </CreateWrapper>
       <BasicWrapper>
         <Title>기본 퍼즐</Title>

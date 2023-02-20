@@ -2,12 +2,12 @@ import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 import Paper from 'paper/dist/paper-core';
 import styled, { css } from 'styled-components';
 
-import axios from 'libs/axios';
+import apis from 'apis';
 import { theme } from 'libs/theme/theme';
 import { useLoading, useModal, usePuzzle, userStore } from 'libs/zustand/store';
 import { exportConfig, initConfig, setPuzzleRowColumn } from 'libs/puzzle/createPuzzle';
 import { saveImage, saveThumbImage } from 'libs/common/saveImage';
-import { useToast } from 'hooks/useToast';
+import { useToast } from 'hooks/views/useToast';
 import { CloseIcon } from '../Icon';
 
 const PuzzleModal = () => {
@@ -74,7 +74,7 @@ const PuzzleModal = () => {
       return;
     }
     if (roomName === '') {
-      toast({ content: '방 이름을 지어 주세요.', type: 'warning' });
+      toast({ content: '방 제목을 지어주세요.', type: 'warning' });
       return;
     }
     removeModal('puzzle');
@@ -90,7 +90,7 @@ const PuzzleModal = () => {
       return;
     }
     if (roomName === '') {
-      toast({ content: '방 이름을 지어 주세요.', type: 'warning' });
+      toast({ content: '방 제목을 지어주세요.', type: 'warning' });
       return;
     }
     if (!user?.name) {
@@ -129,10 +129,7 @@ const PuzzleModal = () => {
         thumbImage: thumbImage,
       };
 
-      const response = await axios.post('/api/puzzle', {
-        data: data,
-      });
-      const { item } = response.data;
+      const item = await apis.puzzles.createPuzzle(data);
       window.location.href = `/puzzle/${item._id}`;
     } catch (err) {
       alert('failed');
@@ -163,12 +160,18 @@ const PuzzleModal = () => {
         ) : (
           <Img onClick={inputImage} src={modalImage.src} />
         )}
-        <Input ref={inputRef} type="file" accept="image/jpg, image/jpeg" onChange={handleChangeFile} />
+        <Input
+          ref={inputRef}
+          type="file"
+          accept="image/jpg, image/jpeg"
+          onChange={handleChangeFile}
+          data-testid="puzzleImage-input"
+        />
       </ImgWrapper>
       <RoomNameWrapper>
-        <SubTitle>방 이름</SubTitle>
+        <SubTitle>방 제목</SubTitle>
         <div>
-          <RoomNameInput value={roomName} onChange={(e) => onchangeRoomName(e)} />
+          <RoomNameInput value={roomName} onChange={(e) => onchangeRoomName(e)} data-testid="roomName-input" />
         </div>
       </RoomNameWrapper>
       <PuzzleNumberWrapper>
@@ -196,12 +199,12 @@ const PuzzleModal = () => {
         </RadioLabel>
       </SecretRoomWrapper>
       <PlayAloneWrapper>
-        <CreateButton ref={buttonRef} onClick={playAlonePuzzle}>
+        <CreateButton ref={buttonRef} onClick={playAlonePuzzle} data-testid="playAlonePuzzle-button">
           혼자 하기
         </CreateButton>
       </PlayAloneWrapper>
       <CreateWrapper>
-        <CreateButton ref={buttonRef} onClick={createPuzzleRoom}>
+        <CreateButton ref={buttonRef} onClick={createPuzzleRoom} data-testid="createPuzzleRoom-button">
           방 만들기
         </CreateButton>
       </CreateWrapper>

@@ -15,7 +15,7 @@ const TYPE = {
 
 export default function Toast({ option }: { option: Toast }) {
   return (
-    <ToastBox>
+    <ToastBox data-testid="toast-div">
       <ToastBar type={option.type} />
       <div>
         <Type>{option.type}</Type>

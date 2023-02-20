@@ -14,7 +14,8 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "types": ["cypress", "cypress-file-upload"]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "libs/pusher/index.ts"],
   "exclude": ["node_modules"]

@@ -1,6 +1,6 @@
-import useImaegHover from 'hooks/useImageHover';
 import React from 'react';
 import styled from 'styled-components';
+import useImaegHover from 'hooks/views/useImageHover';
 
 export default function HoverImage({ src, ...rest }: { src: string; [key: string]: any }) {
   const { onMouseLeave, onMouseMove, onMouseOver, width, mousePosition, thumbImage } = useImaegHover(src);

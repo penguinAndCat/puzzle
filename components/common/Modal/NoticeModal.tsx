@@ -1,11 +1,12 @@
-import axios from 'axios';
+import { Key, MouseEvent } from 'react';
+import styled from 'styled-components';
+
+import apis from 'apis';
 import { CloseIcon } from 'components/common/Icon';
-import { useNotice } from 'hooks/useReactQuery';
-import { useToast } from 'hooks/useToast';
 import { theme } from 'libs/theme/theme';
 import { useModal, userStore } from 'libs/zustand/store';
-import { Key, MouseEvent, useRef } from 'react';
-import styled from 'styled-components';
+import { useNotice } from 'hooks/apis/useReactQuery';
+import { useToast } from 'hooks/views/useToast';
 
 const NoticeModal = () => {
   const { removeModal } = useModal();
@@ -19,16 +20,11 @@ const NoticeModal = () => {
 
   const acceptFriend = async (nickname: string) => {
     if (!user?.id) return;
-    const res = await axios.put(`/api/users/friends`, {
-      data: {
-        userId: user.id,
-        friendNickname: nickname,
-      },
-    });
-    if (res.data.message === 'success') {
+    const message = await apis.friends.acceptFriend(user.id, nickname);
+    if (message === 'success') {
       toast({ nickname: nickname, content: '님과 친구가 되었습니다.', type: 'success' });
     }
-    if (res.data.message === 'duplicated') {
+    if (message === 'duplicated') {
       toast({ content: '이미 친구입니다.', type: 'warning' });
       return;
     }
@@ -37,12 +33,7 @@ const NoticeModal = () => {
   const rejectFriend = async (nickname: string) => {
     if (!user?.id) return;
     try {
-      await axios.delete(`/api/users/friends`, {
-        params: {
-          userId: user.id,
-          friendNickname: nickname,
-        },
-      });
+      await apis.friends.rejectFriend(user.id, nickname);
       toast({ content: '초대를 거절하였습니다.', type: 'success' });
       refetchNotice();
     } catch (err) {
@@ -52,19 +43,14 @@ const NoticeModal = () => {
 
   const acceptInvite = async (puzzleId: string) => {
     if (!user?.id) return;
-    const res = await axios.put(`/api/users/puzzle`, {
-      data: {
-        userId: user.id,
-        puzzleId: puzzleId,
-      },
-    });
-    if (res.data.message === 'success') {
+    const message = await apis.puzzles.acceptInvitation(user.id, puzzleId);
+    if (message === 'success') {
       toast({ content: '초대를 수락하였습니다.', type: 'success' });
       if (confirm('초대받은 퍼즐로 이동하겠습니까?')) {
         window.location.href = `/puzzle/${puzzleId}`;
       }
     }
-    if (res.data.message === 'failed') {
+    if (message === 'failed') {
       toast({ content: '초대 수락이 실패하였습니다.', type: 'warning' });
       return;
     }
@@ -73,12 +59,7 @@ const NoticeModal = () => {
   const rejectInvite = async (puzzleId: string) => {
     if (!user?.id) return;
     try {
-      await axios.delete(`/api/users/puzzle`, {
-        params: {
-          userId: user.id,
-          puzzleId: puzzleId,
-        },
-      });
+      await apis.puzzles.rejectInvitation(user.id, puzzleId);
       toast({ content: '초대를 거절하였습니다.', type: 'success' });
       refetchNotice();
     } catch (err) {
@@ -108,8 +89,12 @@ const NoticeModal = () => {
                     <NoticeMessage>
                       <Span>{item.nickname}</Span>님께서 당신과 친구를 하고 싶어합니다.
                     </NoticeMessage>
-                    <AcceptButton onClick={() => acceptFriend(item.nickname)}>수락</AcceptButton>
-                    <RefuseButton onClick={() => rejectFriend(item.nickname)}>거절</RefuseButton>
+                    <AcceptButton onClick={() => acceptFriend(item.nickname)} data-testid="acceptFriend-button">
+                      수락
+                    </AcceptButton>
+                    <RejectButton onClick={() => rejectFriend(item.nickname)} data-testid="rejectFriend-button">
+                      거절
+                    </RejectButton>
                   </Li>
                 );
               if (item.type === 'puzzle')
@@ -118,8 +103,12 @@ const NoticeModal = () => {
                     <NoticeMessage>
                       <Span>{item.nickname}</Span>님께서 당신을 퍼즐 방에 초대합니다.
                     </NoticeMessage>
-                    <AcceptButton onClick={() => acceptInvite(item.puzzleId)}>수락</AcceptButton>
-                    <RefuseButton onClick={() => rejectInvite(item.puzzleId)}>거절</RefuseButton>
+                    <AcceptButton onClick={() => acceptInvite(item.puzzleId)} data-testid="acceptPuzzle-button">
+                      수락
+                    </AcceptButton>
+                    <RejectButton onClick={() => rejectInvite(item.puzzleId)} data-testid="rejectPuzzle-button">
+                      거절
+                    </RejectButton>
                   </Li>
                 );
             }
@@ -231,7 +220,7 @@ const AcceptButton = styled.button`
   margin-right: 6px;
 `;
 
-const RefuseButton = styled.button`
+const RejectButton = styled.button`
   width: 50px;
   height: 20px;
   font-size: 12px;

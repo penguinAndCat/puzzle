@@ -4,12 +4,11 @@ import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import { QueryClient, dehydrate } from 'react-query';
 
-import { NEXT_SERVER } from 'config';
 import Header from 'components/common/Header';
 import Main from 'components/main/Main';
 import Seo from 'components/Seo';
-import axios from 'libs/axios';
-import { useToast } from 'hooks/useToast';
+import { useToast } from 'hooks/views/useToast';
+import apis from 'apis';
 
 const Home: NextPage<{ user: UserInfo | null }> = ({ user = null }) => {
   const toast = useToast();
@@ -35,30 +34,19 @@ const Home: NextPage<{ user: UserInfo | null }> = ({ user = null }) => {
 
 export default Home;
 
-const getPuzzle = async ({ pageParam = 1 }) => {
-  const { data } = await axios.get(`${NEXT_SERVER}/api/puzzle`, {
-    params: {
-      page: pageParam,
-      sortField: 'createdAt',
-      sortType: 'desc',
-      searchKeyword: `false`,
-      searchField: 'secretRoom',
-      showPerfect: true,
-    },
-  });
-  return data;
+const getPuzzleList = async () => {
+  return await apis.puzzles.getPuzzleList(1, 'createdAt', 'desc', true);
 };
 
-const getPopularPuzzle = async () => {
-  const res = await axios.get(`${NEXT_SERVER}/api/puzzle/popular`);
-  return res.data.puzzle;
+const getPopularPuzzleList = async () => {
+  return await apis.puzzles.getPopularPuzzleList();
 };
 
 export const getServerSideProps: GetServerSideProps = async () => {
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchInfiniteQuery(['public', 'createdAt', 'desc', 'true'], getPuzzle);
-  await queryClient.prefetchQuery(['popularPuzzle'], getPopularPuzzle);
+  await queryClient.prefetchInfiniteQuery(['public', 'createdAt', 'desc', 'true'], getPuzzleList);
+  await queryClient.prefetchQuery(['popularPuzzle'], getPopularPuzzleList);
 
   return {
     props: {

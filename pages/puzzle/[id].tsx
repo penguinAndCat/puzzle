@@ -4,13 +4,12 @@ import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import dynamic from 'next/dynamic';
 
-import { NEXT_SERVER } from 'config';
-import axios from 'libs/axios';
-import { usePuzzle } from 'libs/zustand/store';
+import apis from 'apis';
 import Seo from 'components/Seo';
 import RoomInfo from 'components/puzzle/RoomInfo';
 import Header from 'components/puzzle/Header';
 import Levels from 'components/puzzle/Levels';
+import { usePuzzle } from 'libs/zustand/store';
 
 const PuzzleCanvas = dynamic(() => import('components/puzzle/PuzzleCanvas'), {
   ssr: false,
@@ -63,6 +62,5 @@ export const getServerSideProps: GetServerSideProps = async ({ query: { id } }) 
 };
 
 async function getRoomInfo(id: string | string[] | undefined) {
-  const res = await axios.get(`${NEXT_SERVER}/api/puzzle/info/${id}`);
-  return res.data.item;
+  return await apis.puzzles.getRoomInfo(id);
 }

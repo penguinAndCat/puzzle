@@ -1,5 +1,5 @@
 import { CloseIcon } from 'components/common/Icon';
-import { useInvitedUser } from 'hooks/useReactQuery';
+import { useInvitedUser } from 'hooks/apis/useReactQuery';
 import { theme } from 'libs/theme/theme';
 import { userStore } from 'libs/zustand/store';
 import { Key, MouseEvent } from 'react';

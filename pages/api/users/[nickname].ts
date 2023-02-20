@@ -14,10 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   if (method === 'GET') {
     const { nickname } = req.query;
     try {
-      const user = await User.aggregate([
-        { $match: { nickname: nickname } },
-        { $project: { _id: 0, nickname: 1, picture: 1 } },
-      ]);
+      const user = await User.findOne({ nickname: nickname }, { _id: 0, nickname: 1, picture: 1 });
       res.status(201).json({ user: user, message: 'success' });
     } catch (err) {
       res.status(500).json({ error: err, message: 'failed' });

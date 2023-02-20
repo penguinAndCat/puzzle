@@ -1,10 +1,8 @@
-import { setCookie } from 'cookies-next';
-import axios from 'libs/axios';
-import dbConnect from 'libs/db/mongoose';
-import { makeAccessToken, makeRefreshToken } from 'libs/jwt';
-import { login } from 'libs/login/login';
-import User from 'models/User';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import User from 'models/User';
+import axios from 'apis/axios';
+import dbConnect from 'libs/db/mongoose';
+import { login } from 'libs/login/login';
 
 export default async function handler(
   req: NextApiRequest,

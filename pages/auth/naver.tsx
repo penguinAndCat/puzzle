@@ -1,10 +1,10 @@
 import React, { FormEvent, useEffect, useRef, useState } from 'react';
-import axios from 'libs/axios';
+import axios from 'apis/axios';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { AuthComponent } from 'components/common/Auth';
 import LoginLoading from 'components/common/LoginLoading';
-import { useToast } from 'hooks/useToast';
+import { useToast } from 'hooks/views/useToast';
 
 const Naver: NextPage = () => {
   const router = useRouter();
