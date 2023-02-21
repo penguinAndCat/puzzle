@@ -1,6 +1,5 @@
-import styled from 'styled-components';
-
 import React from 'react';
+import styled, { CSSProp } from 'styled-components';
 
 interface ButtonProps {
   /**
@@ -8,27 +7,36 @@ interface ButtonProps {
    */
   backgroundColor?: string;
   /**
-   * Button contents
+   * Button contents with only storybook
    */
-  label: string;
+  label?: string;
   /**
    * Optional click handler
    */
   onClick?: () => void;
+  /**
+   * Optional click handler
+   */
+  type?: 'default';
+  /**
+   * Optional styled-components CSSProp
+   */
+  css?: CSSProp;
+  /**
+   * Button contents
+   */
+  children?: React.ReactNode;
 }
 
-/**
- * Primary UI component for user interaction
- */
-export const Button = ({ backgroundColor, label, ...props }: ButtonProps) => {
+export const Button = ({ backgroundColor, label, type, css, children, ...props }: ButtonProps) => {
   return (
-    <CustomButton type="button" style={{ backgroundColor }} {...props}>
-      {label}
+    <CustomButton style={{ backgroundColor }} css={css} {...props}>
+      {label ? label : children}
     </CustomButton>
   );
 };
 
-export const CustomButton = styled.button`
+export const CustomButton = styled.button<{ css: CSSProp | undefined }>`
   position: relative;
   width: 80px;
   height: 30px;
@@ -40,4 +48,5 @@ export const CustomButton = styled.button`
   text-align: center;
   cursor: pointer;
   padding: 0;
+  ${({ css }) => css};
 `;

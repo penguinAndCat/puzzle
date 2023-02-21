@@ -1,3 +1,4 @@
+import { Button } from 'components/common/Button';
 import { theme } from 'libs/theme/theme';
 import { useModal } from 'libs/zustand/store';
 import { useRouter } from 'next/router';
@@ -43,15 +44,25 @@ const PuzzleMenu = ({ user, roomInfo, setShowLevel, setShowRoomInfo, createPuzzl
       {dropDown && (
         <DropDownWrapper>
           {router.query.id === undefined ? (
-            <DropDownButton onClick={() => setShowLevel(true)}>퍼즐수</DropDownButton>
+            <Button onClick={() => setShowLevel(true)} css={DropDownButtonCss}>
+              퍼즐수
+            </Button>
           ) : (
-            <DropDownButton onClick={() => setShowRoomInfo(true)}>방 정보</DropDownButton>
+            <Button onClick={() => setShowRoomInfo(true)} css={DropDownButtonCss}>
+              방 정보
+            </Button>
           )}
           {router.query.id === undefined ? (
-            <DropDownButton onClick={createPuzzleRoom}>방 만들기</DropDownButton>
+            <Button onClick={createPuzzleRoom} css={DropDownButtonCss}>
+              방 만들기
+            </Button>
           ) : (
             roomInfo &&
-            roomInfo.secretRoom && <DropDownButton onClick={() => addModal('puzzleFriend')}>초대하기</DropDownButton>
+            roomInfo.secretRoom && (
+              <Button onClick={() => addModal('puzzleFriend')} css={DropDownButtonCss}>
+                초대하기
+              </Button>
+            )
           )}
         </DropDownWrapper>
       )}
@@ -78,35 +89,6 @@ const DropDownWrapper = styled.div`
   margin-top: 30px;
 `;
 
-const ButtonStyle = css`
-  position: relative;
-  width: 80px;
-  height: 30px;
-  border-radius: 4px;
-  border: 3px ${({ theme }) => theme.borderColor};
-  color: ${({ theme }) => theme.headerTextColor};
-  background-color: ${({ theme }) => theme.headerColor};
-  font-weight: 600;
-  text-align: center;
-  cursor: pointer;
-  padding: 0;
-`;
-
-const Button = styled.button`
-  ${ButtonStyle};
-`;
-
-const DropDownButton = styled.button`
-  ${ButtonStyle};
+const DropDownButtonCss = css`
   margin-top: 4px;
-`;
-
-const Notice = styled.div`
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  top: 20px;
-  left: 69px;
-  background-color: #c24641;
-  border-radius: 50%;
 `;

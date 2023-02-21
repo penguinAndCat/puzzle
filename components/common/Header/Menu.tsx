@@ -6,6 +6,7 @@ import apis from 'apis';
 import { useNotice } from 'hooks/apis/useReactQuery';
 import { theme } from 'libs/theme/theme';
 import { useModal } from 'libs/zustand/store';
+import { Button } from '../Button';
 
 const Menu = ({ user }: { user: UserInfo | null }) => {
   const { addModal } = useModal();
@@ -43,13 +44,19 @@ const Menu = ({ user }: { user: UserInfo | null }) => {
       {user?.name ? <Button onClick={onClick}>메뉴</Button> : <Button onClick={() => addModal('login')}>로그인</Button>}
       {dropDown && (
         <DropDownWrapper>
-          <DropDownButton onClick={() => (window.location.href = '/mypage')}>프로필</DropDownButton>
-          <DropDownMobileButton onClick={() => addModal('friend')}>친구</DropDownMobileButton>
-          <DropDownMobileButton onClick={() => addModal('notice')}>
+          <Button onClick={() => (window.location.href = '/mypage')} css={DropDownCss}>
+            프로필
+          </Button>
+          <Button onClick={() => addModal('friend')} css={DropDownMobileCss}>
+            친구
+          </Button>
+          <Button onClick={() => addModal('notice')} css={DropDownMobileCss}>
             알림
             {notice && notice.length > 0 && <Notice />}
-          </DropDownMobileButton>
-          <DropDownButton onClick={logout}>로그아웃</DropDownButton>
+          </Button>
+          <Button onClick={logout} css={DropDownCss}>
+            로그아웃
+          </Button>
         </DropDownWrapper>
       )}
     </ButtonWrapper>
@@ -72,31 +79,11 @@ const DropDownWrapper = styled.div`
   ${theme.common.flexCenterColumn}
 `;
 
-const ButtonStyle = css`
-  position: relative;
-  width: 80px;
-  height: 30px;
-  border-radius: 4px;
-  border: 3px ${({ theme }) => theme.borderColor};
-  color: ${({ theme }) => theme.headerTextColor};
-  background-color: ${({ theme }) => theme.headerColor};
-  font-weight: 600;
-  text-align: center;
-  cursor: pointer;
-  padding: 0;
-`;
-
-const Button = styled.button`
-  ${ButtonStyle};
-`;
-
-const DropDownButton = styled.button`
-  ${ButtonStyle};
+const DropDownCss = css`
   margin-top: 4px;
 `;
 
-const DropDownMobileButton = styled.button`
-  ${ButtonStyle};
+const DropDownMobileCss = css`
   margin-top: 4px;
   display: none;
   @media (max-width: 600px) {

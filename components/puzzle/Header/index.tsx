@@ -5,6 +5,7 @@ import styled, { css } from 'styled-components';
 import apis from 'apis';
 import PuzzleMenu from './PuzzleMenu';
 import Palette from 'components/common/Palette';
+import { Button } from 'components/common/Button';
 import { saveImage } from 'libs/common/saveImage';
 import { exportConfig } from 'libs/puzzle/createPuzzle';
 import { useLoading, useModal, usePuzzle } from 'libs/zustand/store';
@@ -71,9 +72,13 @@ const Header = ({ setShowLevel, setShowRoomInfo, user }: Props) => {
       <Wrapper>
         <Left>
           {router.query.id === undefined ? (
-            <Button onClick={() => setShowLevel(true)}>퍼즐수</Button>
+            <Button onClick={() => setShowLevel(true)} css={ButtonCss}>
+              퍼즐수
+            </Button>
           ) : (
-            <Button onClick={() => setShowRoomInfo(true)}>방 정보</Button>
+            <Button onClick={() => setShowRoomInfo(true)} css={ButtonCss}>
+              방 정보
+            </Button>
           )}
         </Left>
         <Logo onClick={() => window.location.replace('/')}>
@@ -82,9 +87,16 @@ const Header = ({ setShowLevel, setShowRoomInfo, user }: Props) => {
         </Logo>
         <Right>
           {router.query.id === undefined ? (
-            <Button onClick={createPuzzleRoom}>방 만들기</Button>
+            <Button onClick={createPuzzleRoom} css={ButtonCss}>
+              방 만들기
+            </Button>
           ) : (
-            roomInfo && roomInfo.secretRoom && <Button onClick={openModal}>초대하기</Button>
+            roomInfo &&
+            roomInfo.secretRoom && (
+              <Button onClick={openModal} css={ButtonCss}>
+                초대하기
+              </Button>
+            )
           )}
           {router.query.id === undefined ? (
             <PuzzleMenu
@@ -103,7 +115,9 @@ const Header = ({ setShowLevel, setShowRoomInfo, user }: Props) => {
               createPuzzleRoom={createPuzzleRoom}
             />
           ) : (
-            <MobileButton onClick={() => setShowRoomInfo(true)}>방 정보</MobileButton>
+            <Button onClick={() => setShowRoomInfo(true)} css={MobileButtonCss}>
+              방 정보
+            </Button>
           )}
           <Palette />
         </Right>
@@ -162,27 +176,13 @@ const Right = styled.div`
   }
 `;
 
-const ButtonStyle = css`
-  width: 80px;
-  height: 30px;
-  border-radius: 4px;
-  border: 3px ${({ theme }) => theme.borderColor};
-  color: ${({ theme }) => theme.headerTextColor};
-  background-color: ${({ theme }) => theme.headerColor};
-  font-weight: 600;
-  text-align: center;
-  cursor: pointer;
-`;
-
-const Button = styled.button`
-  ${ButtonStyle};
+const ButtonCss = css`
   @media (max-width: 600px) {
     display: none;
   }
 `;
 
-const MobileButton = styled.button`
-  ${ButtonStyle};
+const MobileButtonCss = css`
   @media (min-width: 600px) {
     display: none;
   }
