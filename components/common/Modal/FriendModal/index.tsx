@@ -15,14 +15,13 @@ const FriendModal = () => {
     e.preventDefault();
     removeModal('friend');
   };
-  useEffect(() => {
-    getFriend();
-  }, []);
 
-  const getFriend = async () => {
-    const friends = await apis.friends.getFriend();
-    setFriends(friends);
-  };
+  useEffect(() => {
+    (async function () {
+      const friends = await apis.friends.getFriend();
+      setFriends(friends);
+    })();
+  }, []);
 
   const deleteFriend = async (friendNickname: string) => {
     if (window.confirm('정말로 삭제하시겠습니까?')) {
@@ -46,17 +45,18 @@ const FriendModal = () => {
       <SearchFriend />
       <div>친구 목록</div>
       <Ul>
-        {friends.map((item: { nickname: string; picture: string }) => {
-          return (
-            <Li key={item.nickname}>
-              <Img src={item.picture} />
-              <Nickname>{item.nickname}</Nickname>
-              <DeleteButton onClick={() => deleteFriend(item.nickname)} data-testid="deleteFriend-button">
-                삭제
-              </DeleteButton>
-            </Li>
-          );
-        })}
+        {friends &&
+          friends.map((item: { nickname: string; picture: string }) => {
+            return (
+              <Li key={item.nickname}>
+                <Img src={item.picture} />
+                <Nickname>{item.nickname}</Nickname>
+                <DeleteButton onClick={() => deleteFriend(item.nickname)} data-testid="deleteFriend-button">
+                  삭제
+                </DeleteButton>
+              </Li>
+            );
+          })}
       </Ul>
     </Container>
   );

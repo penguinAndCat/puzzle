@@ -1,5 +1,15 @@
 import { ThemeProvider } from 'styled-components';
 import { silverTheme, darkTheme, pinkTheme, mintTheme } from '../libs/theme/theme';
+import { initialize, mswDecorator } from 'msw-storybook-addon';
+import { GlobalStyle } from './GlobalStyle';
+
+// Initialize MSW
+initialize();
+
+if (typeof global.process === 'undefined') {
+  const { worker } = require('../.mocks/browser');
+  worker.start();
+}
 
 const THEME = {
   pink: pinkTheme,
@@ -14,12 +24,12 @@ const withTheme = (StoryFn, context) => {
   return (
     <ThemeProvider theme={themeObject}>
       <StoryFn />
+      <GlobalStyle />
     </ThemeProvider>
   );
 };
 
-// export all decorators that should be globally applied in an array
-export const decorators = [withTheme];
+export const decorators = [withTheme, mswDecorator];
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },
