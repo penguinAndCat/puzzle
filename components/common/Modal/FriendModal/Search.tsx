@@ -1,31 +1,24 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import styled, { css } from 'styled-components';
 
-import { userStore } from 'libs/zustand/store';
-import { useToast } from 'hooks/views/useToast';
 import apis from 'apis';
+import SearchedUser from './SearchedUser';
 
-const SearchFriend = () => {
+type SearchedUserProps = {
+  picture: string;
+  nickname: string;
+};
+
+const SearchFriend = ({ picture = '', nickname = '' }) => {
   const [searched, setSearched] = useState('');
-  const [searchedUser, setSearchedUser] = useState<any>({});
-  const toast = useToast();
-  const { user } = userStore();
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [searchedUser, setSearchedUser] = useState<SearchedUserProps>({
+    picture: picture,
+    nickname: nickname,
+  });
 
   const searchUser = async () => {
     const user = await apis.users.searchUser(searched);
     setSearchedUser(user);
-  };
-
-  const requestFriend = async (requestedNickname: string) => {
-    if (!user?.id) return;
-    const message = await apis.friends.requestFriend(user.id, requestedNickname);
-    if (message === 'success') {
-      toast({ content: '친구 요청을 보냈습니다.', type: 'success' });
-    }
-    if (message === 'duplicated') {
-      toast({ content: '이미 친구 요청을 보냈습니다.', type: 'warning' });
-    }
   };
 
   return (
@@ -44,19 +37,7 @@ const SearchFriend = () => {
           </SearchButton>
         </div>
       </InputWrapper>
-      {searchedUser?.nickname && (
-        <SearchUserWrapper>
-          <Img src={searchedUser.picture} />
-          <Nickname>{searchedUser.nickname}</Nickname>
-          <RequestButton
-            onClick={() => requestFriend(searchedUser.nickname)}
-            ref={buttonRef}
-            data-testid="requestFriend-button"
-          >
-            친구하기
-          </RequestButton>
-        </SearchUserWrapper>
-      )}
+      {searchedUser?.nickname && <SearchedUser searchedUser={searchedUser} />}
     </Container>
   );
 };
@@ -72,7 +53,7 @@ const Container = styled.div`
 const ModalTheme = css`
   background-color: ${({ theme }) => theme.modalColor};
   color: ${({ theme }) => theme.modalTextColor};
-  border: solid 2px ${({ theme }) => theme.modalTextColor};
+  border: solid 1px ${({ theme }) => theme.modalTextColor};
 `;
 
 const InputWrapper = styled.div`
@@ -105,37 +86,5 @@ const SearchButton = styled.button`
   ${ModalTheme}
   width: 60px;
   height: 24px;
-  cursor: pointer;
-`;
-
-const SearchUserWrapper = styled.div`
-  width: 300px;
-  height: 50px;
-  padding: 0 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const Img = styled.img`
-  width: 40px;
-  height: 40px;
-  object-fit: cover;
-  border-radius: 50%;
-`;
-
-const Nickname = styled.div`
-  width: 120px;
-  font-size: 12px;
-`;
-
-const RequestButton = styled.button`
-  width: 68px;
-  height: 20px;
-  font-size: 12px;
-  line-height: 50%;
-  background-color: ${({ theme }) => theme.modalColor};
-  color: ${({ theme }) => theme.modalTextColor};
-  border: solid 1px ${({ theme }) => theme.modalTextColor};
   cursor: pointer;
 `;

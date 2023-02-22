@@ -1,13 +1,12 @@
-import { MouseEvent, useEffect, useState } from 'react';
+import React, { MouseEvent, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import SearchFriend from './Search';
 import { CloseIcon } from 'components/common/Icon';
 import { theme } from 'libs/theme/theme';
 import { useModal, userStore } from 'libs/zustand/store';
 import apis from 'apis';
 
-const FriendModal = () => {
+const FriendModal = ({ children }: { children?: React.ReactNode }) => {
   const { removeModal } = useModal();
   const [friends, setFriends] = useState([]);
   const { user } = userStore();
@@ -42,13 +41,13 @@ const FriendModal = () => {
           <CloseIcon />
         </Close>
       </TitleWrapper>
-      <SearchFriend />
+      {children}
       <div>친구 목록</div>
       <Ul>
         {friends &&
-          friends.map((item: { nickname: string; picture: string }) => {
+          friends.map((item: { nickname: string; picture: string }, index) => {
             return (
-              <Li key={item.nickname}>
+              <Li key={index}>
                 <Img src={item.picture} />
                 <Nickname>{item.nickname}</Nickname>
                 <DeleteButton onClick={() => deleteFriend(item.nickname)} data-testid="deleteFriend-button">
@@ -123,7 +122,7 @@ const Img = styled.img`
 `;
 
 const Ul = styled.ul`
-  height: 240px;
+  height: 290px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -131,7 +130,7 @@ const Ul = styled.ul`
   &::-webkit-scrollbar {
     width: 5px;
     height: 8px;
-    background-color: #aaa; /* 또는 트랙에 추가한다 */
+    background-color: #cccccc;
   }
   &::-webkit-scrollbar-thumb {
     background-color: ${({ theme }) => theme.modalTextColor};
@@ -140,7 +139,7 @@ const Ul = styled.ul`
 
 const Li = styled.li`
   width: 300px;
-  height: 50px;
+  min-height: 50px;
   padding: 0 20px;
   display: flex;
   justify-content: space-between;

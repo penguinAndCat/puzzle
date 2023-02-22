@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import FriendModal from '.';
 import ModalLayout from '../ModalLayout';
 import { handlers } from '.mocks/handlers';
+import SearchFriend from './Search';
 
 export default {
   title: 'Common/Modal/FriendModal',
@@ -10,32 +11,41 @@ export default {
   argTypes: {
     backgroundColor: { control: 'color' },
   },
+  decorators: [
+    (StoryFn) => {
+      return (
+        <>
+          <div id="modal-root" />
+          <ModalLayout content={'friend'}>
+            <StoryFn />
+          </ModalLayout>
+        </>
+      );
+    },
+  ],
 } as ComponentMeta<typeof FriendModal>;
 
 const Template: ComponentStory<typeof FriendModal> = () => (
-  <>
-    <div id="modal-root" />
-    <ModalLayout content={'friend'}>
-      <FriendModal />
-    </ModalLayout>
-  </>
+  <FriendModal>
+    <SearchFriend />
+  </FriendModal>
 );
 
 export const Default = Template.bind({});
 Default.parameters = {
-  theme: 'pink',
   msw: handlers,
 };
-Default.args = {};
 
-// export const PinkTheme = Template.bind({});
-// PinkTheme.args = Default.args;
-// PinkTheme.parameters = {
-//   theme: 'pink',
-// };
+const SearchUserTemplate: ComponentStory<typeof FriendModal> = () => (
+  <FriendModal>
+    <SearchFriend
+      picture="http://res.cloudinary.com/penguinandcatpuzzle/image/upload/v1672831380/jtguoogjwszywocyeb8o.jpg"
+      nickname="네이버2"
+    />
+  </FriendModal>
+);
 
-// export const MintTheme = Template.bind({});
-// MintTheme.args = Default.args;
-// MintTheme.parameters = {
-//   theme: 'mint',
-// };
+export const SearchUser = SearchUserTemplate.bind({});
+SearchUser.parameters = {
+  msw: handlers,
+};

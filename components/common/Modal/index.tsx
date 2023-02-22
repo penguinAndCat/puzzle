@@ -5,6 +5,7 @@ import LoginModal from './LoginModal';
 import ModalLayout from './ModalLayout';
 import PuzzleFriendModal from './PuzzleFriendModal';
 import PuzzleModal from './PuzzleModal';
+import SearchFriend from './FriendModal/Search';
 
 const Modal = () => {
   const { modal } = useModal();
@@ -22,7 +23,9 @@ const Modal = () => {
       )}
       {modal.includes('friend') && (
         <ModalLayout content={'friend'}>
-          <FriendModal />
+          <FriendModal>
+            <SearchFriend />
+          </FriendModal>
         </ModalLayout>
       )}
       {modal.includes('notice') && (
