@@ -9,7 +9,7 @@ import { usePuzzleFriend } from 'hooks/apis/useReactQuery';
 import { useToast } from 'hooks/views/useToast';
 import apis from 'apis';
 
-const UI = () => {
+const PuzzleFriendModal = () => {
   const router = useRouter();
   const toast = useToast();
   const { removeModal } = useModal();
@@ -64,7 +64,7 @@ const UI = () => {
   );
 };
 
-export default UI;
+export default PuzzleFriendModal;
 
 const Container = styled.div`
   @keyframes fadein {

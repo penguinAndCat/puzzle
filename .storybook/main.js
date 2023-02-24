@@ -6,7 +6,12 @@ module.exports = {
     '../stories/**/*.stories.@(js|jsx|ts|tsx)',
     '../components/common/**/*.stories.@(js|jsx|ts|tsx)',
   ],
-  addons: ['@storybook/addon-links', '@storybook/addon-essentials', '@storybook/addon-interactions'],
+  addons: [
+    '@storybook/addon-links',
+    '@storybook/addon-essentials',
+    '@storybook/addon-interactions',
+    'storybook-addon-next-router',
+  ],
   framework: '@storybook/react',
   webpackFinal: async (config) => {
     config.resolve.modules = [path.resolve(__dirname, '..'), 'node_modules', 'styles'];

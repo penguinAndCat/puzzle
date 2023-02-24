@@ -1,7 +1,9 @@
 import { ThemeProvider } from 'styled-components';
-import { silverTheme, darkTheme, pinkTheme, mintTheme } from '../libs/theme/theme';
 import { initialize, mswDecorator } from 'msw-storybook-addon';
+import { silverTheme, darkTheme, pinkTheme, mintTheme } from '../libs/theme/theme';
 import { GlobalStyle } from './GlobalStyle';
+import { RouterContext } from 'next/dist/shared/lib/router-context';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 // Initialize MSW
 initialize();
@@ -21,11 +23,14 @@ const THEME = {
 const withTheme = (StoryFn, context) => {
   const theme = context.globals.theme || context.parameters.theme;
   const themeObject = THEME[theme];
+  const queryClient = new QueryClient();
   return (
-    <ThemeProvider theme={themeObject}>
-      <StoryFn />
-      <GlobalStyle />
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider theme={themeObject}>
+        <StoryFn />
+        <GlobalStyle />
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 };
 
@@ -38,6 +43,10 @@ export const parameters = {
       color: /(background|color)$/i,
       date: /Date$/,
     },
+  },
+  nextRouter: {
+    Provider: RouterContext.Provider,
+    locale: 'en', // optional
   },
 };
 

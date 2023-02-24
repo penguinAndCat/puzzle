@@ -67,6 +67,7 @@
     "next-compose-plugins": "^2.2.1",
     "react-is": "^18.2.0",
     "sb": "^6.5.16",
+    "storybook-addon-next-router": "^4.0.2",
     "typescript": "4.7.4"
   },
   "msw": {
