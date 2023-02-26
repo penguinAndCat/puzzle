@@ -22,7 +22,7 @@ export const usePuzzleFriend = (puzzleId: string | undefined | string[]) => {
   return { puzzleFriend: data, refetchPuzzleFriend: refetch };
 };
 
-export const useNotice = (user: UserInfo | null) => {
+export const useNotice = () => {
   const { data, refetch } = useQuery(['notice'], () => getNotice(), {
     onError: (error: Error) => {
       console.log(error.message);
@@ -31,7 +31,6 @@ export const useNotice = (user: UserInfo | null) => {
 
   const getNotice = async () => {
     try {
-      if (user === null || user === undefined) return [];
       const res = await axios.get(`/api/users/notices`);
       return res.data.notice;
     } catch (error) {

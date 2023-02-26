@@ -12,7 +12,7 @@ const NoticeModal = () => {
   const { removeModal } = useModal();
   const { user } = userStore();
   const toast = useToast();
-  const { notice, refetchNotice } = useNotice(user);
+  const { notice, refetchNotice } = useNotice();
   const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     e.preventDefault();
     removeModal('notice');

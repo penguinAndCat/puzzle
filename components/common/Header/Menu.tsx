@@ -11,7 +11,7 @@ import { Button } from '../Button';
 const Menu = ({ user }: { user: UserInfo | null }) => {
   const { addModal } = useModal();
   const router = useRouter();
-  const { notice, refetchNotice } = useNotice(user);
+  const { notice } = useNotice();
   const [dropDown, setDropDown] = useState(false);
   const el = useRef<HTMLDivElement>(null);
   const onClick = () => {

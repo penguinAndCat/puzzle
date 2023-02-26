@@ -11,7 +11,7 @@ export default function Popup({ option }: { option: PopupType }) {
   const { removeOnePopup } = usePopupState();
   const { user } = userStore();
   const toast = useToast();
-  const { refetchNotice } = useNotice(user);
+  const { refetchNotice } = useNotice();
 
   const onclick = async () => {
     if (!user?.id) return;

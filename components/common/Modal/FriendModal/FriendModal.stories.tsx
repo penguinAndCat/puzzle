@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import FriendModal from '.';
 import ModalLayout from '../ModalLayout';
@@ -8,9 +8,6 @@ import SearchFriend from './Search';
 export default {
   title: 'Common/Modal/FriendModal',
   component: FriendModal,
-  argTypes: {
-    backgroundColor: { control: 'color' },
-  },
   decorators: [
     (StoryFn) => {
       return (

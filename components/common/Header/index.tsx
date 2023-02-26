@@ -7,7 +7,7 @@ import { Button } from '../Button';
 
 const Header = ({ user }: { user: UserInfo | null }) => {
   const { addModal } = useModal();
-  const { notice } = useNotice(user);
+  const { notice } = useNotice();
 
   return (
     <Container>
