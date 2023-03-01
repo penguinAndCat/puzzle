@@ -33,3 +33,5 @@ Default.parameters = {
     },
   },
 };
+
+export const NoData = Template.bind({});

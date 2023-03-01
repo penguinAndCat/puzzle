@@ -27,3 +27,5 @@ export const Default = Template.bind({});
 Default.parameters = {
   msw: handlers,
 };
+
+export const NoData = Template.bind({});

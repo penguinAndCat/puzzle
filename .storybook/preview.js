@@ -65,8 +65,7 @@ export const globalTypes = {
         { value: 'dark', icon: 'circle', title: 'dark' },
         { value: 'silver', icon: 'circle', title: 'silver' },
       ],
-      // Property that specifies if the name of the item will be displayed
-      showName: true,
+      title: 'Theme',
     },
   },
 };

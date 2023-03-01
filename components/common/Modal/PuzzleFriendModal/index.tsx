@@ -41,9 +41,8 @@ const PuzzleFriendModal = () => {
           <CloseIcon />
         </Close>
       </TitleWrapper>
-      <div>친구 목록</div>
       <Ul>
-        {puzzleFriend &&
+        {puzzleFriend && puzzleFriend.length ? (
           puzzleFriend.map((item: { nickname: string; picture: string; isInvited: boolean; isHost: boolean }) => {
             return (
               <Li key={item.nickname}>
@@ -58,7 +57,10 @@ const PuzzleFriendModal = () => {
                 )}
               </Li>
             );
-          })}
+          })
+        ) : (
+          <NoData>친구가 없습니다.</NoData>
+        )}
       </Ul>
     </Container>
   );
@@ -107,7 +109,6 @@ const TitleWrapper = styled.div`
   justify-content: space-between;
   align-items: center;
   border-bottom: solid 2px ${({ theme }) => theme.modalTextColor};
-  margin-bottom: 12px;
 `;
 
 const Title = styled.div``;
@@ -174,4 +175,9 @@ const InviteButton = styled.button`
   color: ${({ theme }) => theme.modalTextColor};
   border: solid 1px ${({ theme }) => theme.modalTextColor};
   cursor: pointer;
+`;
+
+const NoData = styled.div`
+  margin-top: 12px;
+  font-size: 12px;
 `;

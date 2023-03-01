@@ -46,3 +46,5 @@ export const SearchUser = SearchUserTemplate.bind({});
 SearchUser.parameters = {
   msw: handlers,
 };
+
+export const NoData = Template.bind({});

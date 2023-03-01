@@ -44,7 +44,7 @@ const FriendModal = ({ children }: { children?: React.ReactNode }) => {
       {children}
       <div>친구 목록</div>
       <Ul>
-        {friends &&
+        {friends && friends.length ? (
           friends.map((item: { nickname: string; picture: string }, index) => {
             return (
               <Li key={index}>
@@ -55,7 +55,10 @@ const FriendModal = ({ children }: { children?: React.ReactNode }) => {
                 </DeleteButton>
               </Li>
             );
-          })}
+          })
+        ) : (
+          <NoData>친구가 없습니다.</NoData>
+        )}
       </Ul>
     </Container>
   );
@@ -160,4 +163,9 @@ const DeleteButton = styled.button`
   color: ${({ theme }) => theme.modalTextColor};
   border: solid 1px ${({ theme }) => theme.modalTextColor};
   cursor: pointer;
+`;
+
+const NoData = styled.div`
+  margin-top: 12px;
+  font-size: 12px;
 `;

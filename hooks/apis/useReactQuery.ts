@@ -10,7 +10,6 @@ export const usePuzzleFriend = (puzzleId: string | undefined | string[]) => {
 
   const getPuzzleFriend = async () => {
     try {
-      console.log(puzzleId);
       if (puzzleId === undefined) return [];
       const res = await axios.get(`/api/users/friends/${puzzleId}`);
       return res.data.friends;
