@@ -6,6 +6,7 @@ import ModalLayout from './ModalLayout';
 import PuzzleFriendModal from './PuzzleFriendModal';
 import PuzzleModal from './PuzzleModal';
 import SearchFriend from './FriendModal/Search';
+import InvitedUserModal from './InvitedUserModal';
 
 const Modal = () => {
   const { modal } = useModal();
@@ -36,6 +37,11 @@ const Modal = () => {
       {modal.includes('puzzleFriend') && (
         <ModalLayout content={'puzzleFriend'}>
           <PuzzleFriendModal />
+        </ModalLayout>
+      )}
+      {modal.includes('invitedUser') && (
+        <ModalLayout content={'invitedUser'}>
+          <InvitedUserModal />
         </ModalLayout>
       )}
     </>

@@ -43,8 +43,10 @@ type Config = {
 type ModalProps = {
   modalDisplay: boolean;
   modal: string[];
+  puzzleId: string;
   addModal: (value: string) => void;
   removeModal: (value: string) => void;
+  setPuzzleId: (value: string) => void;
 };
 
 type PuzzleProps = {

@@ -6,18 +6,15 @@ import styled from 'styled-components';
 interface Props {
   children: React.ReactNode;
   content: string;
-  setCloseModal?: () => void;
 }
 
-const ModalLayout = ({ content, children, setCloseModal }: Props) => {
+const ModalLayout = ({ content, children }: Props) => {
   const { modal, removeModal } = useModal();
   const [isBrowser, setIsBrowser] = useState(false);
 
   const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     e.preventDefault();
     removeModal(content);
-    if (setCloseModal === undefined) return;
-    setCloseModal();
   };
 
   useEffect(() => {

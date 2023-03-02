@@ -1,16 +1,32 @@
-import { CloseIcon } from 'components/common/Icon';
-import { useInvitedUser } from 'hooks/apis/useReactQuery';
-import { theme } from 'libs/theme/theme';
-import { userStore } from 'libs/zustand/store';
-import { Key, MouseEvent } from 'react';
+import { MouseEvent } from 'react';
 import styled from 'styled-components';
 
-const InvitedUserModal = ({ puzzleId, setCloseModal }: { puzzleId: string; setCloseModal: () => void }) => {
+import { CloseIcon } from 'components/common/Icon';
+import { theme } from 'libs/theme/theme';
+import { useModal, userStore } from 'libs/zustand/store';
+import { useInvitedUser } from 'hooks/apis/useReactQuery';
+import { useToast } from 'hooks/views/useToast';
+import apis from 'apis';
+
+const InvitedUserModal = () => {
   const { user } = userStore();
+  const { removeModal, puzzleId } = useModal();
   const { invitedUser } = useInvitedUser(puzzleId, user);
+  const toast = useToast();
   const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     e.preventDefault();
-    setCloseModal();
+    removeModal('invitedUser');
+  };
+
+  const requestFriend = async (requestedNickname: string) => {
+    if (!user?.id) return;
+    const message = await apis.friends.requestFriend(user.id, requestedNickname);
+    if (message === 'success') {
+      toast({ content: '친구 요청을 보냈습니다.', type: 'success' });
+    }
+    if (message === 'duplicated') {
+      toast({ content: '이미 친구 요청을 보냈습니다.', type: 'warning' });
+    }
   };
 
   return (
@@ -30,19 +46,25 @@ const InvitedUserModal = ({ puzzleId, setCloseModal }: { puzzleId: string; setCl
               <Nickname>{invitedUser.host.nickname}</Nickname>
               <FriendButton>방장</FriendButton>
             </UserWrapper>
-            {invitedUser.users.map((participant: any, index: Key | null | undefined) => {
-              return (
-                <UserWrapper key={index}>
-                  <Img src={participant.picture} alt={participant.nickname} />
-                  <Nickname>{participant.nickname}</Nickname>
-                  {user?.nickname === participant.nickname ? (
-                    <FriendButton>나</FriendButton>
-                  ) : participant.isFriend > 0 ? (
-                    <FriendButton>친구</FriendButton>
-                  ) : null}
-                </UserWrapper>
-              );
-            })}
+            {invitedUser.users.map(
+              (participant: { picture: string; nickname: string; isFriend: number }, index: number) => {
+                return (
+                  <UserWrapper key={index}>
+                    <Img src={participant.picture} alt={participant.nickname} />
+                    <Nickname>{participant.nickname}</Nickname>
+                    {user?.nickname === participant.nickname ? (
+                      <FriendButton>나</FriendButton>
+                    ) : participant.isFriend > 0 ? (
+                      <FriendButton>친구</FriendButton>
+                    ) : (
+                      <FriendButton style={{ cursor: 'pointer' }} onClick={() => requestFriend(participant.nickname)}>
+                        친구하기
+                      </FriendButton>
+                    )}
+                  </UserWrapper>
+                );
+              }
+            )}
           </div>
         )}
       </Ul>

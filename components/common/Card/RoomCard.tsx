@@ -7,6 +7,7 @@ import InvitedUserModal from '../Modal/InvitedUserModal';
 import ModalLayout from '../Modal/ModalLayout';
 import HoverImage from './HoverImage';
 import ProgressBar from './ProgressBar';
+import { useModal } from 'libs/zustand/store';
 
 export default function RoomCard({
   src,
@@ -29,8 +30,13 @@ export default function RoomCard({
   isMain?: boolean;
   puzzleNumber?: number;
 }) {
-  const [showModal, setShowModal] = useState(false);
+  const { addModal, setPuzzleId } = useModal();
   const [showDelete, setShowDelete] = useState(false);
+
+  const openModal = () => {
+    addModal('invitedUser');
+    setPuzzleId(puzzleId);
+  };
 
   return (
     <>
@@ -52,7 +58,7 @@ export default function RoomCard({
             <div style={{ height: '10px', width: '100%' }}>
               <ProgressBar percent={progress} />
             </div>
-            {isPrivate && <ClickableP onClick={() => setShowModal(true)}>참가자 명단</ClickableP>}
+            {isPrivate && <ClickableP onClick={openModal}>참가자 명단</ClickableP>}
             {onDelete && (
               <DeleteContainer>
                 <ToggleButton onClick={() => setShowDelete((prev) => !prev)}>
@@ -71,11 +77,6 @@ export default function RoomCard({
           </TextWrapper>
         </div>
       </Container>
-      {showModal && (
-        <ModalLayout content={'invitedUser'} setCloseModal={() => setShowModal(false)}>
-          <InvitedUserModal puzzleId={puzzleId} setCloseModal={() => setShowModal(false)} />
-        </ModalLayout>
-      )}
     </>
   );
 }

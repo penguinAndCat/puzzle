@@ -4,6 +4,7 @@ import { persist } from 'zustand/middleware';
 export const useModal = create<ModalProps>()((set) => ({
   modalDisplay: false,
   modal: [],
+  puzzleId: '',
   addModal: (value) => {
     set((state) => ({
       modal: [...state.modal, value],
@@ -14,6 +15,7 @@ export const useModal = create<ModalProps>()((set) => ({
       modal: state.modal.filter((modal: string) => modal !== value),
     }));
   },
+  setPuzzleId: (value) => set({ puzzleId: value }),
 }));
 
 export const usePuzzle = create<PuzzleProps>()(
