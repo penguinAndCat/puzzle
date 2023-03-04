@@ -4,17 +4,19 @@ import styled, { css } from 'styled-components';
 import { AxiosError } from 'axios';
 
 import apis from 'apis';
-import CropImageModal from 'components/common/Modal/CropImageModal';
-import ModalLayout from 'components/common/Modal/ModalLayout';
 import { saveImage } from 'libs/common/saveImage';
 import { useToast } from 'hooks/views/useToast';
+import { useModal } from 'libs/zustand/store';
 
 export default function Profile({ user }: { user: UserInfo | null }) {
   const toast = useToast();
-  const [showModal, setShowModal] = useState(false);
-  const [profileImg, setProfileImg] = useState<string>(user?.picture || '');
-  const [croppedImg, setCroppedImg] = useState<string>(user?.picture || '');
+  const { addModal, profileImg, setProfileImg, croppedImg, setCroppedImg } = useModal();
   const [nickname, setNickname] = useState<string>(user?.nickname || '');
+
+  useEffect(() => {
+    setProfileImg(user?.picture || '');
+    setCroppedImg(user?.picture || '');
+  }, []);
 
   const onClickInputButton = async () => {
     if (nickname.length > 5) {
@@ -53,25 +55,18 @@ export default function Profile({ user }: { user: UserInfo | null }) {
   return (
     <Container>
       <ProfileWrapper>
-        {showModal && (
-          <ModalLayout content={'cropImage'} setCloseModal={() => setShowModal(false)}>
-            <CropImageModal
-              setCloseModal={() => setShowModal(false)}
-              profileImg={profileImg}
-              croppedImg={croppedImg}
-              setProfileImg={setProfileImg}
-              setCroppedImg={setCroppedImg}
-            />
-          </ModalLayout>
-        )}
         <ProfileImageBox>
-          <Img
-            src={profileImg}
-            alt="profile"
-            onClick={() => {
-              setShowModal(true);
-            }}
-          />
+          {profileImg ? (
+            <Img
+              src={profileImg}
+              alt="profile"
+              onClick={() => {
+                addModal('cropImage');
+              }}
+            />
+          ) : (
+            <div style={{ width: '120px', height: '120px' }} />
+          )}
         </ProfileImageBox>
         <Content>
           <ProfileText>

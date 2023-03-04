@@ -5,6 +5,8 @@ export const useModal = create<ModalProps>()((set) => ({
   modalDisplay: false,
   modal: [],
   puzzleId: '',
+  profileImg: '',
+  croppedImg: '',
   addModal: (value) => {
     set((state) => ({
       modal: [...state.modal, value],
@@ -16,6 +18,8 @@ export const useModal = create<ModalProps>()((set) => ({
     }));
   },
   setPuzzleId: (value) => set({ puzzleId: value }),
+  setProfileImg: (value) => set({ profileImg: value }),
+  setCroppedImg: (value) => set({ croppedImg: value }),
 }));
 
 export const usePuzzle = create<PuzzleProps>()(

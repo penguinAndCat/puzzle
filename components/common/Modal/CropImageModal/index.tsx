@@ -1,19 +1,14 @@
-import { CloseIcon } from 'components/common/Icon';
-import { theme } from 'libs/theme/theme';
-import { ChangeEvent, Dispatch, MouseEvent, SetStateAction, useRef, useState } from 'react';
+import { ChangeEvent, MouseEvent, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Cropper, getCroppedImg } from 'react-cropper-custom';
 import 'react-cropper-custom/dist/index.css';
 
-interface Props {
-  setCloseModal: () => void;
-  profileImg: string;
-  croppedImg: string;
-  setProfileImg: Dispatch<SetStateAction<string>>;
-  setCroppedImg: Dispatch<SetStateAction<string>>;
-}
+import { CloseIcon } from 'components/common/Icon';
+import { theme } from 'libs/theme/theme';
+import { useModal } from 'libs/zustand/store';
 
-const CropImageModal = ({ setCloseModal, profileImg, setProfileImg, croppedImg, setCroppedImg }: Props) => {
+const CropImageModal = () => {
+  const { removeModal, profileImg, setProfileImg, croppedImg, setCroppedImg } = useModal();
   const [zoom, setZoom] = useState(1);
   const inputFileRef = useRef<HTMLInputElement>(null);
   const onCropComplete = async (croppedArea: Area) => {
@@ -36,7 +31,7 @@ const CropImageModal = ({ setCloseModal, profileImg, setProfileImg, croppedImg, 
 
   const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     e.preventDefault();
-    setCloseModal();
+    removeModal('cropImage');
   };
 
   return (
@@ -74,7 +69,7 @@ const CropImageModal = ({ setCloseModal, profileImg, setProfileImg, croppedImg, 
           <Button
             onClick={() => {
               setProfileImg(croppedImg);
-              setCloseModal();
+              removeModal('cropImage');
             }}
           >
             자르기 완료

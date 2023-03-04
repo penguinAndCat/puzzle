@@ -7,6 +7,7 @@ import PuzzleFriendModal from './PuzzleFriendModal';
 import PuzzleModal from './PuzzleModal';
 import SearchFriend from './FriendModal/Search';
 import InvitedUserModal from './InvitedUserModal';
+import CropImageModal from './CropImageModal';
 
 const Modal = () => {
   const { modal } = useModal();
@@ -42,6 +43,11 @@ const Modal = () => {
       {modal.includes('invitedUser') && (
         <ModalLayout content={'invitedUser'}>
           <InvitedUserModal />
+        </ModalLayout>
+      )}
+      {modal.includes('cropImage') && (
+        <ModalLayout content={'cropImage'}>
+          <CropImageModal />
         </ModalLayout>
       )}
     </>

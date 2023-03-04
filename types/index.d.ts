@@ -44,9 +44,13 @@ type ModalProps = {
   modalDisplay: boolean;
   modal: string[];
   puzzleId: string;
+  profileImg: string;
+  croppedImg: string;
   addModal: (value: string) => void;
   removeModal: (value: string) => void;
   setPuzzleId: (value: string) => void;
+  setProfileImg: (value: string) => void;
+  setCroppedImg: (value: string) => void;
 };
 
 type PuzzleProps = {
