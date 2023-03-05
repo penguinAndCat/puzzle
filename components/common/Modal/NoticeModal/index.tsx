@@ -5,6 +5,7 @@ import apis from 'apis';
 import { userStore } from 'libs/zustand/store';
 import { useNotice } from 'hooks/apis/useReactQuery';
 import { useToast } from 'hooks/views/useToast';
+import { Button } from 'components/common/Button';
 
 const NoticeModal = () => {
   const { user } = userStore();
@@ -71,12 +72,20 @@ const NoticeModal = () => {
                   <NoticeMessage>
                     <Span>{item.nickname}</Span>님께서 당신과 친구를 하고 싶어합니다.
                   </NoticeMessage>
-                  <AcceptButton onClick={() => acceptFriend(item.nickname)} data-testid="acceptFriend-button">
+                  <Button
+                    buttonType="modalNotice"
+                    onClick={() => acceptFriend(item.nickname)}
+                    data-testid="acceptFriend-button"
+                  >
                     수락
-                  </AcceptButton>
-                  <RejectButton onClick={() => rejectFriend(item.nickname)} data-testid="rejectFriend-button">
+                  </Button>
+                  <Button
+                    buttonType="modalNotice"
+                    onClick={() => rejectFriend(item.nickname)}
+                    data-testid="rejectFriend-button"
+                  >
                     거절
-                  </RejectButton>
+                  </Button>
                 </Li>
               );
             if (item.type === 'puzzle')
@@ -85,12 +94,20 @@ const NoticeModal = () => {
                   <NoticeMessage>
                     <Span>{item.nickname}</Span>님께서 당신을 퍼즐 방에 초대합니다.
                   </NoticeMessage>
-                  <AcceptButton onClick={() => acceptInvite(item.puzzleId)} data-testid="acceptPuzzle-button">
+                  <Button
+                    buttonType="modalNotice"
+                    onClick={() => acceptInvite(item.puzzleId)}
+                    data-testid="acceptPuzzle-button"
+                  >
                     수락
-                  </AcceptButton>
-                  <RejectButton onClick={() => rejectInvite(item.puzzleId)} data-testid="rejectPuzzle-button">
+                  </Button>
+                  <Button
+                    buttonType="modalNotice"
+                    onClick={() => rejectInvite(item.puzzleId)}
+                    data-testid="rejectPuzzle-button"
+                  >
                     거절
-                  </RejectButton>
+                  </Button>
                 </Li>
               );
           }
@@ -136,29 +153,6 @@ const NoticeMessage = styled.div`
 
 const Span = styled.span`
   color: red;
-`;
-
-const AcceptButton = styled.button`
-  width: 50px;
-  height: 20px;
-  font-size: 12px;
-  line-height: 50%;
-  background-color: ${({ theme }) => theme.modalColor};
-  color: ${({ theme }) => theme.modalTextColor};
-  border: solid 1px ${({ theme }) => theme.modalTextColor};
-  cursor: pointer;
-  margin-right: 6px;
-`;
-
-const RejectButton = styled.button`
-  width: 50px;
-  height: 20px;
-  font-size: 12px;
-  line-height: 50%;
-  background-color: ${({ theme }) => theme.modalColor};
-  color: ${({ theme }) => theme.modalTextColor};
-  border: solid 1px ${({ theme }) => theme.modalTextColor};
-  cursor: pointer;
 `;
 
 const NoneNotice = styled.div`

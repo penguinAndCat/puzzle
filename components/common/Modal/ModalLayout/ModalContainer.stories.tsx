@@ -21,8 +21,8 @@ const Template: ComponentStory<typeof ModalLayout> = (args) => <ModalLayout {...
 
 export const Default = Template.bind({});
 Default.args = {
-  title: 'Puzzle',
-  content: 'puzzle',
+  title: 'Title',
+  content: 'content',
   width: 300,
   height: 400,
 };

@@ -14,12 +14,12 @@ export default {
         setProfileImg('/cp.png');
       }, []);
       return (
-        <>
+        <div>
           <div id="modal-root" />
           <ModalLayout title={'CropImage'} content={'cropImage'}>
             <StoryFn />
           </ModalLayout>
-        </>
+        </div>
       );
     },
   ],

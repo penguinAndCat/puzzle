@@ -18,6 +18,7 @@ Default.parameters = {
 };
 Default.args = {
   label: 'button',
+  buttonType: 'default',
 };
 
 // export const PinkTheme = Template.bind({});

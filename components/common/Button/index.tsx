@@ -15,9 +15,9 @@ interface ButtonProps {
    */
   onClick?: () => void;
   /**
-   * Optional click handler
+   * Optional theme
    */
-  type?: 'default';
+  buttonType?: 'default' | 'modalUser' | 'modalNotice';
   /**
    * Optional styled-components CSSProp
    */
@@ -28,11 +28,18 @@ interface ButtonProps {
   children?: React.ReactNode;
 }
 
-export const Button = ({ backgroundColor, label, type, css, children, ...props }: ButtonProps) => {
+export const Button = ({ backgroundColor, label, buttonType = 'default', css, children, ...props }: ButtonProps) => {
+  console.log(buttonType);
+  if (buttonType === 'default')
+    return (
+      <CustomButton style={{ backgroundColor }} css={css} {...props}>
+        {label ? label : children}
+      </CustomButton>
+    );
   return (
-    <CustomButton style={{ backgroundColor }} css={css} {...props}>
+    <ModalButton style={{ backgroundColor }} buttonType={buttonType} {...props}>
       {label ? label : children}
-    </CustomButton>
+    </ModalButton>
   );
 };
 
@@ -49,4 +56,17 @@ export const CustomButton = styled.button<{ css: CSSProp | undefined }>`
   cursor: pointer;
   padding: 0;
   ${({ css }) => css};
+`;
+
+export const ModalButton = styled.button<{ buttonType: 'default' | 'modalUser' | 'modalNotice' }>`
+  width: ${({ buttonType }) => (buttonType === 'modalUser' ? 70 : 50)}px;
+  height: 24px;
+  padding: 0;
+  border-radius: 2px;
+  font-size: 12px;
+  background-color: ${({ theme }) => theme.modalColor};
+  color: ${({ theme }) => theme.modalTextColor};
+  border: solid 1px ${({ theme }) => theme.modalTextColor};
+  line-height: 24px;
+  cursor: pointer;
 `;

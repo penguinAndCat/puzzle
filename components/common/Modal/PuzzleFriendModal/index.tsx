@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
-import styled from 'styled-components';
 
+import * as User from 'components/common/User';
 import { userStore } from 'libs/zustand/store';
 import { usePuzzleFriend } from 'hooks/apis/useReactQuery';
 import { useToast } from 'hooks/views/useToast';
@@ -24,91 +24,28 @@ const PuzzleFriendModal = () => {
   };
 
   return (
-    <Ul>
+    <User.Ul>
       {puzzleFriend && puzzleFriend.length ? (
         puzzleFriend.map((item: { nickname: string; picture: string; isInvited: boolean; isHost: boolean }) => {
           return (
-            <Li key={item.nickname}>
-              <Img src={item.picture} />
-              <Nickname>{item.nickname}</Nickname>
+            <User.Li key={item.nickname}>
+              <User.Img src={item.picture} />
+              <User.Nickname>{item.nickname}</User.Nickname>
               {item.isHost ? (
-                <InviteDiv>방장</InviteDiv>
+                <User.Div>방장</User.Div>
               ) : item.isInvited ? (
-                <InviteDiv>초대됨</InviteDiv>
+                <User.Div>초대됨</User.Div>
               ) : (
-                <InviteButton onClick={() => inviteFriend(item.nickname)}>초대</InviteButton>
+                <User.Button onClick={() => inviteFriend(item.nickname)}>초대</User.Button>
               )}
-            </Li>
+            </User.Li>
           );
         })
       ) : (
-        <NoData>친구가 없습니다.</NoData>
+        <User.NoData>친구가 없습니다.</User.NoData>
       )}
-    </Ul>
+    </User.Ul>
   );
 };
 
 export default PuzzleFriendModal;
-
-const Img = styled.img`
-  width: 40px;
-  height: 40px;
-  object-fit: cover;
-  border-radius: 50%;
-`;
-
-const Ul = styled.ul`
-  height: 240px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow: auto;
-  &::-webkit-scrollbar {
-    width: 5px;
-    height: 8px;
-    background-color: #aaa; /* 또는 트랙에 추가한다 */
-  }
-  &::-webkit-scrollbar-thumb {
-    background-color: ${({ theme }) => theme.modalTextColor};
-  }
-`;
-
-const Li = styled.li`
-  width: 300px;
-  height: 50px;
-  padding: 0 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const Nickname = styled.div`
-  width: 140px;
-  font-size: 12px;
-`;
-
-const InviteDiv = styled.button`
-  width: 60px;
-  height: 20px;
-  font-size: 12px;
-  line-height: 16px;
-  background-color: ${({ theme }) => theme.modalColor};
-  color: ${({ theme }) => theme.modalTextColor};
-  border: solid 1px ${({ theme }) => theme.modalTextColor};
-`;
-
-const InviteButton = styled.button`
-  width: 60px;
-  height: 20px;
-  font-size: 12px;
-  line-height: 16px;
-  background-color: ${({ theme }) => theme.modalColor};
-  color: ${({ theme }) => theme.modalTextColor};
-  border: solid 1px ${({ theme }) => theme.modalTextColor};
-  cursor: pointer;
-`;
-
-const NoData = styled.div`
-  margin-top: 12px;
-  font-size: 12px;
-`;
