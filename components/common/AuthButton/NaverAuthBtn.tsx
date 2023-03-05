@@ -28,7 +28,7 @@ export default function NaverAuthBtn() {
   };
 
   useEffect(() => {
-    initializeNaverLogin();
+    if (window.naver) initializeNaverLogin();
   }, []);
 
   return (
@@ -63,6 +63,7 @@ const BtnWrapper = styled.button`
   cursor: pointer;
   font-size: 12px;
   padding: 0;
+  margin: 0;
 `;
 
 const Img = styled.img`

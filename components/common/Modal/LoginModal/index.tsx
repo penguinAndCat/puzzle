@@ -1,11 +1,12 @@
-import { theme } from 'libs/theme/theme';
-import { useModal } from 'libs/zustand/store';
 import { MouseEvent } from 'react';
 import styled from 'styled-components';
-import GoogleAuthBtn from '../AuthButton/GoogleAuthBtn';
-import KakaoAuthBtn from '../AuthButton/KakaoAuthBtn';
-import NaverAuthBtn from '../AuthButton/NaverAuthBtn';
-import { CloseIcon } from '../Icon';
+
+import { CloseIcon } from 'components/common/Icon';
+import GoogleAuthBtn from 'components/common/AuthButton/GoogleAuthBtn';
+import KakaoAuthBtn from 'components/common/AuthButton/KakaoAuthBtn';
+import NaverAuthBtn from 'components/common/AuthButton/NaverAuthBtn';
+import { theme } from 'libs/theme/theme';
+import { useModal } from 'libs/zustand/store';
 
 const LoginModal = () => {
   const { removeModal } = useModal();
