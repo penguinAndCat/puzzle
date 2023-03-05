@@ -14,39 +14,39 @@ const Modal = () => {
   return (
     <>
       {modal.includes('puzzle') && (
-        <ModalLayout content={'puzzle'}>
+        <ModalLayout title={'Create'} content={'puzzle'}>
           <PuzzleModal />
         </ModalLayout>
       )}
       {modal.includes('login') && (
-        <ModalLayout content={'login'}>
+        <ModalLayout title={'Login'} content={'login'} width={240} height={220}>
           <LoginModal />
         </ModalLayout>
       )}
       {modal.includes('friend') && (
-        <ModalLayout content={'friend'}>
+        <ModalLayout title={'Friend'} content={'friend'}>
           <FriendModal>
             <SearchFriend />
           </FriendModal>
         </ModalLayout>
       )}
       {modal.includes('notice') && (
-        <ModalLayout content={'notice'}>
+        <ModalLayout title={'Notice'} content={'notice'}>
           <NoticeModal />
         </ModalLayout>
       )}
       {modal.includes('puzzleFriend') && (
-        <ModalLayout content={'puzzleFriend'}>
+        <ModalLayout title={'Friend'} content={'puzzleFriend'}>
           <PuzzleFriendModal />
         </ModalLayout>
       )}
       {modal.includes('invitedUser') && (
-        <ModalLayout content={'invitedUser'}>
+        <ModalLayout title={'Participants'} content={'invitedUser'}>
           <InvitedUserModal />
         </ModalLayout>
       )}
       {modal.includes('cropImage') && (
-        <ModalLayout content={'cropImage'}>
+        <ModalLayout title={'CropImage'} content={'cropImage'}>
           <CropImageModal />
         </ModalLayout>
       )}

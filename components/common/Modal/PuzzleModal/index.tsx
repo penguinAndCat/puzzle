@@ -1,4 +1,4 @@
-import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import Paper from 'paper/dist/paper-core';
 import styled, { css } from 'styled-components';
 
@@ -8,7 +8,6 @@ import { useLoading, useModal, usePuzzle, userStore } from 'libs/zustand/store';
 import { exportConfig, initConfig, setPuzzleRowColumn } from 'libs/puzzle/createPuzzle';
 import { saveImage, saveThumbImage } from 'libs/common/saveImage';
 import { useToast } from 'hooks/views/useToast';
-import { CloseIcon } from 'components/common/Icon';
 
 const PuzzleModal = () => {
   const { removeModal, addModal } = useModal();
@@ -21,11 +20,6 @@ const PuzzleModal = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const { user } = userStore();
-
-  const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
-    e.preventDefault();
-    removeModal('puzzle');
-  };
 
   useEffect(() => {
     if (modalImage.src === '') return;
@@ -146,14 +140,7 @@ const PuzzleModal = () => {
   };
 
   return (
-    <Container onClick={(e) => e.stopPropagation()}>
-      <TitleWrapper>
-        <Close />
-        <Title>Create</Title>
-        <Close onClick={(e) => closeModal(e)} style={{ cursor: 'pointer' }}>
-          <CloseIcon />
-        </Close>
-      </TitleWrapper>
+    <Wrapper>
       <ImgWrapper>
         {modalImage.src === '' ? (
           <ImageButton onClick={inputImage}>퍼즐 이미지를 등록해주세요.</ImageButton>
@@ -208,67 +195,20 @@ const PuzzleModal = () => {
           방 만들기
         </CreateButton>
       </CreateWrapper>
-    </Container>
+    </Wrapper>
   );
 };
 
 export default PuzzleModal;
 
-const Container = styled.div`
-  @keyframes fadein {
-    0% {
-      transform: scale(1);
-      opacity: 0;
-      transform: translate3d(-50%, -100%, 0);
-    }
-    50% {
-      transform: scale(1);
-      opacity: 1;
-      transform: translate3d(-50%, -45%, 0);
-    }
-    100% {
-      transform: scale(1);
-      opacity: 1;
-      transform: translate3d(-50%, -50%, 0);
-    }
-  }
-  animation: fadein 0.5s;
-
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate3d(-50%, -50%, 0);
-  max-width: 400px;
-  // max-height: 400px;
-  min-width: 300px;
-  min-height: 300px;
-  ${theme.common.flexCenterColumn}
-
-  background-color: ${({ theme }) => theme.modalColor};
-  color: ${({ theme }) => theme.modalTextColor};
+const Wrapper = styled.div`
+  ${theme.common.flexCenterColumn};
 `;
 
 const ModalTheme = css`
   background-color: ${({ theme }) => theme.modalColor};
   color: ${({ theme }) => theme.modalTextColor};
   border: solid 2px ${({ theme }) => theme.modalTextColor};
-`;
-
-const TitleWrapper = styled.div`
-  width: 100%;
-  height: 30px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: solid 2px ${({ theme }) => theme.modalTextColor};
-`;
-
-const Title = styled.div``;
-
-const Close = styled.div`
-  width: 30px;
-  height: 30px;
-  ${theme.common.flexCenter}
 `;
 
 const ImgWrapper = styled.div`

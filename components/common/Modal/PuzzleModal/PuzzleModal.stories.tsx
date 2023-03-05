@@ -11,7 +11,7 @@ export default {
       return (
         <>
           <div id="modal-root" />
-          <ModalLayout content={'puzzle'}>
+          <ModalLayout title={'Create'} content={'puzzle'}>
             <StoryFn />
           </ModalLayout>
         </>

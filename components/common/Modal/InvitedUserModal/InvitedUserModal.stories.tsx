@@ -20,7 +20,7 @@ export default {
       return (
         <>
           <div id="modal-root" />
-          <ModalLayout content={'invitedUser'}>
+          <ModalLayout title={'Participants'} content={'invitedUser'}>
             <StoryFn />
           </ModalLayout>
         </>

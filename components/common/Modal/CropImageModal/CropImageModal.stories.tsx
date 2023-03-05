@@ -16,7 +16,7 @@ export default {
       return (
         <>
           <div id="modal-root" />
-          <ModalLayout content={'cropImage'}>
+          <ModalLayout title={'CropImage'} content={'cropImage'}>
             <StoryFn />
           </ModalLayout>
         </>

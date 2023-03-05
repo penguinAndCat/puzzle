@@ -1,19 +1,13 @@
-import React, { MouseEvent, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { CloseIcon } from 'components/common/Icon';
 import { theme } from 'libs/theme/theme';
-import { useModal, userStore } from 'libs/zustand/store';
+import { userStore } from 'libs/zustand/store';
 import apis from 'apis';
 
 const FriendModal = ({ children }: { children?: React.ReactNode }) => {
-  const { removeModal } = useModal();
   const [friends, setFriends] = useState([]);
   const { user } = userStore();
-  const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
-    e.preventDefault();
-    removeModal('friend');
-  };
 
   useEffect(() => {
     (async function () {
@@ -33,14 +27,7 @@ const FriendModal = ({ children }: { children?: React.ReactNode }) => {
     }
   };
   return (
-    <Container onClick={(e) => e.stopPropagation()}>
-      <TitleWrapper>
-        <Close />
-        <Title>Friend</Title>
-        <Close onClick={(e) => closeModal(e)} style={{ cursor: 'pointer' }}>
-          <CloseIcon />
-        </Close>
-      </TitleWrapper>
+    <Wrapper>
       {children}
       <div>친구 목록</div>
       <Ul>
@@ -60,61 +47,14 @@ const FriendModal = ({ children }: { children?: React.ReactNode }) => {
           <NoData>친구가 없습니다.</NoData>
         )}
       </Ul>
-    </Container>
+    </Wrapper>
   );
 };
 
 export default FriendModal;
 
-const Container = styled.div`
-  @keyframes fadein {
-    0% {
-      transform: scale(1);
-      opacity: 0;
-      transform: translate3d(-50%, -100%, 0);
-    }
-    50% {
-      transform: scale(1);
-      opacity: 1;
-      transform: translate3d(-50%, -45%, 0);
-    }
-    100% {
-      transform: scale(1);
-      opacity: 1;
-      transform: translate3d(-50%, -50%, 0);
-    }
-  }
-  animation: fadein 0.5s;
-
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate3d(-50%, -50%, 0);
-  min-width: 300px;
-  min-height: 400px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  background-color: ${({ theme }) => theme.modalColor};
-  color: ${({ theme }) => theme.modalTextColor};
-`;
-
-const TitleWrapper = styled.div`
-  width: 100%;
-  height: 30px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: solid 2px ${({ theme }) => theme.modalTextColor};
-`;
-
-const Title = styled.div``;
-
-const Close = styled.div`
-  width: 30px;
-  height: 30px;
-  ${theme.common.flexCenter}
+const Wrapper = styled.div`
+  ${theme.common.flexCenterColumn};
 `;
 
 const Img = styled.img`

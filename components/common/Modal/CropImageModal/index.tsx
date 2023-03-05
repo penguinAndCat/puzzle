@@ -1,10 +1,8 @@
-import { ChangeEvent, MouseEvent, useRef, useState } from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Cropper, getCroppedImg } from 'react-cropper-custom';
 import 'react-cropper-custom/dist/index.css';
 
-import { CloseIcon } from 'components/common/Icon';
-import { theme } from 'libs/theme/theme';
 import { useModal } from 'libs/zustand/store';
 
 const CropImageModal = () => {
@@ -29,116 +27,51 @@ const CropImageModal = () => {
     setProfileImg(URL.createObjectURL(e.target.files[0]));
   };
 
-  const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
-    e.preventDefault();
-    removeModal('cropImage');
-  };
-
   return (
-    <Container onClick={(e) => e.stopPropagation()}>
-      <TitleWrapper>
-        <Close />
-        <Title>CropImage</Title>
-        <Close onClick={(e) => closeModal(e)} style={{ cursor: 'pointer' }}>
-          <CloseIcon />
-        </Close>
-      </TitleWrapper>
-      <Wrapper>
-        {profileImg.slice(undefined, 21) !== 'http://k.kakaocdn.net' ? (
-          <Cropper src={profileImg} zoom={zoom} aspect={1} onZoomChange={setZoom} onCropComplete={onCropComplete} />
-        ) : (
-          <InputWrapper
-            onClick={() => {
-              if (!inputFileRef.current) return;
-              inputFileRef.current.click();
-            }}
-          >
-            <div>이미지를 추가해보세요.</div>
-          </InputWrapper>
-        )}
-        <Explanation>휠과 드래그를 사용하여 영역을 지정할 수 있습니다.</Explanation>
-        <ButtonWrapper>
-          <Button
-            onClick={() => {
-              if (!inputFileRef.current) return;
-              inputFileRef.current.click();
-            }}
-          >
-            이미지 변경
-          </Button>
-          <Button
-            onClick={() => {
-              setProfileImg(croppedImg);
-              removeModal('cropImage');
-            }}
-          >
-            자르기 완료
-          </Button>
-        </ButtonWrapper>
-        <Input
-          type="file"
-          multiple={false}
-          ref={inputFileRef}
-          accept="image/png, image/jpeg"
-          onChange={(e) => onChange(e)}
-        />
-      </Wrapper>
-    </Container>
+    <Wrapper>
+      {profileImg.slice(undefined, 21) !== 'http://k.kakaocdn.net' ? (
+        <Cropper src={profileImg} zoom={zoom} aspect={1} onZoomChange={setZoom} onCropComplete={onCropComplete} />
+      ) : (
+        <InputWrapper
+          onClick={() => {
+            if (!inputFileRef.current) return;
+            inputFileRef.current.click();
+          }}
+        >
+          <div>이미지를 추가해보세요.</div>
+        </InputWrapper>
+      )}
+      <Explanation>휠과 드래그를 사용하여 영역을 지정할 수 있습니다.</Explanation>
+      <ButtonWrapper>
+        <Button
+          onClick={() => {
+            if (!inputFileRef.current) return;
+            inputFileRef.current.click();
+          }}
+        >
+          이미지 변경
+        </Button>
+        <Button
+          onClick={() => {
+            setProfileImg(croppedImg);
+            removeModal('cropImage');
+          }}
+        >
+          자르기 완료
+        </Button>
+      </ButtonWrapper>
+      <Input
+        type="file"
+        multiple={false}
+        ref={inputFileRef}
+        accept="image/png, image/jpeg"
+        onChange={(e) => onChange(e)}
+      />
+    </Wrapper>
   );
 };
 
 export default CropImageModal;
-
-const Container = styled.div`
-  @keyframes fadein {
-    0% {
-      transform: scale(1);
-      opacity: 0;
-      transform: translate3d(-50%, -100%, 0);
-    }
-    50% {
-      transform: scale(1);
-      opacity: 1;
-      transform: translate3d(-50%, -45%, 0);
-    }
-    100% {
-      transform: scale(1);
-      opacity: 1;
-      transform: translate3d(-50%, -50%, 0);
-    }
-  }
-  animation: fadein 0.5s;
-
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate3d(-50%, -50%, 0);
-  min-width: 300px;
-  min-height: 370px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  background-color: ${({ theme }) => theme.modalColor};
-  color: ${({ theme }) => theme.modalTextColor};
-`;
-
-const TitleWrapper = styled.div`
-  width: 100%;
-  height: 30px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: solid 2px ${({ theme }) => theme.modalTextColor};
-`;
-
-const Title = styled.div``;
-
-const Close = styled.div`
-  width: 30px;
-  height: 30px;
-  ${theme.common.flexCenter}
-`;
 
 const Wrapper = styled.div`
   width: 100%;

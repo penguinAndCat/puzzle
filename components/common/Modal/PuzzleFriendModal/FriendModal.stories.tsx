@@ -13,7 +13,7 @@ export default {
       return (
         <>
           <div id="modal-root" />
-          <ModalLayout content={'puzzleFriend'}>
+          <ModalLayout title={'Friend'} content={'puzzleFriend'}>
             <StoryFn />
           </ModalLayout>
         </>
