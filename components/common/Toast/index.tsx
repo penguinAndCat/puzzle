@@ -27,7 +27,7 @@ interface Toast {
    */
   type: 'success' | 'warning' | 'info';
   /**
-   * 토스트 타입
+   * 토스트 에니메이션 유무
    */
   animation?: boolean;
 }

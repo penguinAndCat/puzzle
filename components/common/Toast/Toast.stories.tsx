@@ -6,7 +6,7 @@ import ToastList from './ToastList';
 import { Button } from '../Button';
 
 export default {
-  title: 'Common/Toast/Toast',
+  title: 'Common/Toast',
   component: Toast,
   decorators: [
     (StoryFn) => {

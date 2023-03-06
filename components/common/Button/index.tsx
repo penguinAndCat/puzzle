@@ -3,27 +3,27 @@ import styled, { CSSProp } from 'styled-components';
 
 interface ButtonProps {
   /**
-   * What background color to use
+   * 배경 색상
    */
   backgroundColor?: string;
   /**
-   * Button contents with only storybook
+   * 버튼 내용(storybook에서만 사용)
    */
   label?: string;
   /**
-   * Optional click handler
+   * 클릭 시 핸들러
    */
   onClick?: () => void;
   /**
-   * Optional theme
+   * 버튼 타입
    */
   buttonType?: 'default' | 'modalUser' | 'modalNotice';
   /**
-   * Optional styled-components CSSProp
+   * 추가적인 styled-components CSSProp
    */
   css?: CSSProp;
   /**
-   * Button contents
+   * 버튼 내용
    */
   children?: React.ReactNode;
 }
