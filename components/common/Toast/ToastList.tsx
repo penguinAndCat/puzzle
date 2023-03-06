@@ -7,8 +7,8 @@ const ToastList = () => {
 
   return (
     <Wrapper>
-      {toast.map((item, index) => (
-        <Toast key={index} option={item} />
+      {toast.map((option, index) => (
+        <Toast key={index} nickname={option.nickname} content={option.content} type={option.type} />
       ))}
     </Wrapper>
   );

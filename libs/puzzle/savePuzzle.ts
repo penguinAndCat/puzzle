@@ -54,7 +54,6 @@ export const savePuzzle = () => {
     link.download = `${puzzleName}.jpg`;
     link.href = target?.toDataURL('image/jpeg');
     link.click();
-    console.log(saveConfig);
   }, 500);
 };
 

@@ -68,8 +68,17 @@ type PuzzleProps = {
 };
 
 interface Toast {
+  /**
+   * 토스트에서 강조할 닉네임
+   */
   nickname?: string;
+  /**
+   * 토스트 내용
+   */
   content: string;
+  /**
+   * 토스트 타입
+   */
   type: 'success' | 'warning' | 'info';
 }
 

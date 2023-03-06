@@ -29,7 +29,6 @@ interface ButtonProps {
 }
 
 export const Button = ({ backgroundColor, label, buttonType = 'default', css, children, ...props }: ButtonProps) => {
-  console.log(buttonType);
   if (buttonType === 'default')
     return (
       <CustomButton style={{ backgroundColor }} css={css} {...props}>
