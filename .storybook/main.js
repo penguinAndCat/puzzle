@@ -11,6 +11,7 @@ module.exports = {
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',
     'storybook-addon-next-router',
+    '@storybook/addon-controls',
   ],
   framework: '@storybook/react',
   webpackFinal: async (config) => {

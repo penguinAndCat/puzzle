@@ -11,7 +11,7 @@ interface ButtonProps {
    */
   label?: string;
   /**
-   * 클릭 시 핸들러
+   * 클릭 이벤트 핸들러
    */
   onClick?: () => void;
   /**

@@ -3,13 +3,57 @@ import styled from 'styled-components';
 
 import { theme } from 'libs/theme/theme';
 import { SeeMoreIcon } from '../Icon';
-import InvitedUserModal from '../Modal/InvitedUserModal';
-import ModalLayout from '../Modal/ModalLayout';
 import HoverImage from './HoverImage';
 import ProgressBar from './ProgressBar';
 import { useModal } from 'libs/zustand/store';
 
-export default function RoomCard({
+interface CardProps {
+  /**
+   * 카드 이미지 url
+   */
+  src: string;
+  /**
+   * 퍼즐 완성도(%)
+   */
+  progress: number;
+  /**
+   * 퍼즐 방 제목
+   */
+  title: string;
+  /**
+   * 퍼즐 방 아이디
+   */
+  puzzleId: string;
+  /**
+   * 비밀방 유무
+   */
+  isPrivate?: boolean;
+  /**
+   * 클릭 이벤트 핸들러
+   */
+  onClick: () => void;
+  /**
+   * 삭제 이벤트 핸들러
+   */
+  onDelete?: () => void;
+  /**
+   * 메인 페이지에서 사용하는지 여부
+   */
+  isMain?: boolean;
+  /**
+   * 퍼즐 조각 개수
+   */
+  puzzleNumber?: number;
+  /**
+   * 카드 너비, 미지정시 100%
+   *
+   * 100%인 경우 카드 배치 시 grid 사용에 따라 화면 크기 1024px 이상에서 카드 너비 250px,
+   * 미만일 경우 화면 크기에 따라 줄어듬
+   */
+  width?: number;
+}
+
+export default function Card({
   src,
   progress,
   title,
@@ -19,17 +63,8 @@ export default function RoomCard({
   onDelete,
   isMain = false,
   puzzleNumber,
-}: {
-  src: string;
-  progress: number;
-  title: string;
-  puzzleId: string;
-  isPrivate?: boolean;
-  onClick: () => void;
-  onDelete?: () => void;
-  isMain?: boolean;
-  puzzleNumber?: number;
-}) {
+  width = undefined,
+}: CardProps) {
   const { addModal, setPuzzleId } = useModal();
   const [showDelete, setShowDelete] = useState(false);
 
@@ -40,7 +75,7 @@ export default function RoomCard({
 
   return (
     <>
-      <Container onClick={onClick}>
+      <Container onClick={onClick} width={width}>
         <HoverImage
           src={src}
           alt={title}
@@ -81,9 +116,9 @@ export default function RoomCard({
   );
 }
 
-const Container = styled.div`
+const Container = styled.div<{ width?: number }>`
   position: relative;
-  width: 100%;
+  width: ${({ width }) => (width ? `${width}px` : '100%')};
   height: 100%;
   background-color: #f2f2f2;
   color: ${theme.colors.dark};
@@ -109,7 +144,7 @@ const TitleWrapper = styled.div`
 `;
 
 const Title = styled.h1`
-  width: 200px;
+  width: 100%;
   font-weight: bold;
   text-align: left;
   font-size: 1.25rem;
@@ -122,27 +157,10 @@ const Title = styled.h1`
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  @media (max-width: 1080px) {
-    width: 160px;
-  }
-  @media (max-width: 870px) {
-    width: 120px;
-  }
-  @media (max-width: 720px) {
-    width: 240px;
-  }
-  @media (max-width: 600px) {
-    width: 180px;
-  }
-  @media (max-width: 480px) {
-    width: 120px;
-  }
-  @media (max-width: 360px) {
-    width: 60px;
-  }
 `;
 
 const PrivateP = styled.p`
+  min-width: 40px;
   font-size: 12px;
   margin: 0 8px 2px 0;
   color: #969696;

@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 import { NEXT_SERVER } from 'config';
-import RoomCard from 'components/common/Card/RoomCard';
+import Card from 'components/common/Card';
 import { userStore } from 'libs/zustand/store';
 import { useToast } from 'hooks/views/useToast';
 import { usePopularPuzzle } from 'hooks/apis/useReactQuery';
@@ -25,7 +25,7 @@ const PopularRoomList = () => {
       <PuzzleContainer>
         {popularPuzzle?.map((data: any) => {
           return (
-            <RoomCard
+            <Card
               key={data._id}
               src={data.thumbImage ? data.thumbImage : data.src}
               progress={Number((data.perfection * 100).toFixed(3))}

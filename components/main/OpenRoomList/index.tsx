@@ -2,14 +2,14 @@ import { useState } from 'react';
 import styled from 'styled-components';
 import { Checkbox } from 'antd';
 
-import apis from 'apis';
+import SortDropBox from './SortDropBox';
+import Card from 'components/common/Card';
+import CardSkeleton from 'components/common/Card/CardSkeleton';
 import { NEXT_SERVER } from 'config';
-import RoomCard from 'components/common/Card/RoomCard';
 import { userStore } from 'libs/zustand/store';
 import useInfiniteScroll from 'hooks/apis/useInfiniteScroll';
 import { useToast } from 'hooks/views/useToast';
-import SortDropBox from './SortDropBox';
-import RoomCardSkeleton from 'components/common/Card/RoomCardSkeleton';
+import apis from 'apis';
 
 const OpenRoomList = () => {
   const user = userStore();
@@ -57,7 +57,7 @@ const OpenRoomList = () => {
         {data?.pages.map((page) =>
           page.item.map((data: any) => {
             return (
-              <RoomCard
+              <Card
                 key={data._id}
                 src={data.thumbImage ? data.thumbImage : data.src}
                 progress={Number((data.perfection * 100).toFixed(3))}
@@ -70,7 +70,7 @@ const OpenRoomList = () => {
             );
           })
         )}
-        {isFetching && Array.from({ length: 4 }, (v, i) => i).map((_, index) => <RoomCardSkeleton key={index * 100} />)}
+        {isFetching && Array.from({ length: 4 }, (v, i) => i).map((_, index) => <CardSkeleton key={index * 100} />)}
         <div ref={flagRef} style={{ height: '100px' }} />
       </PuzzleContainer>
     </Container>

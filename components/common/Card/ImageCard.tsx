@@ -7,7 +7,7 @@ interface Props {
   originalImage: string;
 }
 
-const Card = ({ image, originalImage }: Props) => {
+const ImageCard = ({ image, originalImage }: Props) => {
   const { addModal } = useModal();
   const { initialModal } = usePuzzle();
   const { setModalImage } = usePuzzle();
@@ -38,7 +38,7 @@ const Card = ({ image, originalImage }: Props) => {
   );
 };
 
-export default Card;
+export default ImageCard;
 
 const Wrapper = styled.div`
   cursor: pointer;
