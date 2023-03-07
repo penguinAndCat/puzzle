@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import CropImageModal from '.';
-import ModalLayout from '../ModalLayout';
+import ModalContainer from '../ModalLayout/ModalContainer';
 import { useModal } from 'libs/zustand/store';
 
 export default {
@@ -11,15 +11,14 @@ export default {
     (StoryFn) => {
       const { setProfileImg } = useModal();
       useEffect(() => {
-        setProfileImg('/cp.png');
+        setProfileImg(
+          'http://res.cloudinary.com/penguinandcatpuzzle/image/upload/v1672831380/jtguoogjwszywocyeb8o.jpg'
+        );
       }, []);
       return (
-        <div>
-          <div id="modal-root" />
-          <ModalLayout title={'CropImage'} content={'cropImage'}>
-            <StoryFn />
-          </ModalLayout>
-        </div>
+        <ModalContainer title={'CropImage'} content={'cropImage'} story={true}>
+          <StoryFn />
+        </ModalContainer>
       );
     },
   ],

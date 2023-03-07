@@ -7,28 +7,39 @@ import { CloseIcon } from 'components/common/Icon';
 
 interface ModalContainerProps {
   /**
-   * Modal title
+   * 제목
    */
   title: string;
   /**
-   * Modal content name
+   * 모달을 켜고 닫기 위한 이름
    */
   content: string;
   /**
-   * Modal min-width
+   * 너비
    */
   width?: number;
   /**
-   * Modal min-height
+   * 최소 높이
    */
   height?: number;
   /**
-   * Modal main components
+   * 내부 컴포넌트
    */
   children?: React.ReactNode;
+  /**
+   * 스토리북에서 사용 유무
+   */
+  story?: boolean;
 }
 
-const ModalContainer = ({ title, content, width = 300, height = 400, children }: ModalContainerProps) => {
+const ModalContainer = ({
+  title,
+  content,
+  width = 300,
+  height = 400,
+  story = false,
+  children,
+}: ModalContainerProps) => {
   const { removeModal } = useModal();
   const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     e.preventDefault();
@@ -36,7 +47,7 @@ const ModalContainer = ({ title, content, width = 300, height = 400, children }:
   };
 
   return (
-    <Container onClick={(e) => e.stopPropagation()} width={width} height={height}>
+    <Container onClick={(e) => e.stopPropagation()} width={width} height={height} story={story}>
       <TitleWrapper>
         <Div />
         <Title>{title}</Title>
@@ -51,7 +62,7 @@ const ModalContainer = ({ title, content, width = 300, height = 400, children }:
 
 export default ModalContainer;
 
-const Container = styled.div<{ width: number; height: number }>`
+const Container = styled.div<{ width: number; height: number; story: boolean }>`
   @keyframes fadein {
     0% {
       transform: scale(1);
@@ -69,13 +80,13 @@ const Container = styled.div<{ width: number; height: number }>`
       transform: translate3d(-50%, -50%, 0);
     }
   }
-  animation: fadein 0.5s;
+  ${({ story }) => !story && 'animation: fadein 0.5s;'}
 
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate3d(-50%, -50%, 0);
-  min-width: ${({ width }) => width}px;
+  ${({ story }) => !story && 'position: fixed;'}
+  ${({ story }) => !story && 'top: 50%;'}
+  ${({ story }) => !story && 'left: 50%;'}
+  ${({ story }) => !story && 'transform: translate3d(-50%, -50%, 0);'}
+  width: ${({ width }) => width}px;
   min-height: ${({ height }) => height}px;
   display: flex;
   flex-direction: column;
@@ -83,6 +94,7 @@ const Container = styled.div<{ width: number; height: number }>`
 
   background-color: ${({ theme }) => theme.modalColor};
   color: ${({ theme }) => theme.modalTextColor};
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 `;
 
 const TitleWrapper = styled.div`

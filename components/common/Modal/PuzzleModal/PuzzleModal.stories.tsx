@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import PuzzleModal from '.';
-import ModalLayout from '../ModalLayout';
+import ModalContainer from '../ModalLayout/ModalContainer';
 
 export default {
   title: 'Common/Modal/PuzzleModal',
@@ -11,9 +11,9 @@ export default {
       return (
         <>
           <div id="modal-root" />
-          <ModalLayout title={'Create'} content={'puzzle'}>
+          <ModalContainer title={'Create'} content={'puzzle'} story={true}>
             <StoryFn />
-          </ModalLayout>
+          </ModalContainer>
         </>
       );
     },

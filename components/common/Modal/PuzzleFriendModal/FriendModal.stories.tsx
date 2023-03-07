@@ -1,37 +1,29 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import PuzzleFriendModal from '.';
-import ModalLayout from '../ModalLayout';
-import { handlers } from '.mocks/handlers';
-import { puzzleId } from '.mocks/api/users/friends';
+import View from './View';
+import ModalContainer from '../ModalLayout/ModalContainer';
+import { puzzleFriends } from '.mocks/api/users/friends';
 
 export default {
   title: 'Common/Modal/PuzzleFriendModal',
-  component: PuzzleFriendModal,
+  component: View,
   decorators: [
     (StoryFn) => {
       return (
-        <>
-          <div id="modal-root" />
-          <ModalLayout title={'Friend'} content={'puzzleFriend'}>
-            <StoryFn />
-          </ModalLayout>
-        </>
+        <ModalContainer title={'Friend'} content={'puzzleFriend'} story={true}>
+          <StoryFn />
+        </ModalContainer>
       );
     },
   ],
-} as ComponentMeta<typeof PuzzleFriendModal>;
+} as ComponentMeta<typeof View>;
 
-const Template: ComponentStory<typeof PuzzleFriendModal> = () => <PuzzleFriendModal />;
+const Template: ComponentStory<typeof View> = () => (
+  <View puzzleFriend={puzzleFriends.friends} inviteFriend={() => {}} />
+);
 
 export const Default = Template.bind({});
-Default.parameters = {
-  msw: handlers,
-  nextRouter: {
-    query: {
-      id: puzzleId,
-    },
-  },
-};
 
-export const NoData = Template.bind({});
+const NoDataTemplate: ComponentStory<typeof View> = () => <View inviteFriend={() => {}} />;
+
+export const NoData = NoDataTemplate.bind({});

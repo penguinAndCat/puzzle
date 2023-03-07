@@ -1,31 +1,37 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import NoticeModal from '.';
-import ModalLayout from '../ModalLayout';
-import { handlers } from '.mocks/handlers';
+import View from './View';
+import ModalContainer from '../ModalLayout/ModalContainer';
+import { notices } from '.mocks/api/users/notices';
 
 export default {
   title: 'Common/Modal/NoticeModal',
-  component: NoticeModal,
+  component: View,
   decorators: [
     (StoryFn) => {
       return (
-        <>
-          <div id="modal-root" />
-          <ModalLayout title={'Notice'} content={'notice'}>
-            <StoryFn />
-          </ModalLayout>
-        </>
+        <ModalContainer title={'Notice'} content={'notice'} story={true}>
+          <StoryFn />
+        </ModalContainer>
       );
     },
   ],
-} as ComponentMeta<typeof NoticeModal>;
+} as ComponentMeta<typeof View>;
 
-const Template: ComponentStory<typeof NoticeModal> = () => <NoticeModal />;
+const Template: ComponentStory<typeof View> = () => (
+  <View
+    notice={notices.notice}
+    acceptFriend={() => {}}
+    rejectFriend={() => {}}
+    acceptInvite={() => {}}
+    rejectInvite={() => {}}
+  />
+);
 
 export const Default = Template.bind({});
-Default.parameters = {
-  msw: handlers,
-};
 
-export const NoData = Template.bind({});
+const NoDataTemplate: ComponentStory<typeof View> = () => (
+  <View acceptFriend={() => {}} rejectFriend={() => {}} acceptInvite={() => {}} rejectInvite={() => {}} />
+);
+
+export const NoData = NoDataTemplate.bind({});

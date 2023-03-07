@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import LoginModal from '.';
-import ModalLayout from '../ModalLayout';
+import ModalContainer from '../ModalLayout/ModalContainer';
 
 export default {
   title: 'Common/Modal/LoginModal',
@@ -9,12 +9,9 @@ export default {
   decorators: [
     (StoryFn) => {
       return (
-        <>
-          <div id="modal-root" />
-          <ModalLayout title={'Login'} content={'login'} width={240} height={220}>
-            <StoryFn />
-          </ModalLayout>
-        </>
+        <ModalContainer title={'Login'} content={'login'} width={240} height={220} story={true}>
+          <StoryFn />
+        </ModalContainer>
       );
     },
   ],

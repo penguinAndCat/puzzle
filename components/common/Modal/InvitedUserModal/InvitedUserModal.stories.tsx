@@ -1,37 +1,23 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import InvitedUserModal from '.';
-import ModalLayout from '../ModalLayout';
-import { handlers } from '.mocks/handlers';
-import { useModal, userStore } from 'libs/zustand/store';
-import { puzzleId, user } from '.mocks/api/users/friends';
+import { invitedUsers } from '.mocks/api/users/friends';
+import ModalContainer from '../ModalLayout/ModalContainer';
+import View from './View';
 
 export default {
   title: 'Common/Modal/InvitedUserModal',
-  component: InvitedUserModal,
+  component: View,
   decorators: [
     (StoryFn) => {
-      const { setUser } = userStore();
-      const { setPuzzleId } = useModal();
-      useEffect(() => {
-        setUser(user);
-        setPuzzleId(puzzleId);
-      }, []);
       return (
-        <>
-          <div id="modal-root" />
-          <ModalLayout title={'Participants'} content={'invitedUser'}>
-            <StoryFn />
-          </ModalLayout>
-        </>
+        <ModalContainer title={'Participants'} content={'invitedUser'} story={true}>
+          <StoryFn />
+        </ModalContainer>
       );
     },
   ],
-} as ComponentMeta<typeof InvitedUserModal>;
+} as ComponentMeta<typeof View>;
 
-const Template: ComponentStory<typeof InvitedUserModal> = () => <InvitedUserModal />;
+const Template: ComponentStory<typeof View> = () => <View invitedUser={invitedUsers.data} requestFriend={() => {}} />;
 
 export const Default = Template.bind({});
-Default.parameters = {
-  msw: handlers,
-};
