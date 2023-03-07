@@ -1,11 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import apis from 'apis';
-import RoomCard from 'components/common/Card/RoomCard';
-import RoomCardSkeleton from 'components/common/Card/RoomCardSkeleton';
+import Card from 'components/common/Card';
+import CardSkeleton from 'components/common/Card/CardSkeleton';
 import { NEXT_SERVER } from 'config';
 import useInfiniteScroll from 'hooks/apis/useInfiniteScroll';
 import { useModal, usePuzzle } from 'libs/zustand/store';
+import { PuzzleWrapper } from 'components/common/Grid';
 
 export default function RoomList({ user }: { user: UserInfo | null }) {
   const [tab, setTab] = useState<'my' | 'invited'>('my');
@@ -115,7 +116,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
             {puzzleData && puzzleData.length > 0 ? (
               <PuzzleWrapper>
                 {puzzleData?.map((item: any, index: number) => (
-                  <RoomCard
+                  <Card
                     key={item._id}
                     src={item.thumbImage ? item.thumbImage : item.src}
                     progress={Number((item.perfection * 100).toFixed(3))}
@@ -130,7 +131,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
                   />
                 ))}
                 {myPuzzleFetching &&
-                  Array.from({ length: 4 }, (v, i) => i).map((_, index) => <RoomCardSkeleton key={index * 100} />)}
+                  Array.from({ length: 4 }, (v, i) => i).map((_, index) => <CardSkeleton key={index * 100} />)}
               </PuzzleWrapper>
             ) : (
               <CreateWrapper>
@@ -173,7 +174,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
             {invitedPuzzleData && invitedPuzzleData.length > 0 ? (
               <PuzzleWrapper>
                 {invitedPuzzleData?.map((item: any, index: number) => (
-                  <RoomCard
+                  <Card
                     key={item._id}
                     src={item.thumbImage ? item.thumbImage : item.src}
                     progress={Number((item.perfection * 100).toFixed(3))}
@@ -187,7 +188,7 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
                   />
                 ))}
                 {invitedFetching &&
-                  Array.from({ length: 4 }, (v, i) => i).map((_, index) => <RoomCardSkeleton key={index * 100} />)}
+                  Array.from({ length: 4 }, (v, i) => i).map((_, index) => <CardSkeleton key={index * 100} />)}
               </PuzzleWrapper>
             ) : (
               <div style={{ marginTop: '36px' }}>초대된 방이 없습니다.😥</div>
@@ -201,21 +202,10 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
 }
 
 const PuzzleContainer = styled.div`
-  width: 1024px;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-`;
-
-const PuzzleWrapper = styled.div`
-  width: min(100%, 1024px);
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  padding: 1rem 0;
-  gap: 0.5rem;
-  @media (max-width: 720px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
 `;
 
 const TabBox = styled.ul`

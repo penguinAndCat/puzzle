@@ -16,8 +16,8 @@ export default function KakaoAuthBtn() {
   };
 
   useEffect(() => {
-    if (window.Kakao.isInitialized()) return;
-    window.Kakao.init(`${process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID}`);
+    if (window.Kakao?.isInitialized()) return;
+    if (window.Kakao) window.Kakao.init(`${process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID}`);
   }, []);
 
   return (

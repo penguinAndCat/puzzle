@@ -6,7 +6,7 @@ import { usePopup } from 'hooks/views/usePopup';
 
 const SocketNotice = ({ user }: { user: UserInfo | null }) => {
   const popup = usePopup();
-  const { refetchNotice } = useNotice(user);
+  const { refetchNotice } = useNotice();
 
   useEffect(() => {
     if (user === undefined) return;

@@ -17,16 +17,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   if (method === 'GET') {
     const accessToken = getCookie('accessToken', { req, res });
     if (!accessToken) {
-      return res.status(401).json({ message: 'not authorizied' });
+      return res.status(200).json({ message: 'not authorizied' });
     }
-    const userInfo = decodePayload<{
-      name: string;
-      nickname: string;
-      provider: string;
-      iat: number;
-      exp: number;
-      iss: string;
-    }>(accessToken);
+    const userInfo =
+      decodePayload<{
+        name: string;
+        nickname: string;
+        provider: string;
+        iat: number;
+        exp: number;
+        iss: string;
+      }>(accessToken);
 
     const user = await User.findOne({ nickname: userInfo.nickname });
     try {

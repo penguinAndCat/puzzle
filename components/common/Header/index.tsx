@@ -1,22 +1,23 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { useModal } from 'libs/zustand/store';
 import { useNotice } from 'hooks/apis/useReactQuery';
 import Palette from '../Palette';
 import Menu from './Menu';
+import { Button } from '../Button';
 
 const Header = ({ user }: { user: UserInfo | null }) => {
   const { addModal } = useModal();
-  const { notice } = useNotice(user);
+  const { notice } = useNotice();
 
   return (
     <Container>
       <Wrapper>
         {user?.name ? (
           <Left>
-            <Button onClick={() => addModal('friend')} data-testid="friend-button">
+            <Button onClick={() => addModal('friend')} css={ButtonCss} data-testid="friend-button">
               친구
             </Button>
-            <Button onClick={() => addModal('notice')} data-testid="notice-button">
+            <Button onClick={() => addModal('notice')} css={ButtonCss} data-testid="notice-button">
               알림
               {notice && notice.length > 0 && <Notice />}
             </Button>
@@ -125,18 +126,7 @@ const Right = styled.div`
   }
 `;
 
-const Button = styled.button`
-  position: relative;
-  width: 80px;
-  height: 30px;
-  border-radius: 4px;
-  border: 3px ${({ theme }) => theme.borderColor};
-  color: ${({ theme }) => theme.headerTextColor};
-  background-color: ${({ theme }) => theme.headerColor};
-  font-weight: 600;
-  text-align: center;
-  cursor: pointer;
-  padding: 0;
+const ButtonCss = css`
   @media (max-width: 600px) {
     display: none;
   }

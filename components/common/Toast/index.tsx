@@ -13,15 +13,34 @@ const TYPE = {
   },
 };
 
-export default function Toast({ option }: { option: Toast }) {
+interface Toast {
+  /**
+   * 토스트에서 강조할 닉네임
+   */
+  nickname?: string;
+  /**
+   * 토스트 내용
+   */
+  content: string;
+  /**
+   * 토스트 타입
+   */
+  type: 'success' | 'warning' | 'info';
+  /**
+   * 토스트 에니메이션 유무
+   */
+  animation?: boolean;
+}
+
+export default function Toast({ nickname, content, type, animation = true }: Toast) {
   return (
-    <ToastBox data-testid="toast-div">
-      <ToastBar type={option.type} />
+    <ToastBox animation={animation} data-testid="toast-div">
+      <ToastBar type={type} />
       <div>
-        <Type>{option.type}</Type>
+        <Type>{type}</Type>
         <div>
-          <Nickname>{option.nickname}</Nickname>
-          {option.content}
+          <Nickname>{nickname}</Nickname>
+          {content}
         </div>
       </div>
     </ToastBox>
@@ -49,12 +68,11 @@ const ToastBar = styled.div<StyleProps>`
   left: 0;
 `;
 
-const ToastBox = styled.div`
+const ToastBox = styled.div<{ animation: boolean }>`
   zindex: 999;
-  width: 100%;
+  width: 240px;
   height: 100%;
   display: flex;
-  justify-content: center;
   align-items: center;
   margin-bottom: 10px;
   font-size: 16px;
@@ -84,7 +102,7 @@ const ToastBox = styled.div`
   }
 
   animation-fill-mode: forwards;
-  animation-name: fadeInToast, fadeOutToast;
+  ${({ animation }) => animation && 'animation-name: fadeInToast, fadeOutToast;'}
   animation-delay: 0s, 2s;
   animation-duration: 2s, 1s;
 
@@ -92,5 +110,4 @@ const ToastBox = styled.div`
   background-color: ${({ theme }) => theme.textColor};
   border-radius: 4px;
   padding: 6px 8px 6px 28px;
-  // box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 15%);
 `;

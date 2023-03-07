@@ -1,7 +1,7 @@
 import { Space, Skeleton, Card } from 'antd';
 import React from 'react';
 
-export default function RoomCardSkeleton() {
+export default function CardSkeleton({ width, isPrivate }: { width?: number; isPrivate?: boolean }) {
   return (
     <Card
       bodyStyle={{
@@ -10,7 +10,7 @@ export default function RoomCardSkeleton() {
         flexDirection: 'column',
         gap: '0.5rem',
       }}
-      style={{ width: '100%', borderRadius: 0 }}
+      style={{ width: width ? `${width}px` : '100%', borderRadius: 0 }}
       // cover={<Skeleton.Image active={true} style={{ paddingBlock: '200px' }} />}
       cover={
         <Skeleton.Button
@@ -21,9 +21,10 @@ export default function RoomCardSkeleton() {
         />
       }
     >
-      <Space direction="vertical">
+      <Space direction="vertical" style={{ height: isPrivate ? '73px' : '100%' }}>
         <Skeleton.Button block={true} active={true} size={'small'} shape="square" />
         <Skeleton.Button block={true} active={true} size={'small'} shape="square" />
+        {isPrivate && <Skeleton.Button block={true} active={true} style={{ height: '13px' }} />}
       </Space>
     </Card>
   );

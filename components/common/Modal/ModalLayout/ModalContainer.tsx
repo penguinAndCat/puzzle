@@ -1,39 +1,57 @@
-import { theme } from 'libs/theme/theme';
-import { useModal } from 'libs/zustand/store';
 import { MouseEvent } from 'react';
 import styled from 'styled-components';
-import GoogleAuthBtn from '../AuthButton/GoogleAuthBtn';
-import KakaoAuthBtn from '../AuthButton/KakaoAuthBtn';
-import NaverAuthBtn from '../AuthButton/NaverAuthBtn';
-import { CloseIcon } from '../Icon';
 
-const LoginModal = () => {
+import { theme } from 'libs/theme/theme';
+import { useModal } from 'libs/zustand/store';
+import { CloseIcon } from 'components/common/Icon';
+
+interface ModalContainerProps {
+  /**
+   * Modal title
+   */
+  title: string;
+  /**
+   * Modal content name
+   */
+  content: string;
+  /**
+   * Modal min-width
+   */
+  width?: number;
+  /**
+   * Modal min-height
+   */
+  height?: number;
+  /**
+   * Modal main components
+   */
+  children?: React.ReactNode;
+}
+
+const ModalContainer = ({ title, content, width = 300, height = 400, children }: ModalContainerProps) => {
   const { removeModal } = useModal();
   const closeModal = (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
     e.preventDefault();
-    removeModal('login');
+    removeModal(content);
   };
+
   return (
-    <Container onClick={(e) => e.stopPropagation()}>
+    <Container onClick={(e) => e.stopPropagation()} width={width} height={height}>
       <TitleWrapper>
-        <Close />
-        <Title>Login</Title>
-        <Close onClick={(e) => closeModal(e)} style={{ cursor: 'pointer' }}>
+        <Div />
+        <Title>{title}</Title>
+        <Close onClick={(e) => closeModal(e)}>
           <CloseIcon />
         </Close>
       </TitleWrapper>
-      <ButtonWrapper>
-        <GoogleAuthBtn />
-        <KakaoAuthBtn />
-        <NaverAuthBtn />
-      </ButtonWrapper>
+      {children}
     </Container>
   );
 };
 
-export default LoginModal;
+export default ModalContainer;
 
-const Container = styled.div`
+const Container = styled.div<{ width: number; height: number }>`
   @keyframes fadein {
     0% {
       transform: scale(1);
@@ -57,8 +75,8 @@ const Container = styled.div`
   top: 50%;
   left: 50%;
   transform: translate3d(-50%, -50%, 0);
-  min-width: 240px;
-  min-height: 210px;
+  min-width: ${({ width }) => width}px;
+  min-height: ${({ height }) => height}px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -78,16 +96,14 @@ const TitleWrapper = styled.div`
 
 const Title = styled.div``;
 
+const Div = styled.div`
+  width: 30px;
+  height: 30px;
+`;
+
 const Close = styled.div`
   width: 30px;
   height: 30px;
-  ${theme.common.flexCenter}
-`;
-
-const ButtonWrapper = styled.div`
-  width: 185px;
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  cursor: pointer;
+  ${theme.common.flexCenter};
 `;

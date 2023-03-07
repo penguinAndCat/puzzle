@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import Card from 'components/common/Card/Card';
+import ImageCard from 'components/common/Card/ImageCard';
 import { useModal, usePuzzle } from 'libs/zustand/store';
 import OpenRoomList from './OpenRoomList';
 import PopularRoomList from './PopularRoomList';
@@ -27,7 +27,7 @@ const Main = () => {
         <Title>기본 퍼즐</Title>
         <PuzzleContainer>
           {BASE_IMAGE.map((item, index) => {
-            return <Card key={index} originalImage={item.image} image={item.thumbImage} />;
+            return <ImageCard key={index} originalImage={item.image} image={item.thumbImage} />;
           })}
         </PuzzleContainer>
       </BasicWrapper>

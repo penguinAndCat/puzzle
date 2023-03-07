@@ -1,10 +1,11 @@
 import styled from 'styled-components';
 
 import { NEXT_SERVER } from 'config';
-import RoomCard from 'components/common/Card/RoomCard';
+import Card from 'components/common/Card';
 import { userStore } from 'libs/zustand/store';
 import { useToast } from 'hooks/views/useToast';
 import { usePopularPuzzle } from 'hooks/apis/useReactQuery';
+import { PuzzleWrapper } from 'components/common/Grid';
 
 const PopularRoomList = () => {
   const user = userStore();
@@ -22,10 +23,10 @@ const PopularRoomList = () => {
   return (
     <Container>
       <Title>인기 있는 퍼즐</Title>
-      <PuzzleContainer>
+      <PuzzleWrapper>
         {popularPuzzle?.map((data: any) => {
           return (
-            <RoomCard
+            <Card
               key={data._id}
               src={data.thumbImage ? data.thumbImage : data.src}
               progress={Number((data.perfection * 100).toFixed(3))}
@@ -37,7 +38,7 @@ const PopularRoomList = () => {
             />
           );
         })}
-      </PuzzleContainer>
+      </PuzzleWrapper>
     </Container>
   );
 };
@@ -58,14 +59,4 @@ const Title = styled.div`
   font-weight: 600;
   text-align: center;
   margin: 20px 0;
-`;
-
-const PuzzleContainer = styled.div`
-  max-width: 1024px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  gap: 0.5rem;
-  @media (max-width: 720px) {
-    grid-template-columns: 1fr 1fr;
-  }
 `;

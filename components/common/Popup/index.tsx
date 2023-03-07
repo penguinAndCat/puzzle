@@ -7,30 +7,61 @@ import { useNotice } from 'hooks/apis/useReactQuery';
 import { useToast } from 'hooks/views/useToast';
 import apis from 'apis';
 
-export default function Popup({ option }: { option: PopupType }) {
+interface PopupType {
+  /**
+   * 요청자 닉네임
+   */
+  nickname: string;
+  /**
+   * 요청자 프로필 이미지
+   */
+  picture: string;
+  /**
+   * 팝업창 내용
+   */
+  content: string;
+  /**
+   * 공지 아이디를 키로 팝업창 삭제 가능
+   */
+  noticeId: string;
+  /**
+   * 친구 요청, 퍼즐 초대
+   */
+  type: 'friend' | 'puzzle';
+  /**
+   * 퍼즐 초대 수락 시 해당 퍼즐 방으로 이동
+   */
+  puzzleId?: string;
+  /**
+   * 팝업창 에니메이션 유무
+   */
+  animation?: boolean;
+}
+
+export default function Popup({ nickname, picture, content, noticeId, type, puzzleId, animation = true }: PopupType) {
   const { removeOnePopup } = usePopupState();
   const { user } = userStore();
   const toast = useToast();
-  const { refetchNotice } = useNotice(user);
+  const { refetchNotice } = useNotice();
 
   const onclick = async () => {
     if (!user?.id) return;
-    removeOnePopup(option.noticeId);
-    if (option.type === 'friend') {
-      const message = await apis.friends.acceptFriend(user.id, option.nickname);
+    removeOnePopup(noticeId);
+    if (type === 'friend') {
+      const message = await apis.friends.acceptFriend(user.id, nickname);
       if (message === 'success') {
-        toast({ nickname: option.nickname, content: '님과 친구가 되었습니다.', type: 'success' });
+        toast({ nickname: nickname, content: '님과 친구가 되었습니다.', type: 'success' });
       }
       if (message === 'duplicated') {
         toast({ content: '이미 친구입니다.', type: 'warning' });
         return;
       }
-    } else if (option.type === 'puzzle') {
-      const message = await apis.puzzles.acceptInvitation(user.id, option.puzzleId);
+    } else if (type === 'puzzle') {
+      const message = await apis.puzzles.acceptInvitation(user.id, puzzleId);
       if (message === 'success') {
         toast({ content: '초대를 수락하였습니다.', type: 'success' });
         if (confirm('초대받은 퍼즐로 이동하겠습니까?')) {
-          window.location.href = `/puzzle/${option.puzzleId}`;
+          window.location.href = `/puzzle/${puzzleId}`;
         }
       }
       if (message === 'failed') {
@@ -42,19 +73,19 @@ export default function Popup({ option }: { option: PopupType }) {
   };
 
   return (
-    <Container>
+    <Container animation={animation}>
       <Header>
-        <IconWrapper onClick={() => removeOnePopup(option.noticeId)}>
+        <IconWrapper onClick={() => removeOnePopup(noticeId)}>
           <PopupCloseIcon />
         </IconWrapper>
       </Header>
       <Main>
         <ImgWrapper>
-          <Img src={option.picture} />
+          <Img src={picture} />
         </ImgWrapper>
         <ContentWrapper>
-          <Nickname>{option.nickname}</Nickname>
-          <Content>{option.content}</Content>
+          <Nickname>{nickname}</Nickname>
+          <Content>{content}</Content>
         </ContentWrapper>
       </Main>
       <Footer>
@@ -123,7 +154,7 @@ const Button = styled.button`
   cursor: pointer;
 `;
 
-const Container = styled.div`
+const Container = styled.div<{ animation: boolean }>`
   zindex: 999;
   width: 230px;
   height: 100%;
@@ -155,7 +186,7 @@ const Container = styled.div`
   }
 
   animation-fill-mode: forwards;
-  animation-name: fadeInNoti, fadeOutNoti;
+  ${({ animation }) => animation && 'animation-name: fadeInNoti, fadeOutNoti;'}
   animation-delay: 0s, 59.6s;
   animation-duration: 2s, 1s;
 

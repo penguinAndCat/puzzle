@@ -8,7 +8,15 @@ const PopupList = () => {
   return (
     <Wrapper>
       {popup.map((item, index) => (
-        <Popup key={index} option={item} />
+        <Popup
+          key={index}
+          nickname={item.nickname}
+          picture={item.picture}
+          content={item.content}
+          noticeId={item.noticeId}
+          type={item.type}
+          puzzleId={item.puzzleId}
+        />
       ))}
     </Wrapper>
   );
