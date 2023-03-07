@@ -10,6 +10,7 @@ import { userStore } from 'libs/zustand/store';
 import useInfiniteScroll from 'hooks/apis/useInfiniteScroll';
 import { useToast } from 'hooks/views/useToast';
 import apis from 'apis';
+import { PuzzleWrapper } from 'components/common/Grid';
 
 const OpenRoomList = () => {
   const user = userStore();
@@ -53,7 +54,7 @@ const OpenRoomList = () => {
           <Checkbox checked={showPerfect} onChange={() => setShowPerfect((prev) => !prev)} />
         </Label>
       </ButtonWrapper>
-      <PuzzleContainer>
+      <PuzzleWrapper>
         {data?.pages.map((page) =>
           page.item.map((data: any) => {
             return (
@@ -72,7 +73,7 @@ const OpenRoomList = () => {
         )}
         {isFetching && Array.from({ length: 4 }, (v, i) => i).map((_, index) => <CardSkeleton key={index * 100} />)}
         <div ref={flagRef} style={{ height: '100px' }} />
-      </PuzzleContainer>
+      </PuzzleWrapper>
     </Container>
   );
 };
@@ -86,16 +87,6 @@ const Container = styled.div`
   align-items: center;
   margin-top: 20px;
   padding: 0.5rem;
-`;
-
-const PuzzleContainer = styled.div`
-  width: min(100%, 1024px);
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.5rem;
-  @media (max-width: 720px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
 `;
 
 const ButtonWrapper = styled.div`

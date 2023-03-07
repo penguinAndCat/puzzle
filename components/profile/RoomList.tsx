@@ -6,6 +6,7 @@ import CardSkeleton from 'components/common/Card/CardSkeleton';
 import { NEXT_SERVER } from 'config';
 import useInfiniteScroll from 'hooks/apis/useInfiniteScroll';
 import { useModal, usePuzzle } from 'libs/zustand/store';
+import { PuzzleWrapper } from 'components/common/Grid';
 
 export default function RoomList({ user }: { user: UserInfo | null }) {
   const [tab, setTab] = useState<'my' | 'invited'>('my');
@@ -201,21 +202,10 @@ export default function RoomList({ user }: { user: UserInfo | null }) {
 }
 
 const PuzzleContainer = styled.div`
-  width: 1024px;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-`;
-
-const PuzzleWrapper = styled.div`
-  width: min(100%, 1024px);
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  padding: 1rem 0;
-  gap: 0.5rem;
-  @media (max-width: 720px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
 `;
 
 const TabBox = styled.ul`
