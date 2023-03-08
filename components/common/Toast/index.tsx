@@ -1,15 +1,16 @@
 import React from 'react';
 import styled from 'styled-components';
+import { colors } from 'libs/theme/colors';
 
 const TYPE = {
   success: {
-    color: '#0ED73F',
+    color: colors.green,
   },
   warning: {
-    color: '#E3E60E',
+    color: colors.yellow,
   },
   info: {
-    color: '#0E42E6',
+    color: colors.navy,
   },
 };
 

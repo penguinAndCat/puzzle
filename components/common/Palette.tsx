@@ -3,6 +3,7 @@ import styled, { css } from 'styled-components';
 import useTheme from 'hooks/views/useTheme';
 import { theme } from 'libs/theme/theme';
 import { PaletteIcon } from './Icon';
+import { colors } from 'libs/theme/colors';
 
 const Palette = () => {
   const [_, setTheme] = useTheme();
@@ -84,22 +85,22 @@ const paletteButton = css`
   cursor: pointer;
 `;
 
-const Pink = styled.button`
+export const Pink = styled.button`
   ${paletteButton};
-  background-color: ${theme.colors.pink};
+  background-color: ${colors.pink};
 `;
 
-const Mint = styled.button`
+export const Mint = styled.button`
   ${paletteButton};
-  background-color: ${theme.colors.mint};
+  background-color: ${colors.mint};
 `;
 
-const Sliver = styled.button`
+export const Sliver = styled.button`
   ${paletteButton};
-  background-color: ${theme.colors.silver};
+  background-color: ${colors.silver};
 `;
 
-const Dark = styled.button`
+export const Dark = styled.button`
   ${paletteButton};
-  background-color: ${theme.colors.dark};
+  background-color: ${colors.dark};
 `;

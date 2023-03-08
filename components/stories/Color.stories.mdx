@@ -1,0 +1,285 @@
+import { Meta } from '@storybook/addon-docs';
+import { colors } from '../../libs/theme/colors';
+
+<Meta title="Foundation/Color" />
+
+<style>
+  {`
+    .pink {
+      background-color: ${colors.pink};
+    }
+    .mint {
+      background-color: ${colors.mint};
+    }
+    .silver {
+      background-color: ${colors.silver};
+    }
+    .dark {
+      background-color: ${colors.dark};
+    }
+    .pink-similar0 {
+      background-color: ${colors.similarPink[0]};
+    }
+    .pink-similar1 {
+      background-color: ${colors.similarPink[1]};
+    }
+    .pink-similar2 {
+      background-color: ${colors.similarPink[2]};
+    }
+    .mint-similar0 {
+      background-color: ${colors.similarMint[0]};
+    }
+    .mint-similar1 {
+      background-color: ${colors.similarMint[1]};
+    }
+    .mint-similar2 {
+      background-color: ${colors.similarMint[2]};
+    }
+    .silver-similar0 {
+      background-color: ${colors.similarSilver[0]};
+    }
+    .silver-similar1 {
+      background-color: ${colors.similarSilver[1]};
+    }
+    .silver-similar2 {
+      background-color: ${colors.similarSilver[2]};
+    }
+    .dark-similar0 {
+      background-color: ${colors.similarDark[0]};
+    }
+    .dark-similar1 {
+      background-color: ${colors.similarDark[1]};
+    }
+    .dark-similar2 {
+      background-color: ${colors.similarDark[2]};
+    }
+    .green {
+      background-color: ${colors.green};
+    }
+    .yellow {
+      background-color: ${colors.yellow};
+    }
+    .navy {
+      background-color: ${colors.navy};
+    }
+    .color-container {
+      width: 320px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .color-wrapper {
+      width: 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .color-info {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .color {
+      width: 50px;
+      height: 50px;
+    }
+    .color-name {
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+    }
+    .blank {
+      height: 40px;
+    }
+    .small-blank {
+      height: 10px;
+    }
+  `}
+</style>
+
+# Color
+
+펭캣 퍼즐 웹에서 사용하는 색상을 정의합니다.
+
+<div className="blank" />
+
+## Principle
+
+### 일관된
+
+색상은 UI 전체에 일관되게 사용하며 테마에 따라 달라집니다.
+
+### 뚜렷한
+
+색상은 요소 사이에 충분한 대비로 요소를 구분해야합니다.
+
+### 계층적인
+
+색상은 요소의 위계와 중요도에 따라 사용합니다. 가장 중요한 요소가 가장 눈에 띄어야 합니다.
+
+<div className="blank" />
+
+## Theme
+
+`pink`, `mint`, `silver`, `dark` 색상에 따라 테마가 나누어집니다.
+
+테마는 퍼즐을 맞출 때 퍼즐이 배경과 구분 되어 잘 보이게 하기 위해 배경 색상을 바꾸는 것에서 확장되었습니다.
+
+다만 테마에 따른 색상을 과하게 사용함으로써 가장 중요한 요소가 가장 눈에 띄는 원칙이 위배되는 것 같아, 테마의 색상은 유지하지만 적게 사용하는 방향을 찾고 있습니다.
+
+<div className="color-container">
+  <div className="color-wrapper">
+    <div className="color-info">#ffc0cb</div>
+    <div className="pink color" />
+    <div className="color-name">pink</div>
+  </div>
+  <div className="color-wrapper">
+    <div className="color-info">#03dba4</div>
+    <div className="mint color" />
+    <div className="color-name">mint</div>
+  </div>
+  <div className="color-wrapper">
+    <div className="color-info">#e9e6e4</div>
+    <div className="silver color" />
+    <div className="color-name">silver</div>
+  </div>
+  <div className="color-wrapper">
+    <div className="color-info">#2b2a2b</div>
+    <div className="dark color" />
+    <div className="color-name">dark</div>
+  </div>
+</div>
+
+<div className="blank" />
+
+## Tint Color
+
+색조 색상을 정의합니다. 색조 색상에는 Similar과 Sub 색상이 있습니다.
+
+<div className="small-blank" />
+
+### Simialr Color
+
+테마 색상마다 유사한 색상을 가져 로딩 페이지나 퍼즐 완성도 게이지를 구현하는데 사용됩니다.
+
+#### pink
+
+<div className="color-container">
+  <div className="color-wrapper">
+    <div className="color-info">#ffc0cb</div>
+    <div className="pink color" />
+    <div className="color-name">pink</div>
+  </div>
+  <div className="color-wrapper">
+    <div className="color-info">#F28DB2</div>
+    <div className="pink-similar0 color" />
+    <div className="color-name">similar-pink0</div>
+  </div>
+  <div className="color-wrapper">
+    <div className="color-info">#F26716</div>
+    <div className="pink-similar1 color" />
+    <div className="color-name">similar-pink1</div>
+  </div>
+  <div className="color-wrapper">
+    <div className="color-info">#F27979</div>
+    <div className="pink-similar2 color" />
+    <div className="color-name">similar-pink2</div>
+  </div>
+</div>
+
+#### mint
+
+<div className="color-container">
+  <div className="color-wrapper">
+    <div className="color-info">#03dba4</div>
+    <div className="mint color" />
+    <div className="color-name">mint</div>
+  </div>
+  <div className="color-wrapper">
+    <div className="color-info">#085CA6</div>
+    <div className="mint-similar0 color" />
+    <div className="color-name">similar-mint0</div>
+  </div>
+  <div className="color-wrapper">
+    <div className="color-info">#069DBF</div>
+    <div className="mint-similar1 color" />
+    <div className="color-name">similar-mint1</div>
+  </div>
+  <div className="color-wrapper">
+    <div className="color-info">#ACF2DE</div>
+    <div className="mint-similar2 color" />
+    <div className="color-name">similar-mint2</div>
+  </div>
+</div>
+
+#### silver
+
+<div className="color-container">
+  <div className="color-wrapper">
+    <div className="color-info">#e9e6e4</div>
+    <div className="silver color" />
+    <div className="color-name">silver</div>
+  </div>
+  <div className="color-wrapper">
+    <div className="color-info">#0E2440</div>
+    <div className="silver-similar0 color" />
+    <div className="color-name">similar-silver0</div>
+  </div>
+  <div className="color-wrapper">
+    <div className="color-info">#010D00</div>
+    <div className="silver-similar1 color" />
+    <div className="color-name">similar-silver1</div>
+  </div>
+  <div className="color-wrapper">
+    <div className="color-info">#594239</div>
+    <div className="silver-similar2 color" />
+    <div className="color-name">similar-silver2</div>
+  </div>
+</div>
+
+#### dark
+
+<div className="color-container">
+  <div className="color-wrapper">
+    <div className="color-info">#2b2a2b</div>
+    <div className="dark color" />
+    <div className="color-name">dark</div>
+  </div>
+  <div className="color-wrapper">
+    <div className="color-info">#655E4D</div>
+    <div className="dark-similar0 color" />
+    <div className="color-name">similar-dark0</div>
+  </div>
+  <div className="color-wrapper">
+    <div className="color-info">#844534</div>
+    <div className="dark-similar1 color" />
+    <div className="color-name">similar-dark1</div>
+  </div>
+  <div className="color-wrapper">
+    <div className="color-info">#D96907</div>
+    <div className="dark-similar2 color" />
+    <div className="color-name">similar-dark2</div>
+  </div>
+</div>
+
+<div className="small-blank" />
+
+### Sub Color
+
+기능, 강조 등의 목적으로 보조적으로 사용하는 색상입니다.
+
+<div className="color-container">
+  <div className="color-wrapper">
+    <div className="color-info">#0ED73F</div>
+    <div className="green color" />
+    <div className="color-name">green</div>
+  </div>
+  <div className="color-wrapper">
+    <div className="color-info">#E3E60E</div>
+    <div className="yellow color" />
+    <div className="color-name">yellow</div>
+  </div>
+  <div className="color-wrapper">
+    <div className="color-info">#0E42E6</div>
+    <div className="navy color" />
+    <div className="color-name">navy</div>
+  </div>
+</div>

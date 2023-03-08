@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-import { theme } from 'libs/theme/theme';
 import { SeeMoreIcon } from '../Icon';
 import HoverImage from './HoverImage';
 import ProgressBar from './ProgressBar';
 import { useModal } from 'libs/zustand/store';
+import { colors } from 'libs/theme/colors';
 
 interface CardProps {
   /**
@@ -121,7 +121,7 @@ const Container = styled.div<{ width?: number }>`
   width: ${({ width }) => (width ? `${width}px` : '100%')};
   height: 100%;
   background-color: #f2f2f2;
-  color: ${theme.colors.dark};
+  color: ${colors.dark};
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   display: flex;
   flex-direction: column;
