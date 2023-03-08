@@ -5,7 +5,7 @@ import ModalContainer from '../ModalLayout/ModalContainer';
 import { useModal } from 'libs/zustand/store';
 
 export default {
-  title: 'Common/Modal/CropImageModal',
+  title: 'Components/Modal/CropImageModal',
   component: CropImageModal,
   decorators: [
     (StoryFn) => {

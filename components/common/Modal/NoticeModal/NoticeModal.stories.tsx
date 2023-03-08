@@ -5,7 +5,7 @@ import ModalContainer from '../ModalLayout/ModalContainer';
 import { notices } from '.mocks/api/users/notices';
 
 export default {
-  title: 'Common/Modal/NoticeModal',
+  title: 'Components/Modal/NoticeModal',
   component: View,
   decorators: [
     (StoryFn) => {

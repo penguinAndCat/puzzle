@@ -4,7 +4,7 @@ import Card from '.';
 import CardSkeleton from './CardSkeleton';
 
 export default {
-  title: 'Common/Card',
+  title: 'Components/Card',
   component: Card,
 } as ComponentMeta<typeof Card>;
 

@@ -4,7 +4,7 @@ import LoginModal from '.';
 import ModalContainer from '../ModalLayout/ModalContainer';
 
 export default {
-  title: 'Common/Modal/LoginModal',
+  title: 'Components/Modal/LoginModal',
   component: LoginModal,
   decorators: [
     (StoryFn) => {

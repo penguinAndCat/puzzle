@@ -3,7 +3,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import ModalLayout from '.';
 
 export default {
-  title: 'Common/Modal/ModalLayout',
+  title: 'Components/Modal/ModalLayout',
   component: ModalLayout,
   decorators: [
     (StoryFn) => {

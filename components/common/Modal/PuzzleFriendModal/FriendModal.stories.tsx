@@ -5,7 +5,7 @@ import ModalContainer from '../ModalLayout/ModalContainer';
 import { puzzleFriends } from '.mocks/api/users/friends';
 
 export default {
-  title: 'Common/Modal/PuzzleFriendModal',
+  title: 'Components/Modal/PuzzleFriendModal',
   component: View,
   decorators: [
     (StoryFn) => {
