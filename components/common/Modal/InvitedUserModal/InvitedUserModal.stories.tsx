@@ -5,7 +5,7 @@ import ModalContainer from '../ModalLayout/ModalContainer';
 import View from './View';
 
 export default {
-  title: 'Common/Modal/InvitedUserModal',
+  title: 'Components/Modal/InvitedUserModal',
   component: View,
   decorators: [
     (StoryFn) => {

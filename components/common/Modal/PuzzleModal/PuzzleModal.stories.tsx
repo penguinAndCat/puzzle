@@ -4,7 +4,7 @@ import PuzzleModal from '.';
 import ModalContainer from '../ModalLayout/ModalContainer';
 
 export default {
-  title: 'Common/Modal/PuzzleModal',
+  title: 'Components/Modal/PuzzleModal',
   component: PuzzleModal,
   decorators: [
     (StoryFn) => {

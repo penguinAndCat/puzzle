@@ -6,7 +6,7 @@ import PopupList from './PopupList';
 import { Button } from '../Button';
 
 export default {
-  title: 'Common/Popup',
+  title: 'Components/Popup',
   component: Popup,
   decorators: [
     (StoryFn) => {

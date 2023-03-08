@@ -6,7 +6,7 @@ import SearchFriend from './Search';
 import ModalContainer from '../ModalLayout/ModalContainer';
 
 export default {
-  title: 'Common/Modal/FriendModal',
+  title: 'Components/Modal/FriendModal',
   component: View,
   decorators: [
     (StoryFn) => {
