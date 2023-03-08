@@ -1,6 +1,8 @@
 ## 직소 퍼즐 사이트
 > [PengCatPuzzle](https://pengcatpuzzle.vercel.app)
 
+> [Storybook](https://puzzle-storybook.vercel.app)
+
 - 캔버스를 활용할 수 있는 무언가를 만들고 싶었던 필자는 직소 퍼즐 사이트를 만들기로 하였다. 캔버스를 활용한다는 것은 많은 수학적인 계산을 해야 한다는 것이고, 그 점이 참 맘에 들었다.
 - 기존에 있는 직소 퍼즐 사이트와의 차별점을 두고 싶었다.
 
